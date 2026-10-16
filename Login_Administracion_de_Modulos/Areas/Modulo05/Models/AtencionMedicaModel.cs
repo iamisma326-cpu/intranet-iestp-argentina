@@ -55,9 +55,9 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
         {
             using var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
-            const string sql = @"SELECT id_persona, numero_documento, nombres, apellidos 
-                                 FROM personas 
-                                 WHERE numero_documento = @dni LIMIT 1";
+            const string sql = @"SELECT persona_id, dni, nombres, apellidos 
+                                 FROM core.personas 
+                                 WHERE dni = @dni LIMIT 1";
             using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@dni", dni.Trim());
             using var reader = cmd.ExecuteReader();
@@ -79,8 +79,8 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             using var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
             const string sql = @"
-                INSERT INTO atenciones_topico 
-                (persona_id, atendido_por_id, fecha_hora, motivo, medicamento_id, es_alergico, detalle_alergia, seguro_salud, observacion)
+                INSERT INTO mod05.atenciones_topico 
+                (persona_id, atendido_por, fecha_hora, motivo, medicamento_id, es_alergico, detalle_alergia, seguro_salud, observacion)
                 VALUES (@persona_id, @atendido_por, @fecha_hora, @motivo, @medicamento_id, @es_alergico, @detalle_alergia, @seguro_salud, @observacion)";
 
             using var cmd = new NpgsqlCommand(sql, conn);
@@ -123,13 +123,13 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             using var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
             const string sql = @"
-                SELECT a.id_atencion_top, a.persona_id, a.atendido_por_id, a.fecha_hora, a.motivo, 
+                SELECT a.id, a.persona_id, a.atendido_por, a.fecha_hora, a.motivo, 
                        a.medicamento_id, a.es_alergico, a.detalle_alergia, a.seguro_salud, a.observacion,
-                       p.numero_documento, p.nombres, p.apellidos, m.nombre AS medicamento_nombre
+                       p.dni, p.nombres, p.apellidos, m.nombre AS medicamento_nombre
                 FROM atenciones_topico a
-                INNER JOIN personas p ON a.persona_id = p.id_persona
+                INNER JOIN core.personas p ON a.persona_id = p.persona_id
                 LEFT JOIN botica_medicamentos m ON a.medicamento_id = m.id_medicamento
-                WHERE p.numero_documento = @dni
+                WHERE p.dni = @dni
                 ORDER BY a.fecha_hora DESC";
 
             using var cmd = new NpgsqlCommand(sql, conn);

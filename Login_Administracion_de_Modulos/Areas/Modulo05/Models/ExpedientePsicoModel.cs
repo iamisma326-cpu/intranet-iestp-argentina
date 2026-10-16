@@ -110,9 +110,9 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             conn.Open();
 
             const string sql = @"
-                SELECT p.id_persona, p.numero_documento, p.nombres, p.apellidos
-                FROM personas p
-                WHERE p.numero_documento = @dni
+                SELECT p.persona_id, p.dni, p.nombres, p.apellidos
+                FROM core.personas p
+                WHERE p.dni = @dni
                 LIMIT 1";
 
             using var cmd = new NpgsqlCommand(sql, conn);
@@ -145,7 +145,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             conn.Open();
 
             // 1. Buscar si ya existe
-            using (var cmdBuscar = new NpgsqlCommand("SELECT id_persona FROM personas WHERE numero_documento = @dni LIMIT 1", conn))
+            using (var cmdBuscar = new NpgsqlCommand("SELECT persona_id FROM core.personas WHERE dni = @dni LIMIT 1", conn))
             {
                 cmdBuscar.Parameters.AddWithValue("@dni", dni);
                 var res = cmdBuscar.ExecuteScalar();
@@ -157,9 +157,9 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             string apeFinal = string.IsNullOrWhiteSpace(apellidos) ? "Institucional" : apellidos.Trim();
 
             const string sqlInsert = @"
-                INSERT INTO personas (tipo_documento, numero_documento, nombres, apellidos)
-                VALUES ('DNI', @dni, @nombres, @apellidos)
-                RETURNING id_persona;";
+                INSERT INTO core.personas (dni, nombres, apellidos)
+                VALUES (@dni, @nombres, @apellidos)
+                RETURNING persona_id;";
 
             using var cmdInsert = new NpgsqlCommand(sqlInsert, conn);
             cmdInsert.Parameters.AddWithValue("@dni", dni);
@@ -179,7 +179,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
 
             if (sugeridoId.HasValue && sugeridoId.Value > 0)
             {
-                using var cmdCheck = new NpgsqlCommand("SELECT id_usuario FROM usuarios WHERE id_usuario = @id AND estado = 'Activo' LIMIT 1", conn);
+                using var cmdCheck = new NpgsqlCommand("SELECT id FROM core.usuarios WHERE id = @id AND estado = true LIMIT 1", conn);
                 cmdCheck.Parameters.AddWithValue("@id", sugeridoId.Value);
                 var res = cmdCheck.ExecuteScalar();
                 if (res != null) return Convert.ToInt32(res);
@@ -187,18 +187,18 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
 
             // Buscar usuario con rol de Psicología
             const string sqlPsico = @"
-                SELECT u.id_usuario 
-                FROM usuarios u
-                INNER JOIN usuarios_roles ur ON u.id_usuario = ur.id_usuario
-                INNER JOIN roles r ON ur.id_rol = r.id_rol
-                WHERE r.nombre ILIKE '%Psicolog%' AND u.estado = 'Activo'
+                SELECT u.id 
+                FROM core.usuarios u
+                INNER JOIN core.usuario_roles ur ON u.id = ur.usuario_id
+                INNER JOIN core.roles r ON ur.rol_id = r.id
+                WHERE r.nombre ILIKE '%Psicolog%' AND u.estado = true
                 LIMIT 1";
             using var cmdPsico = new NpgsqlCommand(sqlPsico, conn);
             var idPsico = cmdPsico.ExecuteScalar();
             if (idPsico != null) return Convert.ToInt32(idPsico);
 
             // Fallback a cualquier usuario activo para evitar violación de FK
-            using var cmdFallback = new NpgsqlCommand("SELECT id_usuario FROM usuarios WHERE estado = 'Activo' LIMIT 1", conn);
+            using var cmdFallback = new NpgsqlCommand("SELECT id FROM core.usuarios WHERE estado = true LIMIT 1", conn);
             var idFallback = cmdFallback.ExecuteScalar();
             return idFallback != null ? Convert.ToInt32(idFallback) : 1;
         }
@@ -224,10 +224,10 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             };
 
             const string sql = @"
-                INSERT INTO atenciones_psicologia 
+                INSERT INTO mod05.atenciones_psicologia 
                 (persona_id, psicologo_id, fecha_hora, motivo_consulta, observacion_notas, estado_atencion)
                 VALUES (@persona_id, @psicologo_id, @fecha_hora, @motivo, @notas, @estado)
-                RETURNING id_atencion_psico;";
+                RETURNING id;";
 
             using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@persona_id", item.PersonaId);
@@ -321,15 +321,15 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             conn.Open();
 
             const string sql = @"
-                SELECT a.id_atencion_psico, a.persona_id, a.psicologo_id, a.fecha_hora, 
+                SELECT a.id, a.persona_id, a.psicologo_id, a.fecha_hora, 
                        a.motivo_consulta, a.observacion_notas, a.estado_atencion,
-                       p.numero_documento, p.nombres, p.apellidos,
+                       p.dni, p.nombres, p.apellidos,
                        COALESCE(ps_p.nombres || ' ' || ps_p.apellidos, 'Psicólogo Responsable') as psicologo_nombre
-                FROM atenciones_psicologia a
-                INNER JOIN personas p ON a.persona_id = p.id_persona
-                LEFT JOIN usuarios u ON a.psicologo_id = u.id_usuario
-                LEFT JOIN personas ps_p ON u.id_persona = ps_p.id_persona
-                WHERE p.numero_documento = @dni
+                FROM mod05.atenciones_psicologia a
+                INNER JOIN core.personas p ON a.persona_id = p.persona_id
+                LEFT JOIN core.usuarios u ON a.psicologo_id = u.id
+                LEFT JOIN core.personas ps_p ON u.persona_id = ps_p.persona_id
+                WHERE p.dni = @dni
                 ORDER BY a.fecha_hora DESC";
 
             using var cmd = new NpgsqlCommand(sql, conn);
@@ -367,14 +367,14 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             conn.Open();
 
             const string sql = @"
-                SELECT a.id_atencion_psico, a.persona_id, a.psicologo_id, a.fecha_hora, 
+                SELECT a.id, a.persona_id, a.psicologo_id, a.fecha_hora, 
                        a.motivo_consulta, a.observacion_notas, a.estado_atencion,
-                       p.numero_documento, p.nombres, p.apellidos,
+                       p.dni, p.nombres, p.apellidos,
                        COALESCE(ps_p.nombres || ' ' || ps_p.apellidos, 'Lic. Juan Psicólogo') as psicologo_nombre
-                FROM atenciones_psicologia a
-                INNER JOIN personas p ON a.persona_id = p.id_persona
-                LEFT JOIN usuarios u ON a.psicologo_id = u.id_usuario
-                LEFT JOIN personas ps_p ON u.id_persona = ps_p.id_persona
+                FROM mod05.atenciones_psicologia a
+                INNER JOIN core.personas p ON a.persona_id = p.persona_id
+                LEFT JOIN core.usuarios u ON a.psicologo_id = u.id
+                LEFT JOIN core.personas ps_p ON u.persona_id = ps_p.persona_id
                 ORDER BY a.fecha_hora DESC
                 LIMIT @limite";
 

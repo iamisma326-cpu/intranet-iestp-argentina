@@ -83,11 +83,11 @@ namespace Login_Administracion_de_Modulos.Controllers
                 // 1. Usuario por DNI/correo, con persona. (Esquema core — modelo
                 //    institucional compartido por todos los módulos.)
                 const string query = @"
-                    SELECT u.id_usuario, u.clave_cifrada, u.estado,
-                           p.nombres, p.apellidos, p.id_persona
+                    SELECT u.id, u.password_hash, u.estado,
+                           p.nombres, p.apellidos, p.id
                     FROM core.usuarios u
-                    JOIN core.personas p ON p.id_persona = u.id_persona
-                    WHERE p.numero_documento = @dni OR LOWER(u.correo) = LOWER(@dni)
+                    JOIN core.personas p ON p.id = u.persona_id
+                    WHERE p.dni = @dni OR LOWER(u.email) = LOWER(@dni)
                     LIMIT 1;";
 
                 int idUsuario = 0, idPersona = 0;
@@ -104,7 +104,7 @@ namespace Login_Administracion_de_Modulos.Controllers
                         encontrado = true;
                         idUsuario = reader.GetInt32(0);
                         claveCifradaDb = reader.IsDBNull(1) ? null : reader.GetString(1);
-                        estadoActivo = string.Equals(reader.IsDBNull(2) ? "Activo" : reader.GetString(2), "Activo", StringComparison.OrdinalIgnoreCase);
+                        estadoActivo = !reader.IsDBNull(2) && reader.GetBoolean(2);
                         nombres = reader.IsDBNull(3) ? "Personal" : reader.GetString(3);
                         apellidos = reader.IsDBNull(4) ? "Institucional" : reader.GetString(4);
                         idPersona = reader.GetInt32(5);
@@ -220,10 +220,10 @@ namespace Login_Administracion_de_Modulos.Controllers
                 await connection.OpenAsync();
 
                 const string query = @"
-                    SELECT u.id_usuario, u.estado, p.nombres, p.apellidos, p.id_persona
+                    SELECT u.id, u.estado, p.nombres, p.apellidos, p.id
                     FROM core.usuarios u
-                    JOIN core.personas p ON p.id_persona = u.id_persona
-                    WHERE LOWER(u.correo) = LOWER(@correo)
+                    JOIN core.personas p ON p.id = u.persona_id
+                    WHERE LOWER(u.email) = LOWER(@correo)
                     LIMIT 1;";
 
                 int idUsuario = 0, idPersona = 0;
@@ -238,7 +238,7 @@ namespace Login_Administracion_de_Modulos.Controllers
                     {
                         encontrado = true;
                         idUsuario = reader.GetInt32(0);
-                        estadoActivo = string.Equals(reader.IsDBNull(1) ? "Activo" : reader.GetString(1), "Activo", StringComparison.OrdinalIgnoreCase);
+                        estadoActivo = !reader.IsDBNull(1) && reader.GetBoolean(1);
                         nombres = reader.IsDBNull(2) ? "Personal" : reader.GetString(2);
                         apellidos = reader.IsDBNull(3) ? "Institucional" : reader.GetString(3);
                         idPersona = reader.GetInt32(4);
@@ -293,20 +293,20 @@ namespace Login_Administracion_de_Modulos.Controllers
             // 1. Usuario institucional responsable de cada panel (DNI en core.personas)
             string dniDemo = rol?.Trim().ToLowerInvariant() switch
             {
-                "topico" or "enfermeria"   => "51000006", // Rosa Fernández
-                "psicologia"               => "51000007", // Juan Salazar
-                "docente"                  => "20000001", // Carlos Rodríguez
-                "soporte"                  => "60000001", // Mario Sastre
-                "alumno" or "estudiante"   => "87654321", // Ana Torres
-                "practicante"              => "60000002", // Luis Paredes
-                "secretaria"               => "30000001", // Carmen Flores
-                "admin" or "administrador"  => "10000001", // Felipe Ostos
-                "tesoreria" or "tesorero"   => "40000001", // Marta Torres Quispe
-                "jefe" or "jefegeneral"    => "60000003", // Gustavo Rojas
-                "computacion"              => "60000004", // Elena Vargas
-                "taller-administracion"    => "60000005", // Ricardo Paz
-                "taller-contabilidad"      => "60000006", // Claudia Mes
-                "inventario"               => "60000007", // Víctor Palacios (Encargado de Inventario)
+                "topico" or "enfermeria"   => "51000006", // Lucía Fernández Quispe (Enfermería/Tópico)
+                "psicologia"               => "51000007", // Andrés Salazar Morales (Psicología)
+                "docente"                  => "10000002", // Gina Huertas Camacho (Docente)
+                "soporte"                  => "51000005", // Luis Chávez Paredes (Jefe de Soporte)
+                "alumno" or "estudiante"   => "77654321", // Ana García Flores (Alumno)
+                "practicante"              => "74096398", // Franco Stefano Alcála Mancilla (Practicante)
+                "secretaria"               => "30000001", // Rosa Morales Salazar (Secretaría Académica)
+                "admin" or "administrador"  => "47915633", // Felipe Ostos Bermúdez (Administrador)
+                "tesoreria" or "tesorero"   => "40000001", // Elena Ramos Palacios (Tesorería)
+                "jefe" or "jefegeneral"    => "51000001", // Jorge Ramírez Salazar (Jefe General)
+                "computacion"              => "51000002", // María Torres Vega (Jefe de Taller Computación)
+                "taller-administracion"    => "51000003", // Carlos Huamán Ríos (Jefe de Taller Administración)
+                "taller-contabilidad"      => "51000004", // Rosa Vargas Muñoz (Jefe de Taller Contabilidad)
+                "inventario"               => "51000001", // Jorge Ramírez Salazar (Encargado de Inventario)
                 _ => ""
             };
 
@@ -323,16 +323,37 @@ namespace Login_Administracion_de_Modulos.Controllers
                 return View("~/Views/Index.cshtml");
             }
 
+            // Palabra clave del rol objetivo para priorizar el dashboard correcto
+            // (los usuarios de taller también tienen "Coordinador de Carrera").
+            string rolPreferido = rol?.Trim().ToLowerInvariant() switch
+            {
+                "topico" or "enfermeria"        => "Enfermer",
+                "psicologia"                    => "Psicolog",
+                "docente"                       => "Docente",
+                "soporte"                       => "Soporte",
+                "alumno" or "estudiante"        => "Alumno",
+                "practicante"                   => "Practicante",
+                "secretaria"                    => "Secretar",
+                "admin" or "administrador"      => "Administrador",
+                "tesoreria" or "tesorero"        => "Tesorer",
+                "jefe" or "jefegeneral"         => "Jefe General",
+                "computacion"                   => "Computaci",
+                "taller-administracion"         => "Administraci",
+                "taller-contabilidad"           => "Contabilidad",
+                "inventario"                    => "Inventario",
+                _ => ""
+            };
+
             try
             {
                 using var connection = new NpgsqlConnection(connectionString);
                 await connection.OpenAsync();
 
                 const string query = @"
-                    SELECT u.id_usuario, u.estado, p.nombres, p.apellidos, p.id_persona
+                    SELECT u.id, u.estado, p.nombres, p.apellidos, p.id
                     FROM core.usuarios u
-                    JOIN core.personas p ON p.id_persona = u.id_persona
-                    WHERE p.numero_documento = @dni AND u.estado = 'Activo'
+                    JOIN core.personas p ON p.id = u.persona_id
+                    WHERE p.dni = @dni AND u.estado = true
                     LIMIT 1;";
 
                 int idUsuario = 0, idPersona = 0;
@@ -359,8 +380,8 @@ namespace Login_Administracion_de_Modulos.Controllers
                     return View("~/Views/Index.cshtml");
                 }
 
-                // 3. Roles reales del usuario y firma de claims
-                var roles = await ListarRolesAsync(connection, idUsuario);
+                // 3. Roles reales del usuario y firma de claims (prioriza el rol del botón)
+                var roles = await ListarRolesAsync(connection, idUsuario, rolPreferido);
                 string rolPrincipal = roles.FirstOrDefault() ?? "Alumno";
                 string nombreCompleto = $"{nombres} {apellidos}".Trim();
 
@@ -428,18 +449,18 @@ namespace Login_Administracion_de_Modulos.Controllers
                 });
         }
 
-        /// <summary>Roles activos del usuario desde core.usuarios_roles + core.roles.</summary>
-        private static async Task<List<string>> ListarRolesAsync(NpgsqlConnection connection, int idUsuario)
+        /// <summary>Roles activos del usuario desde core.usuario_roles + core.roles.</summary>
+        private static async Task<List<string>> ListarRolesAsync(NpgsqlConnection connection, int idUsuario, string? rolPreferido = null)
         {
             var roles = new List<string>();
             try
             {
                 const string sql = @"
                     SELECT r.nombre
-                    FROM core.usuarios_roles ur
-                    JOIN core.roles r ON r.id_rol = ur.id_rol
-                    WHERE ur.id_usuario = @id AND ur.estado = 'Activo'
-                    ORDER BY ur.id_rol ASC;";
+                    FROM core.usuario_roles ur
+                    JOIN core.roles r ON r.id = ur.rol_id
+                    WHERE ur.usuario_id = @id AND ur.es_activo = true
+                    ORDER BY ur.rol_id ASC;";
 
                 using var command = new NpgsqlCommand(sql, connection);
                 command.Parameters.AddWithValue("@id", idUsuario);
@@ -454,6 +475,16 @@ namespace Login_Administracion_de_Modulos.Controllers
                 // Sin roles registrados → rol por defecto; el login no debe caerse por esto.
             }
             if (roles.Count == 0) roles.Add("Alumno");
+            // Priorizar el rol solicitado (acceso rápido) para que el dashboard correcto gane.
+            if (!string.IsNullOrWhiteSpace(rolPreferido))
+            {
+                var match = roles.FirstOrDefault(r => r.Contains(rolPreferido, StringComparison.OrdinalIgnoreCase));
+                if (match != null)
+                {
+                    roles.Remove(match);
+                    roles.Insert(0, match);
+                }
+            }
             return roles;
         }
 
@@ -505,7 +536,7 @@ namespace Login_Administracion_de_Modulos.Controllers
                     await cmd.ExecuteNonQueryAsync();
                 }
 
-                const string sqlUpdate = "UPDATE core.usuarios SET ultimo_acceso = CURRENT_TIMESTAMP WHERE id_usuario = @id;";
+                const string sqlUpdate = "UPDATE core.usuarios SET ultimo_acceso = CURRENT_TIMESTAMP WHERE id = @id;";
                 using (var cmdUpdate = new NpgsqlCommand(sqlUpdate, connection))
                 {
                     cmdUpdate.Parameters.AddWithValue("@id", idUsuario);
