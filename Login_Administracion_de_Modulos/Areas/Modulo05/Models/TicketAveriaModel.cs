@@ -41,9 +41,9 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             using var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
             const string sql = @"
-                INSERT INTO incidencias 
-                (id_bien, reportador_id, fecha_reporte, tipo_falla, gravedad, descripcion, estado)
-                VALUES (@id_bien, @reportador_id, @fecha_reporte, @tipo_falla, @gravedad, @descripcion, @estado)";
+                INSERT INTO mod05.incidencias 
+                (bien_id, registrada_por, fecha_registro, tipo_falla, gravedad, descripcion, estado, dictamen)
+                VALUES (@id_bien, @reportador_id, @fecha_reporte, @tipo_falla, @gravedad, @descripcion, @estado, 'En evaluación')";
 
             using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id_bien", item.IdBien > 0 ? item.IdBien : 1);
@@ -63,13 +63,13 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             using var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
             const string sql = @"
-                SELECT i.id_incidencia, i.id_bien, i.reportador_id, i.tecnico_id, i.fecha_reporte, 
+                SELECT i.id, i.bien_id, i.registrada_por, i.tecnico_id, i.fecha_registro, 
                        i.fecha_cierre, i.tipo_falla, i.gravedad, i.descripcion, i.solucion_aplicada, i.estado,
                        b.cbi, b.descripcion AS bien_desc, b.marca, b.modelo
-                FROM incidencias i
-                LEFT JOIN bien b ON i.id_bien = b.id_bien
-                WHERE i.reportador_id = @docenteId OR @docenteId = 0
-                ORDER BY i.fecha_reporte DESC";
+                FROM mod05.incidencias i
+                LEFT JOIN mod03.bien b ON i.bien_id = b.id_bien
+                WHERE i.registrada_por = @docenteId OR @docenteId = 0
+                ORDER BY i.fecha_registro DESC";
 
             using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@docenteId", docenteId);
@@ -103,11 +103,11 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             using var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
             string sql = @"
-                SELECT i.id_incidencia, i.id_bien, i.reportador_id, i.tecnico_id, i.fecha_reporte, 
+                SELECT i.id, i.bien_id, i.registrada_por, i.tecnico_id, i.fecha_registro, 
                        i.fecha_cierre, i.tipo_falla, i.gravedad, i.descripcion, i.solucion_aplicada, i.estado,
                        b.cbi, b.descripcion AS bien_desc, b.marca, b.modelo
-                FROM incidencias i
-                LEFT JOIN bien b ON i.id_bien = b.id_bien";
+                FROM mod05.incidencias i
+                LEFT JOIN mod03.bien b ON i.bien_id = b.id_bien";
 
             if (!string.IsNullOrEmpty(filtroEstado))
             {
@@ -150,12 +150,12 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             using var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
             const string sql = @"
-                SELECT i.id_incidencia, i.id_bien, i.reportador_id, i.tecnico_id, i.fecha_reporte, 
+                SELECT i.id, i.bien_id, i.registrada_por, i.tecnico_id, i.fecha_registro, 
                        i.fecha_cierre, i.tipo_falla, i.gravedad, i.descripcion, i.solucion_aplicada, i.estado,
                        b.cbi, b.descripcion AS bien_desc, b.marca, b.modelo
-                FROM incidencias i
-                LEFT JOIN bien b ON i.id_bien = b.id_bien
-                WHERE i.id_incidencia = @id LIMIT 1";
+                FROM mod05.incidencias i
+                LEFT JOIN mod03.bien b ON i.bien_id = b.id_bien
+                WHERE i.id = @id LIMIT 1";
 
             using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", idIncidencia);
@@ -188,12 +188,12 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             using var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
             const string sql = @"
-                UPDATE incidencias 
+                UPDATE mod05.incidencias 
                 SET estado = @estado, 
                     solucion_aplicada = @solucion, 
                     tecnico_id = @tecnico_id,
                     fecha_cierre = CASE WHEN @estado IN ('Reparado', 'Cerrado', 'Resuelto') THEN NOW() ELSE fecha_cierre END
-                WHERE id_incidencia = @id";
+                WHERE id = @id";
 
             using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", idIncidencia);

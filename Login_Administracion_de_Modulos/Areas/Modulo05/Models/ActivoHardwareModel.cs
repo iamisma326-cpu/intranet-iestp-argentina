@@ -38,11 +38,11 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             using var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
             const string sql = @"
-                SELECT b.id_bien, b.id_almacen, b.cbi, b.descripcion, b.tipo_bien, 
+                SELECT b.id_bien, b.id_almacen, b.cbi, b.descripcion, CAST(b.id_clasificacion AS TEXT), 
                        b.marca, b.modelo, b.serie, b.procedencia, b.fecha_ingreso, b.estado, b.observacion,
-                       (SELECT a.nombre FROM asignacion asg INNER JOIN ambiente a ON asg.id_ambiente = a.id_ambiente WHERE asg.id_bien = b.id_bien AND asg.estado = 'Activo' LIMIT 1) as ambiente_nombre,
-                       (SELECT COUNT(*) FROM incidencias inc WHERE inc.id_bien = b.id_bien) as total_fallas
-                FROM bien b
+                       (SELECT a.nombre FROM mod03.asignacion asg INNER JOIN mod03.ambiente a ON asg.id_ambiente = a.id_ambiente WHERE asg.id_bien = b.id_bien AND asg.estado = 'Activo' LIMIT 1) as ambiente_nombre,
+                       (SELECT COUNT(*) FROM mod05.incidencias inc WHERE inc.bien_id = b.id_bien) as total_fallas
+                FROM mod03.bien b
                 WHERE LOWER(b.cbi) = LOWER(@crit) 
                    OR LOWER(b.serie) = LOWER(@crit)
                    OR CAST(b.id_bien AS TEXT) = @crit
@@ -80,10 +80,10 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             using var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
             string sql = @"
-                SELECT b.id_bien, b.id_almacen, b.cbi, b.descripcion, b.tipo_bien, 
+                SELECT b.id_bien, b.id_almacen, b.cbi, b.descripcion, CAST(b.id_clasificacion AS TEXT), 
                        b.marca, b.modelo, b.serie, b.procedencia, b.fecha_ingreso, b.estado, b.observacion,
-                       (SELECT COUNT(*) FROM incidencias inc WHERE inc.id_bien = b.id_bien) as total_fallas
-                FROM bien b";
+                       (SELECT COUNT(*) FROM mod05.incidencias inc WHERE inc.bien_id = b.id_bien) as total_fallas
+                FROM mod03.bien b";
 
             if (!string.IsNullOrWhiteSpace(filtro))
             {

@@ -418,7 +418,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
                     COUNT(*) FILTER (WHERE estado_atencion = 'En proceso') as en_proceso,
                     COUNT(*) FILTER (WHERE estado_atencion = 'Dado de Alta') as altas,
                     COUNT(*) FILTER (WHERE fecha_hora::date = CURRENT_DATE) as citas_hoy
-                FROM atenciones_psicologia;";
+                FROM mod05.atenciones_psicologia;";
 
             using var cmd = new NpgsqlCommand(sql, conn);
             using var reader = cmd.ExecuteReader();
