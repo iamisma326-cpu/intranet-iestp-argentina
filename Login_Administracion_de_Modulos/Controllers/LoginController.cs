@@ -311,7 +311,6 @@ namespace Login_Administracion_de_Modulos.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            HttpContext.Session.Clear();
             return RedirectToAction("Index", "Login");
         }
 

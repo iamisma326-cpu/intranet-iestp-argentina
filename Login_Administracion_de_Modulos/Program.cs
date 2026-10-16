@@ -14,9 +14,9 @@ builder.Services.AddControllersWithViews(options =>
 });
 builder.Services.AddDistributedMemoryCache();
 
-// 2. Sesión ligera (solo para datos de presentación que los módulos ya usan,
-//    como recordar filtros de pantalla). La AUTENTICACIÓN real va por cookies
-//    de claims — HttpContext.Session NO valida a nadie.
+// 2. (Reservado) Sesión ligera para datos de presentación de módulos futuros
+//    (p. ej. recordar filtros de pantalla). La AUTENTICACIÓN real va por cookies
+//    de claims — HttpContext.Session NO valida a nadie y hoy nadie la usa.
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(60);
