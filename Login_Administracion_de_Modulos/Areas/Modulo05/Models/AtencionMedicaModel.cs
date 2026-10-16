@@ -108,7 +108,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             // Si se recetó medicamento, descontar stock en botica
             if (item.MedicamentoId.HasValue && item.MedicamentoId.Value > 0)
             {
-                const string sqlStock = "UPDATE botica_medicamentos SET stock_actual = GREATEST(stock_actual - 1, 0) WHERE id_medicamento = @id";
+                const string sqlStock = "UPDATE mod05.botica_medicamentos SET stock_actual = GREATEST(stock_actual - 1, 0) WHERE id_medicamento = @id";
                 using var cmdStock = new NpgsqlCommand(sqlStock, conn);
                 cmdStock.Parameters.AddWithValue("@id", item.MedicamentoId.Value);
                 cmdStock.ExecuteNonQuery();
@@ -128,7 +128,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
                        p.dni, p.nombres, p.apellidos, m.nombre AS medicamento_nombre
                 FROM atenciones_topico a
                 INNER JOIN core.personas p ON a.persona_id = p.persona_id
-                LEFT JOIN botica_medicamentos m ON a.medicamento_id = m.id_medicamento
+                LEFT JOIN mod05.botica_medicamentos m ON a.medicamento_id = m.id_medicamento
                 WHERE p.dni = @dni
                 ORDER BY a.fecha_hora DESC";
 
@@ -163,7 +163,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             var medicamentos = new List<MedicamentoItem>();
             using var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
-            const string sql = "SELECT id_medicamento, nombre, presentacion, stock_actual, fecha_vencimiento, estado FROM botica_medicamentos WHERE estado = 'Activo' OR estado IS NULL ORDER BY nombre ASC";
+            const string sql = "SELECT id_medicamento, nombre, presentacion, stock_actual, fecha_vencimiento, estado FROM mod05.botica_medicamentos WHERE estado = 'Disponible' OR estado = 'Activo' OR estado IS NULL ORDER BY nombre ASC";
             using var cmd = new NpgsqlCommand(sql, conn);
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
