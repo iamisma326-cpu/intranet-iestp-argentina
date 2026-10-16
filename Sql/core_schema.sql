@@ -125,7 +125,10 @@ INSERT INTO core.roles (nombre, descripcion) VALUES
     ('Jefe de Soporte',      'Soporte TI'),
     ('Practicante',          'Practicante de apoyo'),
     ('Jefe General',         'Jefatura general / almacén'),
-    ('Encargado de Inventario', 'Inventario de bienes')
+    ('Encargado de Inventario', 'Inventario de bienes'),
+    ('Jefe de Taller Computación',  'Jefatura del taller de computación'),
+    ('Jefe de Taller Administración','Jefatura del taller de administración'),
+    ('Jefe de Taller Contabilidad', 'Jefatura del taller de contabilidad')
 ON CONFLICT (nombre) DO NOTHING;
 
 -- Módulos registrados para la gobernanza de permisos
@@ -155,7 +158,14 @@ INSERT INTO core.personas (tipo_documento, numero_documento, nombres, apellidos,
     ('DNI', '51000006', 'Rosa',        'Fernández',     'rosa.fernandez@istpargentina.edu.pe'),
     ('DNI', '51000007', 'Juan',        'Salazar',       'juan.salazar@istpargentina.edu.pe'),
     ('DNI', '12345678', 'Sheyla',      'Ríos',          'sheyla.rios@istpargentina.edu.pe'),
-    ('DNI', '20000001', 'Carlos',      'Rodríguez',     'carlos.rodriguez@istpargentina.edu.pe')
+    ('DNI', '20000001', 'Carlos',      'Rodríguez',     'carlos.rodriguez@istpargentina.edu.pe'),
+    ('DNI', '60000001', 'Mario',       'Sastre',        'mario.sastre@istpargentina.edu.pe'),
+    ('DNI', '60000002', 'Luis',        'Paredes',       'luis.paredes@istpargentina.edu.pe'),
+    ('DNI', '60000003', 'Gustavo',     'Rojas',         'gustavo.rojas@istpargentina.edu.pe'),
+    ('DNI', '60000004', 'Elena',       'Vargas',        'elena.vargas@istpargentina.edu.pe'),
+    ('DNI', '60000005', 'Ricardo',     'Paz',           'ricardo.paz@istpargentina.edu.pe'),
+    ('DNI', '60000006', 'Claudia',     'Mes',           'claudia.mes@istpargentina.edu.pe'),
+    ('DNI', '60000007', 'Víctor',      'Palacios',      'victor.palacios@istpargentina.edu.pe')
 ON CONFLICT (numero_documento) DO NOTHING;
 
 -- clave 'Demo2026!' hasheada con el MISMO algoritmo de la app:
@@ -164,7 +174,8 @@ INSERT INTO core.usuarios (id_persona, correo, clave_cifrada, estado)
 SELECT p.id_persona, p.correo,
        'PBKDF2$100000$VJkHWIZXD75tfNqRanes+Q==$+jq4KEycmgeHBx3jBKhEavosJ1ecay0jLVDXjipeLag=', 'Activo'
 FROM core.personas p
-WHERE p.numero_documento IN ('10000001','87654321','30000001','40000001','51000006','51000007','12345678','20000001')
+WHERE p.numero_documento IN ('10000001','87654321','30000001','40000001','51000006','51000007','12345678','20000001',
+                             '60000001','60000002','60000003','60000004','60000005','60000006','60000007')
 ON CONFLICT (id_persona) DO NOTHING;
 
 -- ---------------------------------------------------------------------------
@@ -182,7 +193,14 @@ JOIN core.roles r ON (
     (p.numero_documento = '51000006' AND r.nombre = 'Enfermería (Tópico)') OR
     (p.numero_documento = '51000007' AND r.nombre = 'Psicología') OR
     (p.numero_documento = '12345678' AND r.nombre = 'Docente') OR
-    (p.numero_documento = '20000001' AND r.nombre = 'Docente')
+    (p.numero_documento = '20000001' AND r.nombre = 'Docente') OR
+    (p.numero_documento = '60000001' AND r.nombre = 'Jefe de Soporte') OR
+    (p.numero_documento = '60000002' AND r.nombre = 'Practicante') OR
+    (p.numero_documento = '60000003' AND r.nombre = 'Jefe General') OR
+    (p.numero_documento = '60000004' AND r.nombre = 'Jefe de Taller Computación') OR
+    (p.numero_documento = '60000005' AND r.nombre = 'Jefe de Taller Administración') OR
+    (p.numero_documento = '60000006' AND r.nombre = 'Jefe de Taller Contabilidad') OR
+    (p.numero_documento = '60000007' AND r.nombre = 'Encargado de Inventario')
 )
 ON CONFLICT (id_usuario, id_rol) DO NOTHING;
 

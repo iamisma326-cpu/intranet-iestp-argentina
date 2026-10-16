@@ -276,9 +276,11 @@ namespace Login_Administracion_de_Modulos.Controllers
         }
 
         // ==========================================
-        // RUTA 3: Sesión Local de Prueba (Demo sin BD)
-        // Disponible en desarrollo SIEMPRE; en producción solo si el .env
-        // define ENABLE_DEMO_LOGIN=true (flag que controla el dueño del sitio).
+        // RUTA 3: Acceso Rápido por Rol (usuario REAL de la BD)
+        // Inicia sesión con el usuario institucional sembrado que tiene ese rol:
+        // consulta core.usuarios, carga sus roles, firma sus claims reales y
+        // registra auditoría (método ACCESO_RAPIDO). En producción solo si el
+        // .env define ENABLE_DEMO_LOGIN=true (flag del dueño del sitio).
         // ==========================================
         [HttpGet("login-demo/{rol}")]
         public async Task<IActionResult> LoginDemo(string rol)
@@ -288,27 +290,91 @@ namespace Login_Administracion_de_Modulos.Controllers
                 return NotFound();
             }
 
-            var (nombreDemo, rolDemo) = rol?.Trim().ToLowerInvariant() switch
+            // 1. Usuario institucional responsable de cada panel (DNI en core.personas)
+            string dniDemo = rol?.Trim().ToLowerInvariant() switch
             {
-                "topico" or "enfermeria"  => ("Lic. Rosa Fernández (Demo)", "Enfermería (Tópico)"),
-                "psicologia"              => ("Lic. Juan Psicólogo (Demo)", "Psicología"),
-                "docente"                 => ("Prof. Carlos Docente (Demo)", "Docente"),
-                "soporte"                 => ("Ing. Mario Soporte (Demo)", "Jefe de Soporte"),
-                "alumno" or "estudiante"  => ("Estudiante Ana Torres (Demo)", "Alumno"),
-                "practicante"             => ("Téc. Luis Practicante (Demo)", "Practicante"),
-                "secretaria"              => ("Lic. Carmen Secretaría (Demo)", "Secretaría Académica"),
-                "admin" or "administrador" => ("Administrador del Sistema (Demo)", "Administrador"),
-                "tesoreria" or "tesorero"  => ("Marta Beatriz Torres (Demo)", "Tesorería"),
-                "jefe" or "jefegeneral"   => ("Jefe General (Demo)", "Jefe General"),
-                "computacion"             => ("Jefe de Taller Computación (Demo)", "Jefe de Taller Computación"),
-                "taller-administracion"   => ("Jefe de Taller Administración (Demo)", "Jefe de Taller Administración"),
-                "taller-contabilidad"     => ("Jefe de Taller Contabilidad (Demo)", "Jefe de Taller Contabilidad"),
-                "inventario"              => ("Encargado de Inventario (Demo)", "Encargado de Inventario"),
-                _ => ("Personal Demo", "Enfermería (Tópico)")
+                "topico" or "enfermeria"   => "51000006", // Rosa Fernández
+                "psicologia"               => "51000007", // Juan Salazar
+                "docente"                  => "20000001", // Carlos Rodríguez
+                "soporte"                  => "60000001", // Mario Sastre
+                "alumno" or "estudiante"   => "87654321", // Ana Torres
+                "practicante"              => "60000002", // Luis Paredes
+                "secretaria"               => "30000001", // Carmen Flores
+                "admin" or "administrador"  => "10000001", // Felipe Ostos
+                "tesoreria" or "tesorero"   => "40000001", // Marta Torres Quispe
+                "jefe" or "jefegeneral"    => "60000003", // Gustavo Rojas
+                "computacion"              => "60000004", // Elena Vargas
+                "taller-administracion"    => "60000005", // Ricardo Paz
+                "taller-contabilidad"      => "60000006", // Claudia Mes
+                "inventario"               => "60000007", // Víctor Palacios (Encargado de Inventario)
+                _ => ""
             };
 
-            await FirmarSesionAsync(0, 0, nombreDemo, rolDemo, new[] { rolDemo }, esDemo: true);
-            return Redirect(ObtenerRutaDashboardPorRol(rolDemo));
+            if (string.IsNullOrEmpty(dniDemo))
+            {
+                return NotFound();
+            }
+
+            // 2. Autenticar contra la BD (mismo camino que el login por DNI)
+            string? connectionString = ConfiguracionSegura.ObtenerCadenaConexion(_configuration);
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                ViewBag.Error = "La base de datos no está configurada (falta .env).";
+                return View("~/Views/Index.cshtml");
+            }
+
+            try
+            {
+                using var connection = new NpgsqlConnection(connectionString);
+                await connection.OpenAsync();
+
+                const string query = @"
+                    SELECT u.id_usuario, u.estado, p.nombres, p.apellidos, p.id_persona
+                    FROM core.usuarios u
+                    JOIN core.personas p ON p.id_persona = u.id_persona
+                    WHERE p.numero_documento = @dni AND u.estado = 'Activo'
+                    LIMIT 1;";
+
+                int idUsuario = 0, idPersona = 0;
+                string nombres = "Personal", apellidos = "Institucional";
+                bool encontrado = false;
+
+                using (var command = new NpgsqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@dni", dniDemo);
+                    using var reader = await command.ExecuteReaderAsync();
+                    if (await reader.ReadAsync())
+                    {
+                        encontrado = true;
+                        idUsuario = reader.GetInt32(0);
+                        nombres = reader.IsDBNull(2) ? "Personal" : reader.GetString(2);
+                        apellidos = reader.IsDBNull(3) ? "Institucional" : reader.GetString(3);
+                        idPersona = reader.GetInt32(4);
+                    }
+                }
+
+                if (!encontrado)
+                {
+                    ViewBag.Error = "El usuario institucional de este panel no está registrado en la base de datos.";
+                    return View("~/Views/Index.cshtml");
+                }
+
+                // 3. Roles reales del usuario y firma de claims
+                var roles = await ListarRolesAsync(connection, idUsuario);
+                string rolPrincipal = roles.FirstOrDefault() ?? "Alumno";
+                string nombreCompleto = $"{nombres} {apellidos}".Trim();
+
+                await RegistrarSesionAsync(connection, idUsuario, "ACCESO_RAPIDO");
+                await FirmarSesionAsync(idUsuario, idPersona, nombreCompleto, rolPrincipal, roles, esDemo: true);
+
+                return Redirect(ObtenerRutaDashboardPorRol(rolPrincipal));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error en acceso rápido por rol (DNI {Dni})", dniDemo);
+                ViewBag.Error = "Ocurrió un error al iniciar la sesión rápida. Intente con su DNI y contraseña.";
+                return View("~/Views/Index.cshtml");
+            }
         }
 
         [HttpGet("logout")]
