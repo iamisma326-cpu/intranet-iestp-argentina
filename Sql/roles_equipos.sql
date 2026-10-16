@@ -42,8 +42,9 @@ END
 $$;
 
 GRANT USAGE ON SCHEMA core TO grupo_core_lectura;
-GRANT SELECT ON ALL TABLES IN SCHEMA core TO grupo_core_lectura;
-ALTER DEFAULT PRIVILEGES IN SCHEMA core GRANT SELECT ON TABLES TO grupo_core_lectura;
+GRANT SELECT, REFERENCES ON ALL TABLES IN SCHEMA core TO grupo_core_lectura;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA core TO grupo_core_lectura;
+ALTER DEFAULT PRIVILEGES IN SCHEMA core GRANT SELECT, REFERENCES ON TABLES TO grupo_core_lectura;
 
 -- El usuario de la APLICACIÓN (login) necesita además INSERT/UPDATE de auditoría
 GRANT INSERT, UPDATE ON core.intentos_login, core.sesiones_login TO grupo_auditoria_login;

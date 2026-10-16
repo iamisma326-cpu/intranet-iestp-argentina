@@ -158,25 +158,14 @@ INSERT INTO core.personas (tipo_documento, numero_documento, nombres, apellidos,
     ('DNI', '20000001', 'Carlos',      'Rodríguez',     'carlos.rodriguez@istpargentina.edu.pe')
 ON CONFLICT (numero_documento) DO NOTHING;
 
--- clave 'Demo2026!' hasheada PBKDF2 (100000 iteraciones, SHA-256, salt 16B)
--- Se usa la misma para todos los demo: cada quien la cambia al primer login real.
+-- clave 'Demo2026!' hasheada con el MISMO algoritmo de la app:
+-- PasswordSecurity.HashearClave → PBKDF2-SHA256, 100000 iteraciones, salt 16B, hash 32B
 INSERT INTO core.usuarios (id_persona, correo, clave_cifrada, estado)
 SELECT p.id_persona, p.correo,
-       'PBKDF2$100000$' ||
-       encode(gen_random_bytes(16), 'base64') || '$' ||
-       '' -- placeholder: el hash real se inserta abajo por UPDATE (ver nota)
-       , 'Activo'
+       'PBKDF2$100000$VJkHWIZXD75tfNqRanes+Q==$+jq4KEycmgeHBx3jBKhEavosJ1ecay0jLVDXjipeLag=', 'Activo'
 FROM core.personas p
 WHERE p.numero_documento IN ('10000001','87654321','30000001','40000001','51000006','51000007','12345678','20000001')
 ON CONFLICT (id_persona) DO NOTHING;
-
--- NOTA sobre el INSERT anterior: el hash PBKDF2 no puede generarse en SQL puro.
--- Ejecutar tras este script el comando de la app (o el script hashear_demo.py)
--- que hashea 'Demo2026!' con PasswordSecurity.HashearClave y hace UPDATE.
--- Alternativa rápida con pgcrypto para uso de SOLO desarrollo:
-UPDATE core.usuarios
-SET clave_cifrada = crypt('Demo2026!', gen_salt('bf', 10))
-WHERE clave_cifrada = '' OR clave_cifrada IS NULL;
 
 -- ---------------------------------------------------------------------------
 -- Asignación de roles demo
