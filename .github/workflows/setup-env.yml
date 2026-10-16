@@ -1,0 +1,44 @@
+name: Configurar .env del sitio (una sola vez)
+
+# ==============================================================================
+# Workflow de UN SOLO USO: escribe el .env de producción (cadena de la BD Neon)
+# directamente en el wwwroot del sitio usando WebDeploy.
+#
+# ¿Por qué existe? El .env contiene la contraseña de la BD y NO debe estar en
+# el repo. Este workflow la toma del SECRET DB_CONNECTION_STRING de GitHub
+# (cifrada, invisible para terceros) y la publica como archivo al sitio.
+#
+# NO se dispara solo: solo manualmente (workflow_dispatch) desde Actions →
+# "Configurar .env del sitio" → Run. Tras el primer uso puede borrarse.
+# ==============================================================================
+
+on:
+  workflow_dispatch:
+
+jobs:
+  subir_env:
+    runs-on: windows-latest
+
+    steps:
+      - name: Preparar .env (el secreto NUNCA se imprime)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path .\env_payload | Out-Null
+          $content = @"
+          # Configuración de producción - generado por workflow
+          DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING }}
+          "@
+          # Quitar indentación del here-string y escribir
+          ($content -split "`n" | ForEach-Object { $_.TrimStart() }) -join "`r`n" |
+            Set-Content -Path .\env_payload\.env -NoNewline -Encoding ascii
+          Write-Output "Archivo .env creado (contenido oculto)."
+
+      - name: Publicar .env al wwwroot con WebDeploy
+        uses: rasmusbuchholdt/simply-web-deploy@2.1.0
+        with:
+          website-name: ${{ secrets.MSA_SITE }}
+          server-computer-name: ${{ secrets.MSA_SERVER }}
+          server-username: ${{ secrets.MSA_USERNAME }}
+          server-password: ${{ secrets.MSA_PASSWORD }}
+          source-path: \env_payload\
+          # sin target-delete: los demás archivos del sitio no se tocan
