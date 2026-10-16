@@ -7,6 +7,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - Administración de Módulos</title>
+    <!-- Script inmediato de tema (evita parpadeo) -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('app-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
     <link rel="stylesheet" href="~/css/login.css" />
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@@phosphor-icons/web"></script>
@@ -41,9 +48,18 @@
 
         <!-- Right Side -->
         <div class="right-side">
+            <!-- Barra superior con selector de tema -->
+            <div class="login-top-bar">
+                <button type="button" id="loginThemeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Cambiar tema">
+                    <i class="ph ph-sun theme-icon-light"></i>
+                    <i class="ph ph-moon theme-icon-dark"></i>
+                    <span class="theme-toggle-text">Modo Claro</span>
+                </button>
+            </div>
+
             <div class="login-header">
                 <div class="logo-container">
-                    <img src="~/images/logo-argentina.png" alt="Logo Instituto Argentina" class="institute-logo" />
+                    <img src="~/images/logo-animado.webp" alt="Logo Instituto Argentina" class="institute-logo" />
                 </div>
                 <h2>¡Hola de nuevo!</h2>
                 <p>Inicia sesión para acceder a la plataforma institucional.</p>
@@ -257,6 +273,7 @@
         </div>
     </div>
 
+    <script src="~/js/site.js"></script>
     <script>
         function togglePassword() {
             const passwordInput = document.getElementById('passwordInput');

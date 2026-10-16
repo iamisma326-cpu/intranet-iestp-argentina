@@ -1,13 +1,73 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-:root {
+/* =========================================================================
+   VARIABLES DE TEMA: MODO OSCURO (POR DEFECTO) Y MODO CLARO
+   Conserva el celeste institucional en ambos modos
+   ========================================================================= */
+
+:root,
+[data-theme="dark"] {
     --bg-dark: #0a0e17;
     --panel-bg: #111827;
     --text-primary: #ffffff;
     --text-secondary: #9ca3af;
-    --accent-cyan: #00f2fe;
+    --accent-cyan: #00f2fe; /* Celeste marca modo oscuro */
+    --accent-cyan-hover: #38bdf8;
+    --accent-cyan-bg: rgba(0, 242, 254, 0.1);
     --input-bg: #1f2937;
+    --input-border: #374151;
     --border-color: #374151;
+    --google-btn-bg: #ffffff;
+    --google-btn-color: #111111;
+    --google-btn-border: transparent;
+    --google-btn-hover: #f3f4f6;
+    --btn-submit-bg: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
+    --btn-submit-color: #000000;
+    --btn-submit-shadow: 0 4px 15px rgba(0, 242, 254, 0.25);
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    --card-hover-border: #9ca3af;
+    --theme-toggle-bg: rgba(31, 41, 55, 0.85);
+    --theme-toggle-border: #374151;
+    --theme-toggle-color: #f3f4f6;
+    --theme-toggle-hover: #374151;
+    --hero-overlay: linear-gradient(180deg, rgba(10, 14, 23, 0.4) 0%, rgba(10, 14, 23, 0.9) 100%);
+    --logo-glow: drop-shadow(0 0 15px rgba(0, 242, 254, 0.4));
+    --logo-glow-hover: drop-shadow(0 0 20px rgba(0, 242, 254, 0.7));
+    --demo-tag-bg: rgba(16, 185, 129, 0.15);
+    --demo-tag-color: #10b981;
+    --demo-tag-border: rgba(16, 185, 129, 0.25);
+}
+
+[data-theme="light"] {
+    --bg-dark: #f8fafc;
+    --panel-bg: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --accent-cyan: #0099cc; /* Celeste marca calibrado para alto contraste en modo claro */
+    --accent-cyan-hover: #0077a8;
+    --accent-cyan-bg: rgba(0, 153, 204, 0.1);
+    --input-bg: #ffffff;
+    --input-border: #cbd5e1;
+    --border-color: #e2e8f0;
+    --google-btn-bg: #ffffff;
+    --google-btn-color: #1e293b;
+    --google-btn-border: #cbd5e1;
+    --google-btn-hover: #f1f5f9;
+    --btn-submit-bg: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
+    --btn-submit-color: #ffffff;
+    --btn-submit-shadow: 0 4px 15px rgba(0, 119, 182, 0.35);
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+    --card-hover-border: #0099cc;
+    --theme-toggle-bg: #ffffff;
+    --theme-toggle-border: #cbd5e1;
+    --theme-toggle-color: #334155;
+    --theme-toggle-hover: #f1f5f9;
+    --hero-overlay: linear-gradient(180deg, rgba(14, 116, 144, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+    --logo-glow: drop-shadow(0 4px 12px rgba(0, 153, 204, 0.2));
+    --logo-glow-hover: drop-shadow(0 6px 16px rgba(0, 153, 204, 0.35));
+    --demo-tag-bg: rgba(16, 185, 129, 0.12);
+    --demo-tag-color: #059669;
+    --demo-tag-border: rgba(16, 185, 129, 0.3);
 }
 
 * {
@@ -15,6 +75,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Inter', sans-serif;
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.2s ease;
 }
 
 body {
@@ -27,9 +88,10 @@ body {
 .login-container {
     display: flex;
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
 }
 
+/* Lado Izquierdo (Hero) */
 .left-side {
     flex: 1;
     position: relative;
@@ -47,8 +109,9 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(180deg, rgba(10, 14, 23, 0.4) 0%, rgba(10, 14, 23, 0.9) 100%);
+    background: var(--hero-overlay);
     z-index: 1;
+    transition: background 0.3s ease;
 }
 
 .left-content {
@@ -62,15 +125,16 @@ body {
     align-items: center;
     gap: 0.5rem;
     padding: 0.25rem 0.75rem;
-    background: rgba(0, 242, 254, 0.1);
-    border: 1px solid rgba(0, 242, 254, 0.2);
+    background: rgba(0, 242, 254, 0.15);
+    border: 1px solid rgba(0, 242, 254, 0.3);
     border-radius: 999px;
-    color: var(--accent-cyan);
+    color: #00f2fe;
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 2rem;
+    backdrop-filter: blur(6px);
 }
 
 .left-content h1 {
@@ -82,11 +146,11 @@ body {
 }
 
 .left-content h1 span {
-    color: var(--accent-cyan);
+    color: #00f2fe;
 }
 
 .left-content p {
-    color: var(--text-secondary);
+    color: #e2e8f0;
     font-size: 1.125rem;
     line-height: 1.6;
     margin-bottom: 4rem;
@@ -104,22 +168,75 @@ body {
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 0.25rem;
+    color: #fff;
 }
 
 .stat-item p {
     font-size: 0.75rem;
-    color: var(--text-secondary);
+    color: #cbd5e1;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
+/* Lado Derecho (Formulario de Login) */
 .right-side {
     width: 480px;
     background-color: var(--bg-dark);
     display: flex;
     flex-direction: column;
-    padding: 3rem 4rem;
+    padding: 2.5rem 3.5rem;
     overflow-y: auto;
+    position: relative;
+}
+
+/* Barra superior derecha: Theme Switcher */
+.login-top-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.theme-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.85rem;
+    background-color: var(--theme-toggle-bg);
+    color: var(--theme-toggle-color);
+    border: 1px solid var(--theme-toggle-border);
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.theme-toggle-btn:hover {
+    background-color: var(--theme-toggle-hover);
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.theme-toggle-btn i {
+    font-size: 1.05rem;
+    color: var(--accent-cyan);
+}
+
+/* Control visual de iconos del tema */
+[data-theme="dark"] .theme-icon-light {
+    display: inline-block;
+}
+[data-theme="dark"] .theme-icon-dark {
+    display: none;
+}
+[data-theme="light"] .theme-icon-light {
+    display: none;
+}
+[data-theme="light"] .theme-icon-dark {
+    display: inline-block;
 }
 
 .login-header {
@@ -135,13 +252,13 @@ body {
 .institute-logo {
     width: 150px;
     height: auto;
-    filter: drop-shadow(0 0 15px rgba(0, 242, 254, 0.4));
+    filter: var(--logo-glow);
     transition: transform 0.3s ease, filter 0.3s ease;
 }
 
 .institute-logo:hover {
     transform: scale(1.05);
-    filter: drop-shadow(0 0 20px rgba(0, 242, 254, 0.7));
+    filter: var(--logo-glow-hover);
 }
 
 .login-header h2 {
@@ -149,6 +266,7 @@ body {
     font-weight: 700;
     margin-bottom: 0.5rem;
     text-align: center;
+    color: var(--text-primary);
 }
 
 .login-header p {
@@ -164,19 +282,22 @@ body {
     gap: 0.75rem;
     width: 100%;
     padding: 0.75rem;
-    background-color: #fff;
-    color: #111;
-    border: none;
+    background-color: var(--google-btn-bg);
+    color: var(--google-btn-color);
+    border: 1px solid var(--google-btn-border);
     border-radius: 8px;
     font-weight: 600;
     font-size: 0.875rem;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
     margin-bottom: 2rem;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .btn-google:hover {
-    background-color: #f3f4f6;
+    background-color: var(--google-btn-hover);
+    transform: translateY(-1px);
 }
 
 .divider {
@@ -235,11 +356,22 @@ body {
     width: 100%;
     padding: 0.875rem 3rem 0.875rem 3rem;
     background-color: var(--input-bg);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--input-border);
     border-radius: 8px;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 0.875rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 3px var(--accent-cyan-bg);
+}
+
+.form-control::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.75;
 }
 
 .btn-toggle-password {
@@ -264,16 +396,6 @@ body {
     font-size: 1.25rem;
 }
 
-.form-control:focus {
-    outline: none;
-    border-color: var(--accent-cyan);
-    box-shadow: 0 0 0 2px rgba(0, 242, 254, 0.1);
-}
-
-.form-control::placeholder {
-    color: #6b7280;
-}
-
 .form-options {
     display: flex;
     justify-content: space-between;
@@ -293,10 +415,11 @@ body {
     width: 1rem;
     height: 1rem;
     background-color: var(--input-bg);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--input-border);
     border-radius: 4px;
     cursor: pointer;
     position: relative;
+    transition: all 0.2s;
 }
 
 .checkbox-wrapper input[type="checkbox"]:checked {
@@ -311,9 +434,13 @@ body {
     top: 1px;
     width: 4px;
     height: 8px;
-    border: solid #000;
+    border: solid #fff;
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
+}
+
+[data-theme="dark"] .checkbox-wrapper input[type="checkbox"]:checked::after {
+    border-color: #000;
 }
 
 .checkbox-wrapper span {
@@ -326,17 +453,19 @@ body {
     font-size: 0.875rem;
     text-decoration: none;
     font-weight: 500;
+    transition: color 0.2s;
 }
 
 .forgot-link:hover {
     text-decoration: underline;
+    color: var(--accent-cyan-hover);
 }
 
 .btn-submit {
     width: 100%;
     padding: 0.875rem;
-    background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
-    color: #000;
+    background: var(--btn-submit-bg);
+    color: var(--btn-submit-color);
     border: none;
     border-radius: 8px;
     font-weight: 600;
@@ -346,12 +475,14 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    transition: opacity 0.2s;
-    margin-bottom: 3rem;
+    transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: var(--btn-submit-shadow);
+    margin-bottom: 2.5rem;
 }
 
 .btn-submit:hover {
-    opacity: 0.9;
+    opacity: 0.95;
+    transform: translateY(-1px);
 }
 
 .modules-section h3 {
@@ -377,13 +508,15 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 12px;
     cursor: pointer;
-    transition: transform 0.2s, border-color 0.2s;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
     text-decoration: none;
+    box-shadow: var(--card-shadow);
 }
 
 .module-card:hover {
     transform: translateY(-2px);
-    border-color: var(--text-secondary);
+    border-color: var(--card-hover-border);
+    box-shadow: 0 8px 16px rgba(0, 153, 204, 0.12);
 }
 
 .module-icon {
@@ -394,6 +527,7 @@ body {
     align-items: center;
     justify-content: center;
     margin-right: 1rem;
+    flex-shrink: 0;
 }
 
 .icon-enfermeria { background-color: rgba(16, 185, 129, 0.1); color: #10b981; }
@@ -412,9 +546,9 @@ body {
     text-transform: uppercase;
     padding: 0.2rem 0.5rem;
     border-radius: 6px;
-    background: rgba(16, 185, 129, 0.15);
-    color: #10b981;
-    border: 1px solid rgba(16, 185, 129, 0.25);
+    background: var(--demo-tag-bg);
+    color: var(--demo-tag-color);
+    border: 1px solid var(--demo-tag-border);
     margin-right: 0.5rem;
     letter-spacing: 0.5px;
 }
@@ -424,7 +558,7 @@ body {
 }
 
 .module-info h4 {
-    color: #fff;
+    color: var(--text-primary);
     font-size: 0.875rem;
     font-weight: 600;
     margin-bottom: 0.125rem;
@@ -437,6 +571,12 @@ body {
 
 .module-arrow {
     color: var(--text-secondary);
+    transition: transform 0.2s;
+}
+
+.module-card:hover .module-arrow {
+    transform: translateX(2px);
+    color: var(--accent-cyan);
 }
 
 @media (max-width: 900px) {

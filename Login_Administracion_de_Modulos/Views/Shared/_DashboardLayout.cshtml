@@ -1,47 +1,203 @@
+@{
+    // Identidad desde la cookie de claims (fuente única de verdad).
+    // ViewBag.User* lo inyecta [ProtegerPanel]; Session NO autentica a nadie.
+    var claimsUserName  = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+    var claimsUserRole  = User.FindFirst("RolActivo")?.Value;
+    var isDemoSession   = User.FindFirst("EsDemo")?.Value == "true";
+
+    var resolvedUserName = ViewBag.UserName as string
+        ?? (!string.IsNullOrWhiteSpace(claimsUserName) ? claimsUserName : "Usuario Institucional");
+    var resolvedUserRole = ViewBag.UserRole as string
+        ?? ViewData["Role"] as string
+        ?? (!string.IsNullOrWhiteSpace(claimsUserRole) ? claimsUserRole : "Personal");
+
+    // Calcular iniciales representativas
+    string resolvedInitials = ViewBag.UserInitials as string ?? "";
+    if (string.IsNullOrWhiteSpace(resolvedInitials) && !string.IsNullOrWhiteSpace(resolvedUserName))
+    {
+        var cleanName = resolvedUserName.Replace("(Demo)", "").Trim();
+        var words = cleanName.Split(new[] { ' ', '.', ',' }, StringSplitOptions.RemoveEmptyEntries);
+        var filteredWords = words.Where(w => !new[] { "LIC", "ING", "PROF", "TEC", "CPC", "DR", "DRA", "SR", "SRA" }.Contains(w.ToUpper())).ToArray();
+        var candidateWords = filteredWords.Length >= 2 ? filteredWords : words;
+
+        if (candidateWords.Length >= 2)
+        {
+            resolvedInitials = $"{candidateWords[0][0]}{candidateWords[1][0]}".ToUpper();
+        }
+        else if (candidateWords.Length == 1 && candidateWords[0].Length > 0)
+        {
+            resolvedInitials = candidateWords[0].Substring(0, Math.Min(2, candidateWords[0].Length)).ToUpper();
+        }
+    }
+    if (string.IsNullOrWhiteSpace(resolvedInitials))
+    {
+        resolvedInitials = "US";
+    }
+
+    var cleanUserSlug = resolvedUserName.Replace("(Demo)", "").Replace(" ", ".").Replace("..", ".").Trim().ToLower();
+    var userEmail = $"{resolvedInitials.ToLower()}.{cleanUserSlug}@iestpargentina.edu.pe";
+    if (userEmail.Length > 36)
+    {
+        userEmail = $"institucional.{resolvedInitials.ToLower()}@iestpargentina.edu.pe";
+    }
+}
+}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Intranet IESTP Argentina</title>
+    <!-- Script inmediato de tema y estado de sidebar (evita parpadeo / FOUC) -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('app-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+
+            const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+            if (isCollapsed && window.innerWidth >= 992) {
+                document.documentElement.classList.add('sidebar-collapsed');
+            }
+        })();
+    </script>
     <link rel="stylesheet" href="~/css/dashboard.css" />
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@@phosphor-icons/web"></script>
 </head>
 <body>
-    <!-- Header -->
+    <!-- Header Principal -->
     <header class="top-header">
-        <div class="logo-container">
-            <i class="ph-fill ph-graduation-cap"></i>
+        <div class="header-left">
+            <button type="button" id="sidebarToggleBtn" class="btn-icon btn-sidebar-toggle" onclick="toggleSidebar()" aria-label="Alternar panel lateral" title="Ocultar / Mostrar panel lateral (Ctrl+B)">
+                <i class="ph ph-sidebar-simple" id="sidebarToggleIcon"></i>
+            </button>
+            <div class="logo-container" title="IESTP Argentina">
+                <i class="ph-fill ph-graduation-cap"></i>
+            </div>
+            <div class="header-brand-info">
+                <span class="header-institution-name">IESTP Argentina</span>
+                <span class="header-system-badge">Intranet</span>
+            </div>
         </div>
+
         <div class="header-actions">
-            @if (User.FindFirst("EsDemo")?.Value == "true")
+            <!-- Selector de Tema (Modo Claro / Modo Oscuro) -->
+            <button type="button" id="dashboardThemeToggleBtn" class="btn-icon btn-theme-toggle" onclick="toggleTheme()" title="Cambiar tema visual" aria-label="Cambiar tema visual">
+                <i class="ph ph-sun theme-icon-light"></i>
+                <i class="ph ph-moon theme-icon-dark"></i>
+            </button>
+
+            @if (isDemoSession)
             {
-                <span style="font-size: 0.72rem; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 10px; border-radius: 20px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;">
-                    <i class="ph ph-shield-check"></i> Panel de demostración
+                <span class="header-demo-badge" title="Sesión interactiva en modo Demostración">
+                    <i class="ph ph-shield-check"></i> <span class="demo-badge-text">Demo</span>
                 </span>
             }
-            <div class="profile-avatar-small">
-                @(ViewBag.UserInitials ?? "RF")
+
+            <!-- Perfil del Usuario en Cabecera con Menú Desplegable -->
+            <div class="header-profile-wrapper" id="headerProfileWrapper">
+                <button type="button" id="headerUserDropdownTrigger" class="header-user-profile-btn" onclick="toggleProfileDropdown(event)" aria-haspopup="true" aria-expanded="false" title="Mi Cuenta (@resolvedUserName)">
+                    <div class="header-user-avatar">
+                        @resolvedInitials
+                        <span class="online-dot"></span>
+                    </div>
+                    <div class="header-user-info">
+                        <span class="header-user-name">@resolvedUserName</span>
+                        <span class="header-user-role">@resolvedUserRole</span>
+                    </div>
+                    <i class="ph ph-caret-down profile-dropdown-caret" id="profileDropdownCaret"></i>
+                </button>
+
+                <!-- Menú desplegable interactivo flotante -->
+                <div class="header-profile-dropdown" id="headerProfileDropdown" role="menu" aria-label="Opciones de cuenta">
+                    <div class="dropdown-user-header">
+                        <div class="dropdown-user-avatar">
+                            @resolvedInitials
+                            <span class="dropdown-online-dot"></span>
+                        </div>
+                        <div class="dropdown-user-meta">
+                            <span class="dropdown-user-name">@resolvedUserName</span>
+                            <span class="dropdown-user-role-badge">@resolvedUserRole</span>
+                            <span class="dropdown-user-status">
+                                <span class="status-pulse-dot"></span> Sesión activa
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="dropdown-divider"></div>
+
+                    <div class="dropdown-menu-list">
+                        <button type="button" class="dropdown-menu-item" onclick="abrirModalPerfil()" role="menuitem">
+                            <div class="dropdown-item-icon">
+                                <i class="ph ph-user-circle"></i>
+                            </div>
+                            <div class="dropdown-item-content">
+                                <span class="dropdown-item-title">Mi Perfil</span>
+                                <span class="dropdown-item-subtitle">Ver información y credenciales</span>
+                            </div>
+                            <i class="ph ph-caret-right dropdown-item-arrow"></i>
+                        </button>
+
+                        <button type="button" class="dropdown-menu-item" onclick="abrirModalConfiguracion()" role="menuitem">
+                            <div class="dropdown-item-icon">
+                                <i class="ph ph-gear-six"></i>
+                            </div>
+                            <div class="dropdown-item-content">
+                                <span class="dropdown-item-title">Configuración</span>
+                                <span class="dropdown-item-subtitle">Tema visual y preferencias</span>
+                            </div>
+                            <i class="ph ph-caret-right dropdown-item-arrow"></i>
+                        </button>
+
+                        @if (isDemoSession)
+                        {
+                            <a href="/" class="dropdown-menu-item dropdown-menu-item-demo" role="menuitem" title="Cambiar a otro panel demo">
+                                <div class="dropdown-item-icon demo-icon">
+                                    <i class="ph ph-swap"></i>
+                                </div>
+                                <div class="dropdown-item-content">
+                                    <span class="dropdown-item-title">Cambiar Panel (Demo)</span>
+                                    <span class="dropdown-item-subtitle">Probar otros perfiles del sistema</span>
+                                </div>
+                                <i class="ph ph-caret-right dropdown-item-arrow"></i>
+                            </a>
+                        }
+                    </div>
+
+                    <div class="dropdown-divider"></div>
+
+                    <div class="dropdown-footer">
+                        <a href="/logout" class="dropdown-logout-btn" role="menuitem" title="Cerrar Sesión de forma segura">
+                            <i class="ph ph-sign-out"></i>
+                            <span>Cerrar Sesión</span>
+                        </a>
+                    </div>
+                </div>
             </div>
-            <a href="/logout" class="btn-icon" title="Cerrar Sesión">
-                <i class="ph ph-sign-out"></i>
-            </a>
         </div>
     </header>
 
+    <!-- Backdrop para versión móvil/tablet -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="closeSidebarMobile()"></div>
+
+    <!-- Botón flotante para expandir sidebar cuando está oculta en PC -->
+    <button type="button" id="sidebarFloatingExpandBtn" class="sidebar-floating-expand-btn" onclick="toggleSidebar()" title="Mostrar panel lateral (Ctrl+B)" aria-label="Mostrar panel lateral">
+        <i class="ph ph-sidebar-simple"></i>
+        <span class="floating-tooltip">Mostrar menú</span>
+    </button>
+
     <div class="dashboard-layout">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-profile">
-                <div class="profile-avatar-large">
-                    @(ViewBag.UserInitials ?? "RF")
-                    <span class="online-dot"></span>
+        <!-- Sidebar (Navegación lateral) -->
+        <aside class="sidebar" id="appSidebar">
+            <!-- Barra superior móvil para cerrar el drawer -->
+            <div class="sidebar-mobile-header">
+                <div class="sidebar-header-brand">
+                    <i class="ph ph-list-dashes"></i>
+                    <span>Módulos de Acceso</span>
                 </div>
-                <div class="profile-info">
-                    <h4>@(ViewBag.UserName ?? "Lic. Rosa Fernández")</h4>
-                    <p>@(ViewBag.UserRole ?? ViewData["Role"] ?? "Enfermería (Tópico)")</p>
-                </div>
+                <button type="button" class="btn-icon sidebar-close-mobile-btn" onclick="closeSidebarMobile()" title="Cerrar menú" aria-label="Cerrar menú">
+                    <i class="ph ph-x"></i>
+                </button>
             </div>
 
             <nav class="sidebar-nav">
@@ -49,16 +205,20 @@
             </nav>
 
             <div class="sidebar-footer">
-                @if (User.FindFirst("EsDemo")?.Value == "true")
+                <button type="button" class="btn-collapse-sidebar" onclick="toggleSidebar()" title="Ocultar panel lateral (Ctrl+B)">
+                    <i class="ph ph-sidebar-simple"></i>
+                    <span>Ocultar Menú</span>
+                </button>
+                @if (isDemoSession)
                 {
                     <a href="/" class="btn-logout" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa; margin-bottom: 0.5rem;" title="Volver al selector de roles demo">
                         <i class="ph ph-swap"></i>
-                        Cambiar Panel (Demo)
+                        <span>Cambiar Panel (Demo)</span>
                     </a>
                 }
-                <a href="/logout" class="btn-logout">
+                <a href="/logout" class="btn-logout" title="Cerrar sesión actual">
                     <i class="ph ph-sign-out"></i>
-                    Cerrar Sesión
+                    <span>Cerrar Sesión</span>
                 </a>
             </div>
         </aside>
@@ -69,6 +229,166 @@
         </main>
     </div>
 
+    <!-- Modal: Mi Perfil -->
+    <div id="modalMiPerfil" class="app-modal-overlay" onclick="handleModalOverlayClick(event, 'modalMiPerfil')" aria-hidden="true" role="dialog" aria-labelledby="modalPerfilTitle">
+        <div class="app-modal-dialog">
+            <div class="app-modal-header">
+                <div class="app-modal-title-wrap">
+                    <div class="app-modal-icon-badge">
+                        <i class="ph ph-user-focus"></i>
+                    </div>
+                    <div>
+                        <h3 id="modalPerfilTitle" class="app-modal-title">Perfil Institucional</h3>
+                        <p class="app-modal-subtitle">Información del usuario y credenciales activas</p>
+                    </div>
+                </div>
+                <button type="button" class="app-modal-close-btn" onclick="cerrarModalPerfil()" aria-label="Cerrar modal" title="Cerrar">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+
+            <div class="app-modal-body">
+                <!-- Tarjeta destacada de usuario -->
+                <div class="profile-hero-card">
+                    <div class="profile-hero-avatar">
+                        @resolvedInitials
+                        <span class="profile-hero-status-dot" title="Usuario conectado"></span>
+                    </div>
+                    <div class="profile-hero-info">
+                        <h4 class="profile-hero-name">@resolvedUserName</h4>
+                        <div class="profile-hero-badges">
+                            <span class="badge-role"><i class="ph ph-identification-badge"></i> @resolvedUserRole</span>
+                            @if (isDemoSession)
+                            {
+                                <span class="badge-demo"><i class="ph ph-shield-check"></i> Modo Demostración</span>
+                            }
+                            else
+                            {
+                                <span class="badge-verified"><i class="ph ph-shield-check"></i> Cuenta Verificada</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grilla de detalles del usuario -->
+                <div class="profile-details-grid">
+                    <div class="profile-detail-card">
+                        <span class="detail-label"><i class="ph ph-identification-card"></i> Identificador</span>
+                        <span class="detail-value">@(User.FindFirst("UsuarioId")?.Value is string uid && uid != "0" ? $"ID #{uid} (Activo)" : "Sesión de demostración")</span>
+                    </div>
+
+                    <div class="profile-detail-card">
+                        <span class="detail-label"><i class="ph ph-envelope-simple"></i> Correo Institucional</span>
+                        <span class="detail-value text-break">@userEmail</span>
+                    </div>
+
+                    <div class="profile-detail-card">
+                        <span class="detail-label"><i class="ph ph-buildings"></i> Institución</span>
+                        <span class="detail-value">IESTP Argentina - Sede Central</span>
+                    </div>
+
+                    <div class="profile-detail-card">
+                        <span class="detail-label"><i class="ph ph-clock"></i> Régimen / Horario</span>
+                        <span class="detail-value">Turno Diurno / Regular</span>
+                    </div>
+
+                    <div class="profile-detail-card">
+                        <span class="detail-label"><i class="ph ph-shield-chevron"></i> Nivel de Seguridad</span>
+                        <span class="detail-value">Autenticación RBAC Módulo Seguro</span>
+                    </div>
+
+                    <div class="profile-detail-card">
+                        <span class="detail-label"><i class="ph ph-globe"></i> Conexión Actual</span>
+                        <span class="detail-value"><span class="badge-online-pill">En Línea</span> Intranet Segura</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-modal-footer">
+                <button type="button" class="btn-modal-secondary" onclick="cerrarModalPerfil()">
+                    <i class="ph ph-check"></i> Entendido
+                </button>
+                <a href="/logout" class="btn-modal-danger" title="Cerrar Sesión">
+                    <i class="ph ph-sign-out"></i> Cerrar Sesión
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Configuración -->
+    <div id="modalConfiguracion" class="app-modal-overlay" onclick="handleModalOverlayClick(event, 'modalConfiguracion')" aria-hidden="true" role="dialog" aria-labelledby="modalConfigTitle">
+        <div class="app-modal-dialog">
+            <div class="app-modal-header">
+                <div class="app-modal-title-wrap">
+                    <div class="app-modal-icon-badge">
+                        <i class="ph ph-gear-six"></i>
+                    </div>
+                    <div>
+                        <h3 id="modalConfigTitle" class="app-modal-title">Configuración del Sistema</h3>
+                        <p class="app-modal-subtitle">Personaliza tu experiencia visual y preferencias</p>
+                    </div>
+                </div>
+                <button type="button" class="app-modal-close-btn" onclick="cerrarModalConfiguracion()" aria-label="Cerrar modal" title="Cerrar">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+
+            <div class="app-modal-body">
+                <!-- Selección rápida de tema -->
+                <div class="config-section">
+                    <h5 class="config-section-title"><i class="ph ph-palette"></i> Tema de la Interfaz</h5>
+                    <p class="config-section-desc">Selecciona el modo visual preferido para tu pantalla.</p>
+
+                    <div class="theme-switch-cards">
+                        <button type="button" class="theme-choice-card" id="themeChoiceDark" onclick="seleccionarTema('dark')">
+                            <div class="theme-choice-preview dark-preview">
+                                <i class="ph-fill ph-moon"></i>
+                            </div>
+                            <div class="theme-choice-meta">
+                                <span class="theme-choice-name">Modo Oscuro</span>
+                                <span class="theme-choice-sub">Recomendado para descansar la vista</span>
+                            </div>
+                            <i class="ph ph-check-circle theme-choice-check"></i>
+                        </button>
+
+                        <button type="button" class="theme-choice-card" id="themeChoiceLight" onclick="seleccionarTema('light')">
+                            <div class="theme-choice-preview light-preview">
+                                <i class="ph-fill ph-sun"></i>
+                            </div>
+                            <div class="theme-choice-meta">
+                                <span class="theme-choice-name">Modo Claro</span>
+                                <span class="theme-choice-sub">Alta luminosidad y contraste</span>
+                            </div>
+                            <i class="ph ph-check-circle theme-choice-check"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Accesibilidad y Atajos -->
+                <div class="config-section">
+                    <h5 class="config-section-title"><i class="ph ph-keyboard"></i> Atajos Rápidos de Teclado</h5>
+                    <div class="shortcuts-list">
+                        <div class="shortcut-item">
+                            <span class="shortcut-desc">Alternar barra lateral (Ocultar / Mostrar)</span>
+                            <kbd class="shortcut-kbd">Ctrl + B</kbd>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-desc">Cerrar ventanas y menús activos</span>
+                            <kbd class="shortcut-kbd">Esc</kbd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-modal-footer">
+                <button type="button" class="btn-modal-primary" onclick="cerrarModalConfiguracion()">
+                    <i class="ph ph-check"></i> Guardar y Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/js/site.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>
