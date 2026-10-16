@@ -161,7 +161,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Controller
                     obsCompleta = $"Medicamento recetado: {medicamentosStr}\n{obsCompleta}".Trim();
                 }
 
-                int atendidoPorId = HttpContext.Session.GetInt32("UsuarioId") ?? 1;
+                int atendidoPorId = User.FindFirst("UsuarioId")?.Value is string uid ? int.Parse(uid) : 1;
                 var item = new AtencionMedicaItem
                 {
                     PersonaId = paciente.IdPersona,

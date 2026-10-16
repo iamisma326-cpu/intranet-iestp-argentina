@@ -355,11 +355,6 @@ namespace Login_Administracion_de_Modulos.Controllers
                     IsPersistent = true,
                     ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
                 });
-
-            // Datos de presentación para renderizar en la MISMA solicitud
-            // (los layouts leen ViewBag.UserName/UserRole vía [ProtegerPanel]).
-            HttpContext.Session.SetString("UsuarioNombre", nombreCompleto);
-            HttpContext.Session.SetString("UsuarioRol", rolPrincipal);
         }
 
         /// <summary>Roles activos del usuario desde core.usuarios_roles + core.roles.</summary>

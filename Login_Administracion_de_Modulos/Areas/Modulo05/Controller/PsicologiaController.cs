@@ -166,7 +166,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Controller
                 }
 
                 // Identificar psicólogo logueado desde la sesión HTTP
-                int? sesionUsuarioId = HttpContext.Session.GetInt32("UsuarioId");
+                int? sesionUsuarioId = User.FindFirst("UsuarioId")?.Value is string uid2 ? int.Parse(uid2) : (int?)null;
 
                 var sesion = new SesionPsicologicaItem
                 {

@@ -15,7 +15,7 @@
             <i class="ph-fill ph-graduation-cap"></i>
         </div>
         <div class="header-actions">
-            @if (Context.Session.GetString("EsDemo") == "true")
+            @if (User.FindFirst("EsDemo")?.Value == "true")
             {
                 <span style="font-size: 0.72rem; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 10px; border-radius: 20px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;">
                     <i class="ph ph-shield-check"></i> Sesión Demo Local
@@ -49,7 +49,7 @@
             </nav>
 
             <div class="sidebar-footer">
-                @if (Context.Session.GetString("EsDemo") == "true")
+                @if (User.FindFirst("EsDemo")?.Value == "true")
                 {
                     <a href="/" class="btn-logout" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa; margin-bottom: 0.5rem;" title="Volver al selector de roles demo">
                         <i class="ph ph-swap"></i>
