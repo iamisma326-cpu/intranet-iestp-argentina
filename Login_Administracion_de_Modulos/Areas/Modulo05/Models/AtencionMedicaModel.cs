@@ -55,7 +55,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
         {
             using var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
-            const string sql = @"SELECT persona_id, dni, nombres, apellidos 
+            const string sql = @"SELECT id, dni, nombres, apellidos 
                                  FROM core.personas 
                                  WHERE dni = @dni LIMIT 1";
             using var cmd = new NpgsqlCommand(sql, conn);
@@ -127,7 +127,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
                        a.medicamento_id, a.es_alergico, a.detalle_alergia, a.seguro_salud, a.observacion,
                        p.dni, p.nombres, p.apellidos, m.nombre AS medicamento_nombre
                 FROM atenciones_topico a
-                INNER JOIN core.personas p ON a.persona_id = p.persona_id
+                INNER JOIN core.personas p ON a.persona_id = p.id
                 LEFT JOIN mod05.botica_medicamentos m ON a.medicamento_id = m.id
                 WHERE p.dni = @dni
                 ORDER BY a.fecha_hora DESC";

@@ -110,7 +110,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
             conn.Open();
 
             const string sql = @"
-                SELECT p.persona_id, p.dni, p.nombres, p.apellidos
+                SELECT p.id, p.dni, p.nombres, p.apellidos
                 FROM core.personas p
                 WHERE p.dni = @dni
                 LIMIT 1";
@@ -267,7 +267,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
                 _ => "Pendiente"
             };
 
-            const string sql = @"UPDATE atenciones_psicologia SET estado_atencion = @estado WHERE id_atencion_psico = @id";
+            const string sql = @"UPDATE mod05.atenciones_psicologia SET estado_atencion = @estado WHERE id = @id";
             using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@estado", estadoValidado);
             cmd.Parameters.AddWithValue("@id", idAtencion);
@@ -281,7 +281,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
         {
             using var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
-            using var cmd = new NpgsqlCommand("DELETE FROM atenciones_psicologia WHERE id_atencion_psico = @id", conn);
+            using var cmd = new NpgsqlCommand("DELETE FROM mod05.atenciones_psicologia WHERE id = @id", conn);
             cmd.Parameters.AddWithValue("@id", idAtencion);
             return cmd.ExecuteNonQuery() > 0;
         }
@@ -326,9 +326,9 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
                        p.dni, p.nombres, p.apellidos,
                        COALESCE(ps_p.nombres || ' ' || ps_p.apellidos, 'Psicólogo Responsable') as psicologo_nombre
                 FROM mod05.atenciones_psicologia a
-                INNER JOIN core.personas p ON a.persona_id = p.persona_id
+                INNER JOIN core.personas p ON a.persona_id = p.id
                 LEFT JOIN core.usuarios u ON a.psicologo_id = u.id
-                LEFT JOIN core.personas ps_p ON u.persona_id = ps_p.persona_id
+                LEFT JOIN core.personas ps_p ON u.persona_id = ps_p.id
                 WHERE p.dni = @dni
                 ORDER BY a.fecha_hora DESC";
 
@@ -372,9 +372,9 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Models
                        p.dni, p.nombres, p.apellidos,
                        COALESCE(ps_p.nombres || ' ' || ps_p.apellidos, 'Lic. Juan Psicólogo') as psicologo_nombre
                 FROM mod05.atenciones_psicologia a
-                INNER JOIN core.personas p ON a.persona_id = p.persona_id
+                INNER JOIN core.personas p ON a.persona_id = p.id
                 LEFT JOIN core.usuarios u ON a.psicologo_id = u.id
-                LEFT JOIN core.personas ps_p ON u.persona_id = ps_p.persona_id
+                LEFT JOIN core.personas ps_p ON u.persona_id = ps_p.id
                 ORDER BY a.fecha_hora DESC
                 LIMIT @limite";
 
