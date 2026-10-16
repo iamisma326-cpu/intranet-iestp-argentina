@@ -1,15 +1,22 @@
 name: Configurar .env del sitio (una sola vez)
 
 # ==============================================================================
-# Workflow de UN SOLO USO: escribe el .env de producción (cadena de la BD Neon)
-# directamente en el wwwroot del sitio usando WebDeploy.
+# Workflow de UN SOLO USO: escribe el .env de producción (BD Neon, Google SSO
+# y flag de accesos demo) directamente en el wwwroot del sitio usando WebDeploy.
 #
-# ¿Por qué existe? El .env contiene la contraseña de la BD y NO debe estar en
-# el repo. Este workflow la toma del SECRET DB_CONNECTION_STRING de GitHub
-# (cifrada, invisible para terceros) y la publica como archivo al sitio.
+# ¿Por qué existe? El .env contiene secretos que NO deben estar en el repo.
+# Este workflow los toma de los SECRETS de GitHub (cifrados) y los publica
+# como un único archivo al sitio.
+#
+# SECRETOS QUE LEE:
+#   DB_CONNECTION_STRING  → cadena de conexión PostgreSQL (Neon, rol user_app)
+#   GOOGLE_CLIENT_ID      → OAuth client id de Google (opcional)
+#   GOOGLE_CLIENT_SECRET  → OAuth client secret de Google (opcional)
+#   ENABLE_DEMO_LOGIN     → "true" habilita los accesos rápidos demo en producción
 #
 # NO se dispara solo: solo manualmente (workflow_dispatch) desde Actions →
-# "Configurar .env del sitio" → Run. Tras el primer uso puede borrarse.
+# "Configurar .env del sitio" → Run. Puede re-ejecutarse cuando cambie algún
+# secreto (sobrescribe el .env del sitio).
 # ==============================================================================
 
 on:
@@ -27,6 +34,9 @@ jobs:
           $content = @"
           # Configuración de producción - generado por workflow
           DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING }}
+          ENABLE_DEMO_LOGIN=${{ secrets.ENABLE_DEMO_LOGIN }}
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
           "@
           # Quitar indentación del here-string y escribir
           ($content -split "`n" | ForEach-Object { $_.TrimStart() }) -join "`r`n" |

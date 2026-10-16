@@ -99,6 +99,9 @@ namespace Login_Administracion_de_Modulos.Seguridad
             string? googleClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET")
                                         ?? (envDictionary.TryGetValue("GOOGLE_CLIENT_SECRET", out var envGSec) ? envGSec : null);
 
+            string? enableDemoLogin = Environment.GetEnvironmentVariable("ENABLE_DEMO_LOGIN")
+                                      ?? (envDictionary.TryGetValue("ENABLE_DEMO_LOGIN", out var envDemo) ? envDemo : null);
+
             // 4. Mapear al árbol de configuración IConfiguration de ASP.NET Core
             var inMemoryConfig = new Dictionary<string, string?>();
 
@@ -115,6 +118,12 @@ namespace Login_Administracion_de_Modulos.Seguridad
             if (!string.IsNullOrWhiteSpace(googleClientSecret) && !googleClientSecret.Contains(MarcadorConfiguracion))
             {
                 inMemoryConfig["Authentication:Google:ClientSecret"] = googleClientSecret;
+            }
+
+            // Flag de los accesos rápidos demo en producción ("true" los habilita)
+            if (enableDemoLogin is not null)
+            {
+                inMemoryConfig["Security:EnableDemoLogin"] = enableDemoLogin.Trim().ToLowerInvariant();
             }
 
             if (inMemoryConfig.Count > 0)

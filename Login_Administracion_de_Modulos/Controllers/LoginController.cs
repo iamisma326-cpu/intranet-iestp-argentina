@@ -277,7 +277,8 @@ namespace Login_Administracion_de_Modulos.Controllers
 
         // ==========================================
         // RUTA 3: Sesión Local de Prueba (Demo sin BD)
-        // SOLO en desarrollo (dotnet run local). En producción la ruta NO existe.
+        // Disponible en desarrollo SIEMPRE; en producción solo si el .env
+        // define ENABLE_DEMO_LOGIN=true (flag que controla el dueño del sitio).
         // ==========================================
         [HttpGet("login-demo/{rol}")]
         public async Task<IActionResult> LoginDemo(string rol)
@@ -289,15 +290,20 @@ namespace Login_Administracion_de_Modulos.Controllers
 
             var (nombreDemo, rolDemo) = rol?.Trim().ToLowerInvariant() switch
             {
-                "topico" or "enfermeria" => ("Lic. Rosa Fernández (Demo)", "Enfermería (Tópico)"),
-                "psicologia"            => ("Lic. Juan Psicólogo (Demo)", "Psicología"),
-                "docente"               => ("Prof. Carlos Docente (Demo)", "Docente"),
-                "soporte"               => ("Ing. Mario Soporte (Demo)", "Jefe de Soporte"),
-                "alumno" or "estudiante" => ("Estudiante Ana Torres (Demo)", "Alumno"),
-                "practicante"           => ("Téc. Luis Practicante (Demo)", "Practicante"),
-                "secretaria"            => ("Lic. Carmen Secretaría (Demo)", "Secretaría Académica"),
+                "topico" or "enfermeria"  => ("Lic. Rosa Fernández (Demo)", "Enfermería (Tópico)"),
+                "psicologia"              => ("Lic. Juan Psicólogo (Demo)", "Psicología"),
+                "docente"                 => ("Prof. Carlos Docente (Demo)", "Docente"),
+                "soporte"                 => ("Ing. Mario Soporte (Demo)", "Jefe de Soporte"),
+                "alumno" or "estudiante"  => ("Estudiante Ana Torres (Demo)", "Alumno"),
+                "practicante"             => ("Téc. Luis Practicante (Demo)", "Practicante"),
+                "secretaria"              => ("Lic. Carmen Secretaría (Demo)", "Secretaría Académica"),
                 "admin" or "administrador" => ("Administrador del Sistema (Demo)", "Administrador"),
-                "tesoreria" or "tesorero" => ("Marta Beatriz Torres (Demo)", "Tesorería"),
+                "tesoreria" or "tesorero"  => ("Marta Beatriz Torres (Demo)", "Tesorería"),
+                "jefe" or "jefegeneral"   => ("Jefe General (Demo)", "Jefe General"),
+                "computacion"             => ("Jefe de Taller Computación (Demo)", "Jefe de Taller Computación"),
+                "taller-administracion"   => ("Jefe de Taller Administración (Demo)", "Jefe de Taller Administración"),
+                "taller-contabilidad"     => ("Jefe de Taller Contabilidad (Demo)", "Jefe de Taller Contabilidad"),
+                "inventario"              => ("Encargado de Inventario (Demo)", "Encargado de Inventario"),
                 _ => ("Personal Demo", "Enfermería (Tópico)")
             };
 
