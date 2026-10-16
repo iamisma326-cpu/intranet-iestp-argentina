@@ -1,0 +1,145 @@
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Administración y Seguridad";
+    ViewData["Role"] = "Administrador";
+}
+
+@section SidebarNav {
+    <a href="javascript:void(0)" class="nav-item active" id="nav-adm-dash" onclick="mostrarSeccionAdmin('seccion-adm-dash', this)">
+        <i class="ph ph-squares-four"></i>
+        <span>Dashboard Central</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-adm-usuarios" onclick="mostrarSeccionAdmin('seccion-adm-usuarios', this)">
+        <i class="ph ph-user-gear"></i>
+        <span>Gestión de Usuarios</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-adm-roles" onclick="mostrarSeccionAdmin('seccion-adm-roles', this)">
+        <i class="ph ph-shield-check"></i>
+        <span>Roles y Perfiles</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-adm-permisos" onclick="mostrarSeccionAdmin('seccion-adm-permisos', this)">
+        <i class="ph ph-key"></i>
+        <span>Permisos y Módulos</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-adm-sesiones" onclick="mostrarSeccionAdmin('seccion-adm-sesiones', this)">
+        <i class="ph ph-fingerprint"></i>
+        <span>Auditoría de Sesiones</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-adm-config" onclick="mostrarSeccionAdmin('seccion-adm-config', this)">
+        <i class="ph ph-sliders"></i>
+        <span>Configuración Global</span>
+    </a>
+    <a href="/Modulo05/Enfermeria/Panel" class="nav-item" id="nav-adm-topico">
+        <i class="ph ph-first-aid"></i>
+        <span>M05: Tópico Médico</span>
+    </a>
+    <a href="/Modulo05/Psicologia/Panel" class="nav-item" id="nav-adm-psico">
+        <i class="ph ph-brain"></i>
+        <span>M05: Psicología</span>
+    </a>
+    <a href="/Modulo05/Soporte/ConsolaPrincipal" class="nav-item" id="nav-adm-soporte">
+        <i class="ph ph-wrench"></i>
+        <span>M05: Soporte TI</span>
+    </a>
+}
+
+<div class="page-header">
+    <h1>Administración Central y Seguridad</h1>
+    <p>Control de acceso basado en roles (RBAC), cuentas de usuario y auditoría de accesos (bd.sql)</p>
+    <div class="header-accent"></div>
+</div>
+
+<div id="seccion-adm-dash" class="adm-section active-section">
+    <!-- Tarjetas de Seguridad basadas en bd.sql -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-user-gear"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Usuarios Totales (usuarios)</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">1,248</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(168, 85, 247, 0.1); color: #a855f7; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-shield-check"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Roles Configurados (roles)</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">8 Perfiles</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(16, 185, 129, 0.1); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-fingerprint"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Sesiones Activas (sesiones_login)</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">42 En Línea</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-key"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Permisos de Módulos</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">16 Módulos</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registro de Auditoría de Sesiones (Tabla: sesiones_login) -->
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="ph ph-shield" style="color: var(--accent-cyan);"></i> Últimas Sesiones Registradas (Tabla: sesiones_login)
+        </h3>
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+                    <th style="padding: 0.75rem 0.5rem;">ID Sesión</th>
+                    <th style="padding: 0.75rem 0.5rem;">Método de Autenticación</th>
+                    <th style="padding: 0.75rem 0.5rem;">IP Origen</th>
+                    <th style="padding: 0.75rem 0.5rem;">Fecha y Hora Inicio</th>
+                    <th style="padding: 0.75rem 0.5rem;">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 0.5rem; font-family: monospace; color: var(--accent-cyan);">a7c92e10-...</td>
+                    <td style="padding: 0.75rem 0.5rem;"><span style="color: #00f2fe; font-weight: 600;">GOOGLE_SSO</span></td>
+                    <td style="padding: 0.75rem 0.5rem; color: var(--text-secondary);">192.168.1.45</td>
+                    <td style="padding: 0.75rem 0.5rem;">Hoy, 20:10</td>
+                    <td style="padding: 0.75rem 0.5rem;"><span style="color: #10b981; font-weight: 600;">Activa</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 0.5rem; font-family: monospace; color: var(--accent-cyan);">f3b81102-...</td>
+                    <td style="padding: 0.75rem 0.5rem;"><span style="color: #f59e0b; font-weight: 600;">DNI_LOCAL</span></td>
+                    <td style="padding: 0.75rem 0.5rem; color: var(--text-secondary);">192.168.1.80</td>
+                    <td style="padding: 0.75rem 0.5rem;">Hoy, 19:45</td>
+                    <td style="padding: 0.75rem 0.5rem;"><span style="color: #10b981; font-weight: 600;">Activa</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function mostrarSeccionAdmin(idSeccion, el) {
+        document.querySelectorAll('.adm-section').forEach(sec => sec.style.display = 'none');
+        document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => item.classList.remove('active'));
+        
+        var objetivo = document.getElementById(idSeccion);
+        if (objetivo) {
+            objetivo.style.display = 'block';
+        } else {
+            document.getElementById('seccion-adm-dash').style.display = 'block';
+        }
+
+        if (el) el.classList.add('active');
+    }
+</script>

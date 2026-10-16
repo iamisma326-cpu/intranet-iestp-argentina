@@ -1,0 +1,739 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "Registro de Sesión Psicológica";
+    ViewData["Role"] = "Bienestar Estudiantil";
+}
+
+<style>
+    /* Estilos Premium Pixel-Perfect para el Formulario de Sesión Psicológica */
+    :root {
+        --psy-bg-card: #0c101c;
+        --psy-bg-input: #080c16;
+        --psy-bg-locked: #070a13;
+        --psy-border: rgba(255, 255, 255, 0.08);
+        --psy-border-focus: #6366f1;
+        --psy-primary: #6366f1;
+        --psy-primary-hover: #4f46e5;
+        --psy-primary-grad: linear-gradient(135deg, #6366f1, #7c3aed);
+        --psy-text-title: #a5b4fc;
+        --psy-text-label: #94a3b8;
+        --psy-text-value: #f8fafc;
+        --psy-text-muted: #64748b;
+    }
+
+    .psy-main-card {
+        background-color: var(--psy-bg-card);
+        border: 1px solid var(--psy-border);
+        border-radius: 16px;
+        padding: 2rem 2.25rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+        max-width: 1200px;
+        margin: 0 auto 2rem auto;
+        color: #fff;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* Títulos de Sección */
+    .psy-section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        color: var(--psy-text-title);
+        text-transform: uppercase;
+        margin-bottom: 1.25rem;
+    }
+
+    .psy-section-title i {
+        font-size: 1.1rem;
+    }
+
+    /* Grilla de Identificación del Estudiante (4 columnas) */
+    .psy-grid-student {
+        display: grid;
+        grid-template-columns: minmax(240px, 1.2fr) minmax(220px, 1.4fr) minmax(200px, 1.2fr) minmax(150px, 1fr);
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Grilla de Creación de Expediente (3 columnas) */
+    .psy-grid-consult {
+        display: grid;
+        grid-template-columns: minmax(180px, 1fr) minmax(240px, 1.2fr) minmax(320px, 2fr);
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Grupos de Formulario */
+    .psy-field-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .psy-field-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--psy-text-label);
+        margin-bottom: 0.45rem;
+    }
+
+    /* Input Base */
+    .psy-form-control {
+        width: 100%;
+        background-color: var(--psy-bg-input);
+        border: 1px solid var(--psy-border);
+        color: var(--psy-text-value);
+        border-radius: 8px;
+        padding: 0.7rem 0.9rem;
+        font-size: 0.88rem;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .psy-form-control:focus {
+        border-color: var(--psy-border-focus);
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+    }
+
+    .psy-form-control::placeholder {
+        color: var(--psy-text-muted);
+    }
+
+    /* Input de Búsqueda con Botón Integrado */
+    .psy-search-box {
+        display: flex;
+        gap: 0.5rem;
+        align-items: stretch;
+    }
+
+    .psy-search-input {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .psy-btn-search {
+        background: var(--psy-primary);
+        border: none;
+        color: #fff;
+        padding: 0 1.25rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
+    }
+
+    .psy-btn-search:hover {
+        background: var(--psy-primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.45);
+    }
+
+    .psy-btn-search:active {
+        transform: translateY(0);
+    }
+
+    /* Inputs Bloqueados / Solo Lectura con Ícono de Candado */
+    .psy-locked-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .psy-locked-icon {
+        position: absolute;
+        left: 0.85rem;
+        color: var(--psy-text-muted);
+        font-size: 0.95rem;
+        pointer-events: none;
+    }
+
+    .psy-input-locked {
+        background-color: var(--psy-bg-locked);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        color: #94a3b8;
+        padding-left: 2.25rem;
+        cursor: not-allowed;
+        font-family: inherit;
+    }
+
+    .psy-input-locked::placeholder {
+        color: #475569;
+        letter-spacing: 2px;
+    }
+
+    /* Select Clínico */
+    .psy-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1rem;
+        padding-right: 2.2rem;
+        cursor: pointer;
+    }
+
+    .psy-select option {
+        background-color: #0d1222;
+        color: #fff;
+    }
+
+    /* Textarea de Motivo */
+    .psy-textarea-motivo {
+        min-height: 42px;
+        height: 42px;
+        resize: vertical;
+        line-height: 1.4;
+    }
+
+    /* Tarjeta de Notas Confidenciales */
+    .psy-confidential-card {
+        background-color: var(--psy-bg-input);
+        border: 1px solid var(--psy-border);
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+        margin-top: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        transition: border-color 0.2s;
+    }
+
+    .psy-confidential-card:focus-within {
+        border-color: var(--psy-border-focus);
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+
+    .psy-confidential-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.73rem;
+        font-weight: 800;
+        color: #818cf8;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+    }
+
+    .psy-confidential-textarea {
+        width: 100%;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--psy-text-value);
+        font-size: 0.88rem;
+        line-height: 1.5;
+        resize: vertical;
+        min-height: 80px;
+        font-family: inherit;
+        box-sizing: border-box;
+    }
+
+    .psy-confidential-textarea::placeholder {
+        color: var(--psy-text-muted);
+    }
+
+    /* Barra de Botones de Acción */
+    .psy-actions-bar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.85rem;
+        margin-top: 1.75rem;
+    }
+
+    .psy-btn-clear {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #cbd5e1;
+        padding: 0.65rem 1.6rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .psy-btn-clear:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .psy-btn-save {
+        background: var(--psy-primary-grad);
+        border: none;
+        color: #fff;
+        padding: 0.65rem 1.75rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    }
+
+    .psy-btn-save:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.55);
+    }
+
+    .psy-btn-save:active {
+        transform: translateY(0);
+    }
+
+    .psy-btn-save:disabled, .psy-btn-search:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+
+    /* Mensajes de feedback dinámico */
+    .psy-status-msg {
+        font-size: 0.82rem;
+        font-weight: 600;
+        margin-top: 0.4rem;
+        min-height: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .psy-status-msg.success { color: #34d399; }
+    .psy-status-msg.error { color: #f87171; }
+    .psy-status-msg.loading { color: #94a3b8; }
+
+    /* Alerta flotante / Banner */
+    .psy-alert-toast {
+        display: none;
+        margin-top: 1.25rem;
+        padding: 0.9rem 1.25rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    .psy-alert-toast.show {
+        display: flex;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .psy-alert-toast.success {
+        background: rgba(16, 185, 129, 0.12);
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        color: #34d399;
+    }
+
+    .psy-alert-toast.error {
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid rgba(239, 68, 68, 0.35);
+        color: #f87171;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsividad */
+    @@media (max-width: 900px) {
+        .psy-grid-student {
+            grid-template-columns: 1fr 1fr;
+        }
+        .psy-grid-consult {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .psy-grid-student {
+            grid-template-columns: 1fr;
+        }
+        .psy-main-card {
+            padding: 1.25rem;
+        }
+        .psy-actions-bar {
+            flex-direction: column-reverse;
+            width: 100%;
+        }
+        .psy-btn-clear, .psy-btn-save {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="psy-main-card">
+    <form id="formAtencionPsicologia" onsubmit="event.preventDefault(); guardarSesionPsicologia();">
+        <input type="hidden" id="personaIdHidden" name="personaId" value="" />
+
+        <!-- I. IDENTIFICACIÓN DEL ESTUDIANTE -->
+        <div class="psy-section-title">
+            <i class="ph-bold ph-identification-badge"></i>
+            <span>I. IDENTIFICACIÓN DEL ESTUDIANTE</span>
+        </div>
+
+        <div class="psy-grid-student">
+            <!-- BUSCAR ALUMNO (DNI) -->
+            <div class="psy-field-group">
+                <label class="psy-field-label" for="dniBusqueda">BUSCAR ALUMNO (DNI)</label>
+                <div class="psy-search-box">
+                    <input type="text" 
+                           id="dniBusqueda" 
+                           name="dniBusqueda" 
+                           class="psy-form-control psy-search-input" 
+                           placeholder="DNI..." 
+                           maxlength="8" 
+                           pattern="\d{8}"
+                           autocomplete="off" 
+                           onkeypress="if(event.key === 'Enter'){ event.preventDefault(); buscarAlumnoDni(); }"
+                           required />
+                    <button type="button" class="psy-btn-search" id="btnBuscarDni" onclick="buscarAlumnoDni()">
+                        <i class="ph-bold ph-magnifying-glass"></i> Buscar
+                    </button>
+                </div>
+                <div id="dniStatusMsg" class="psy-status-msg"></div>
+            </div>
+
+            <!-- APELLIDOS Y NOMBRES -->
+            <div class="psy-field-group">
+                <label class="psy-field-label" for="apellidosNombres">APELLIDOS Y NOMBRES</label>
+                <div class="psy-locked-wrapper">
+                    <i class="ph-bold ph-lock-key psy-locked-icon"></i>
+                    <input type="text" 
+                           id="apellidosNombres" 
+                           name="apellidosNombres" 
+                           class="psy-form-control psy-input-locked" 
+                           placeholder="- - -" 
+                           readonly />
+                </div>
+            </div>
+
+            <!-- CARRERA / PROGRAMA -->
+            <div class="psy-field-group">
+                <label class="psy-field-label" for="carreraPrograma">CARRERA / PROGRAMA</label>
+                <div class="psy-locked-wrapper">
+                    <i class="ph-bold ph-lock-key psy-locked-icon"></i>
+                    <input type="text" 
+                           id="carreraPrograma" 
+                           name="carreraPrograma" 
+                           class="psy-form-control psy-input-locked" 
+                           placeholder="- - -" 
+                           readonly />
+                </div>
+            </div>
+
+            <!-- CICLO / TURNO -->
+            <div class="psy-field-group">
+                <label class="psy-field-label" for="cicloTurno">CICLO / TURNO</label>
+                <div class="psy-locked-wrapper">
+                    <i class="ph-bold ph-lock-key psy-locked-icon"></i>
+                    <input type="text" 
+                           id="cicloTurno" 
+                           name="cicloTurno" 
+                           class="psy-form-control psy-input-locked" 
+                           placeholder="- - -" 
+                           readonly />
+                </div>
+            </div>
+        </div>
+
+        <!-- II. CREACIÓN DE EXPEDIENTE / CONSULTA ACTUAL -->
+        <div class="psy-section-title">
+            <i class="ph-bold ph-folder-notch-open"></i>
+            <span>II. CREACIÓN DE EXPEDIENTE / CONSULTA ACTUAL</span>
+        </div>
+
+        <div class="psy-grid-consult">
+            <!-- FECHA Y HORA -->
+            <div class="psy-field-group">
+                <label class="psy-field-label" for="fechaHora">FECHA Y HORA</label>
+                <input type="datetime-local" 
+                       id="fechaHora" 
+                       name="fechaHora" 
+                       class="psy-form-control" 
+                       required />
+            </div>
+
+            <!-- ESTADO CLÍNICO -->
+            <div class="psy-field-group">
+                <label class="psy-field-label" for="estadoClinico">ESTADO CLÍNICO *</label>
+                <select id="estadoClinico" name="estadoClinico" class="psy-form-control psy-select" required>
+                    <option value="Pendiente" selected>Pendiente — Evaluación Inicial</option>
+                    <option value="En proceso">En proceso — Tratamiento Continuo</option>
+                    <option value="Dado de Alta">Dado de Alta — Caso Cerrado</option>
+                    <option value="Derivado externamente">Derivado externamente — Red de Salud</option>
+                </select>
+            </div>
+
+            <!-- MOTIVO DE CONSULTA Y CONTEXTO ACADÉMICO / FAMILIAR -->
+            <div class="psy-field-group">
+                <label class="psy-field-label" for="motivoConsulta">MOTIVO DE CONSULTA Y CONTEXTO ACADÉMICO / FAMILIAR</label>
+                <textarea id="motivoConsulta" 
+                          name="motivoConsulta" 
+                          class="psy-form-control psy-textarea-motivo" 
+                          rows="1" 
+                          placeholder="Síntomas referidos o razones de bajo rendimiento..." 
+                          required></textarea>
+            </div>
+        </div>
+
+        <!-- DIAGNÓSTICO PRELIMINAR Y NOTAS CONFIDENCIALES DE TERAPIA -->
+        <div class="psy-field-group">
+            <label class="psy-field-label" for="diagnosticoNotas">DIAGNÓSTICO PRELIMINAR Y NOTAS CONFIDENCIALES DE TERAPIA</label>
+            <div class="psy-confidential-card">
+                <div class="psy-confidential-badge">
+                    <i class="ph-bold ph-shield-check"></i>
+                    <span>NOTAS BAJO SECRETO PROFESIONAL</span>
+                </div>
+                <textarea id="diagnosticoNotas" 
+                          name="diagnosticoNotas" 
+                          class="psy-confidential-textarea" 
+                          rows="4" 
+                          placeholder="Evaluación HTP, Test Vocacional, Notas bajo secreto profesional..."></textarea>
+            </div>
+        </div>
+
+        <!-- ACCIONES -->
+        <div class="psy-actions-bar">
+            <button type="button" class="psy-btn-clear" onclick="limpiarFormulario()">
+                Limpiar
+            </button>
+            <button type="submit" class="psy-btn-save" id="btnGuardarSesion">
+                <i class="ph-bold ph-floppy-disk"></i> Guardar Sesión
+            </button>
+        </div>
+
+        <!-- ALERTA / TOAST DE RESULTADO -->
+        <div id="psyAlertToast" class="psy-alert-toast"></div>
+    </form>
+</div>
+
+<script>
+    (function () {
+        // Inicializar fecha y hora actual en formato local ISO
+        function inicializarFechaActual() {
+            const fechaInput = document.getElementById('fechaHora');
+            if (fechaInput) {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                fechaInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+        }
+
+        inicializarFechaActual();
+
+        // Autocargar DNI si fue proporcionado por parámetro o ViewBag
+        setTimeout(() => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const dniParam = '@(ViewBag.DniInicial ?? "")' || urlParams.get('dni');
+            if (dniParam && dniParam.trim().length === 8) {
+                const dniInput = document.getElementById('dniBusqueda');
+                if (dniInput) {
+                    dniInput.value = dniParam.trim();
+                    buscarAlumnoDni();
+                }
+            }
+        }, 150);
+    })();
+
+    function mostrarToast(mensaje, tipo = 'success') {
+        const toast = document.getElementById('psyAlertToast');
+        if (!toast) return;
+
+        toast.className = `psy-alert-toast show ${tipo}`;
+        const icon = tipo === 'success' 
+            ? '<i class="ph-bold ph-check-circle" style="font-size: 1.2rem;"></i>' 
+            : '<i class="ph-bold ph-warning-circle" style="font-size: 1.2rem;"></i>';
+
+        toast.innerHTML = `${icon} <span>${mensaje}</span>`;
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 5000);
+    }
+
+    function buscarAlumnoDni() {
+        const dniInput = document.getElementById('dniBusqueda');
+        const dni = dniInput ? dniInput.value.trim() : '';
+        const statusMsg = document.getElementById('dniStatusMsg');
+        const btnBuscar = document.getElementById('btnBuscarDni');
+
+        const nomInput = document.getElementById('apellidosNombres');
+        const carInput = document.getElementById('carreraPrograma');
+        const cicInput = document.getElementById('cicloTurno');
+        const personaHidden = document.getElementById('personaIdHidden');
+
+        if (!dni || dni.length !== 8 || isNaN(dni)) {
+            if (statusMsg) {
+                statusMsg.className = 'psy-status-msg error';
+                statusMsg.innerHTML = '<i class="ph-bold ph-warning"></i> Ingrese un DNI válido de 8 dígitos.';
+            }
+            if (dniInput) dniInput.focus();
+            return;
+        }
+
+        if (statusMsg) {
+            statusMsg.className = 'psy-status-msg loading';
+            statusMsg.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Buscando en BD...';
+        }
+
+        if (btnBuscar) {
+            btnBuscar.disabled = true;
+            btnBuscar.innerHTML = '<i class="ph ph-spinner ph-spin"></i>';
+        }
+
+        fetch('/Modulo05/Psicologia/BuscarPaciente?dni=' + encodeURIComponent(dni))
+            .then(res => res.json())
+            .then(data => {
+                if (btnBuscar) {
+                    btnBuscar.disabled = false;
+                    btnBuscar.innerHTML = '<i class="ph-bold ph-magnifying-glass"></i> Buscar';
+                }
+
+                if (data.success) {
+                    if (statusMsg) {
+                        statusMsg.className = 'psy-status-msg success';
+                        statusMsg.innerHTML = '<i class="ph-bold ph-check"></i> Alumno verificado';
+                    }
+
+                    if (personaHidden) personaHidden.value = data.personaId || '';
+                    if (nomInput) nomInput.value = data.nombreCompleto || `${data.apellidos} ${data.nombres}`.trim();
+                    if (carInput) carInput.value = data.carrera || 'Desarrollo de Sistemas de Información';
+                    if (cicInput) cicInput.value = data.cicloTurno || 'IV Ciclo / Turno Noche';
+                } else {
+                    if (statusMsg) {
+                        statusMsg.className = 'psy-status-msg error';
+                        statusMsg.innerHTML = '<i class="ph-bold ph-x"></i> ' + (data.message || 'No encontrado');
+                    }
+                    if (personaHidden) personaHidden.value = '';
+                    if (nomInput) nomInput.value = '';
+                    if (carInput) carInput.value = '';
+                    if (cicInput) cicInput.value = '';
+                }
+            })
+            .catch(err => {
+                if (btnBuscar) {
+                    btnBuscar.disabled = false;
+                    btnBuscar.innerHTML = '<i class="ph-bold ph-magnifying-glass"></i> Buscar';
+                }
+                if (statusMsg) {
+                    statusMsg.className = 'psy-status-msg error';
+                    statusMsg.innerHTML = '<i class="ph-bold ph-warning-circle"></i> Error de conexión al consultar';
+                }
+            });
+    }
+
+    function guardarSesionPsicologia() {
+        const form = document.getElementById('formAtencionPsicologia');
+        const dni = document.getElementById('dniBusqueda');
+        const motivo = document.getElementById('motivoConsulta');
+        const nomInput = document.getElementById('apellidosNombres');
+        const btnGuardar = document.getElementById('btnGuardarSesion');
+
+        if (!dni || !dni.value.trim() || dni.value.trim().length !== 8) {
+            mostrarToast('Debe ingresar y buscar un DNI de 8 dígitos válido.', 'error');
+            if (dni) dni.focus();
+            return;
+        }
+
+        if (!nomInput || !nomInput.value.trim() || nomInput.value.trim() === '- - -') {
+            mostrarToast('Primero debe verificar el estudiante presionando el botón "Buscar".', 'error');
+            return;
+        }
+
+        if (!motivo || !motivo.value.trim()) {
+            mostrarToast('El motivo de consulta y contexto es obligatorio.', 'error');
+            if (motivo) motivo.focus();
+            return;
+        }
+
+        const formData = new FormData(form);
+
+        if (btnGuardar) {
+            btnGuardar.disabled = true;
+            btnGuardar.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Guardando...';
+        }
+
+        fetch('/Modulo05/Psicologia/GuardarAtencion', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (btnGuardar) {
+                btnGuardar.disabled = false;
+                btnGuardar.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Guardar Sesión';
+            }
+
+            if (data.success) {
+                mostrarToast(data.message || '¡Sesión psicológica registrada exitosamente!', 'success');
+                limpiarFormulario();
+            } else {
+                mostrarToast(data.message || 'Error al guardar la sesión.', 'error');
+            }
+        })
+        .catch(err => {
+            if (btnGuardar) {
+                btnGuardar.disabled = false;
+                btnGuardar.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Guardar Sesión';
+            }
+            mostrarToast('Error de conexión con el servidor: ' + err.message, 'error');
+        });
+    }
+
+    function limpiarFormulario() {
+        const form = document.getElementById('formAtencionPsicologia');
+        if (form) form.reset();
+
+        const personaHidden = document.getElementById('personaIdHidden');
+        if (personaHidden) personaHidden.value = '';
+
+        const nomInput = document.getElementById('apellidosNombres');
+        const carInput = document.getElementById('carreraPrograma');
+        const cicInput = document.getElementById('cicloTurno');
+        if (nomInput) nomInput.value = '';
+        if (carInput) carInput.value = '';
+        if (cicInput) cicInput.value = '';
+
+        const statusMsg = document.getElementById('dniStatusMsg');
+        if (statusMsg) {
+            statusMsg.innerHTML = '';
+            statusMsg.className = 'psy-status-msg';
+        }
+
+        const estadoSelect = document.getElementById('estadoClinico');
+        if (estadoSelect) estadoSelect.value = 'Pendiente';
+
+        // Restablecer fecha y hora
+        const fechaInput = document.getElementById('fechaHora');
+        if (fechaInput) {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            fechaInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+    }
+</script>

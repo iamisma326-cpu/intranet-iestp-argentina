@@ -1,0 +1,183 @@
+@model Login_Administracion_de_Modulos.Areas.Modulo05.Models.TicketAveriaItem
+@{
+    Layout = null;
+    ViewData["Title"] = "Atención de Incidencia Técnica";
+}
+
+<style>
+    :root {
+        --primary-sop: #0ea5e9;
+        --secondary-sop: #0284c7;
+        --border-glass: rgba(255, 255, 255, 0.1);
+    }
+
+    .sop-form-container {
+        max-width: 960px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .sop-card {
+        background: rgba(30, 30, 45, 0.65);
+        backdrop-filter: blur(14px);
+        border: 1px solid var(--border-glass);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    }
+
+    .sop-legend {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(90deg, #0ea5e9, #0284c7);
+        padding: 0.4rem 1.2rem;
+        border-radius: 8px;
+        display: inline-block;
+        margin-bottom: 1.5rem;
+    }
+
+    .sop-input, .sop-select, .sop-textarea {
+        width: 100%;
+        background: rgba(15, 15, 20, 0.8);
+        border: 1px solid var(--border-glass);
+        color: #fff;
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+    }
+
+    .sop-input:focus, .sop-select:focus, .sop-textarea:focus {
+        outline: none;
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.25);
+    }
+
+    .sop-btn-save {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        padding: 0.9rem 2rem;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+    }
+</style>
+
+<div class="page-header" style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; background: linear-gradient(90deg, #0ea5e9, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 0.5rem 0;">
+                Intervención Técnica - Ticket #@Model.IdIncidencia
+            </h1>
+            <p style="color: var(--text-secondary); margin: 0;">Diagnóstico, aplicación de solución y actualización de estado en base de datos PostgreSQL</p>
+        </div>
+        <a href="/Dashboard/Soporte" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 0.75rem 1.25rem; border-radius: 10px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+            <i class="ph ph-arrow-left"></i> Volver al Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="sop-form-container">
+    <!-- Resumen del Ticket Reportado -->
+    <div class="sop-card" style="border-left: 4px solid #0ea5e9;">
+        <span class="sop-legend"><i class="ph-bold ph-info"></i> Información del Reporte Original</span>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem;">
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Equipo</span>
+                <p style="color: #fff; font-weight: 700; margin: 0.2rem 0 0 0;">@Model.DescripcionBien (@Model.MarcaModelo)</p>
+                <small style="color: #38bdf8;">CBI: @Model.CodigoBien</small>
+            </div>
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Fecha de Reporte</span>
+                <p style="color: #fff; font-weight: 600; margin: 0.2rem 0 0 0;">@Model.FechaReporte.ToString("dd/MM/yyyy HH:mm")</p>
+            </div>
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Falla y Gravedad</span>
+                <p style="color: #f59e0b; font-weight: 700; margin: 0.2rem 0 0 0;">@Model.TipoFalla (@Model.Gravedad)</p>
+            </div>
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Estado Actual</span>
+                <p style="color: #10b981; font-weight: 700; margin: 0.2rem 0 0 0;">@Model.Estado</p>
+            </div>
+        </div>
+        <div style="margin-top: 1.25rem; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px;">
+            <span style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Descripción Reportada por el Docente:</span>
+            <p style="color: #f1f5f9; margin: 0.4rem 0 0 0; line-height: 1.5;">@Model.Descripcion</p>
+        </div>
+    </div>
+
+    <!-- Formulario de Solución Técnica -->
+    <form id="formAtencionTecnica" onsubmit="event.preventDefault(); actualizarTicketSoporte();" class="sop-card">
+        <input type="hidden" name="idIncidencia" value="@Model.IdIncidencia" />
+        <span class="sop-legend" style="background: linear-gradient(90deg, #10b981, #059669);"><i class="ph-bold ph-wrench"></i> Resolución y Cambio de Estado</span>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-top: 1rem;">
+            <div style="margin-bottom: 1.2rem;">
+                <label for="estado" style="display: block; font-weight: 600; color: #e5e7eb; margin-bottom: 0.5rem;">Nuevo Estado del Ticket *</label>
+                <select id="estado" name="estado" class="sop-select" required>
+                    <option value="En Atención" selected="@(Model.Estado == "En Atención")">En Atención / En Revisión Técnica</option>
+                    <option value="Reparado" selected="@(Model.Estado == "Reparado" || Model.Estado == "Pendiente")">Reparado / Operativo</option>
+                    <option value="Cerrado" selected="@(Model.Estado == "Cerrado")">Cerrado / Verificado</option>
+                    <option value="Derivado a Garantia">Derivado a Garantía de Proveedor</option>
+                    <option value="Baja Técnica">Baja Técnica / Equipo No Reparable</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 1.2rem;">
+                <label for="tecnicoAsignado" style="display: block; font-weight: 600; color: #e5e7eb; margin-bottom: 0.5rem;">Técnico Responsable</label>
+                <input type="text" id="tecnicoAsignado" class="sop-input" value="Ing. Mario Soporte (Jefatura de TI)" readonly />
+            </div>
+        </div>
+
+        <div style="margin-bottom: 1.2rem;">
+            <label for="solucionAplicada" style="display: block; font-weight: 600; color: #e5e7eb; margin-bottom: 0.5rem;">Diagnóstico y Solución Técnica Aplicada *</label>
+            <textarea id="solucionAplicada" name="solucionAplicada" class="sop-textarea" rows="4" placeholder="Ej: Se realizó limpieza de contactos de memoria RAM y cambio de cable de poder. El equipo encendió correctamente y superó pruebas de estrés..." required>@Model.SolucionAplicada</textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; align-items: center; margin-top: 1rem;">
+            <button type="submit" class="sop-btn-save">
+                <i class="ph-bold ph-floppy-disk"></i> Guardar Resolución y Actualizar Estado
+            </button>
+        </div>
+        <div id="resultadoAtencionTecnica" style="margin-top: 1rem; font-weight: 700; font-size: 0.95rem; text-align: right;"></div>
+    </form>
+</div>
+
+<script>
+    function actualizarTicketSoporte() {
+        const form = document.getElementById('formAtencionTecnica');
+        const resDiv = document.getElementById('resultadoAtencionTecnica');
+        const formData = new FormData(form);
+
+        fetch('/Modulo05/Soporte/ActualizarTicket', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                resDiv.style.color = '#10b981';
+                resDiv.innerHTML = '<i class="ph-bold ph-check-circle"></i> ' + data.message;
+                alert(data.message || 'Ticket actualizado con éxito');
+                window.location.href = '/Modulo05/Soporte/ConsolaPrincipal';
+            } else {
+                resDiv.style.color = '#ef4444';
+                resDiv.innerHTML = '<i class="ph-bold ph-warning"></i> ' + data.message;
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(err => {
+            resDiv.style.color = '#ef4444';
+            resDiv.textContent = 'Error de conexión: ' + err.message;
+        });
+    }
+</script>

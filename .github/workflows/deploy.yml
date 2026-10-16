@@ -1,0 +1,58 @@
+name: Desplegar ASP.NET a MonsterASP (WebDeploy)
+
+# ==============================================================================
+# Deploy automático a MonsterASP siguiendo la guía oficial del proveedor:
+#   https://help.monsterasp.net/websites/git-deploy/github-actions
+# Cada push a master → GitHub compila → WebDeploy publica al sitio.
+# La action apaga y enciende el app pool sola; NO agregar pasos de stop manual.
+#
+# SECRETOS REQUERIDOS (Settings → Secrets and variables → Actions), sacados
+# de la "tarjeta de acceso Visual Studio" del panel de MonsterASP:
+#   MSA_SITE     → nombre del sitio  (ej: siteXXXX)
+#   MSA_SERVER   → servidor WebDeploy (ej: https://siteXXXX.siteasp.net:8172)
+#   MSA_USERNAME → usuario WebDeploy  (ej: siteXXXX)
+#   MSA_PASSWORD → contraseña WebDeploy
+#
+# El .env de producción (BD Neon + Google OAuth) NO va en este flujo: se sube
+# UNA vez por WebFTP al wwwroot del sitio; ConfiguracionSegura.cs lo lee allí.
+# target-delete queda en false a propósito: así el .env y wwwroot/uploads
+# sobreviven cada deploy (no se borra lo que no viene en el paquete).
+# ==============================================================================
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  compilar_y_desplegar:
+    runs-on: windows-latest
+
+    steps:
+      - name: 1. Descargar el código
+        uses: actions/checkout@v4
+
+      - name: 2. Preparar .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: 3. Compilar y publicar (win-x86)
+        run: |
+          dotnet publish Login_Administracion_de_Modulos/Login_Administracion_de_Modulos.csproj `
+            -c Release -r win-x86 --self-contained false `
+            -o ./publish_output
+          # appsettings de producción: placeholders; los secretos salen del .env del sitio
+          Copy-Item ./publish_output/appsettings.json ./publish_output/appsettings.Production.json -Force
+
+      - name: 4. Desplegar con WebDeploy (apaga/enciende el app pool solo)
+        uses: rasmusbuchholdt/simply-web-deploy@2.1.0
+        with:
+          website-name: ${{ secrets.MSA_SITE }}
+          server-computer-name: ${{ secrets.MSA_SERVER }}
+          server-username: ${{ secrets.MSA_USERNAME }}
+          server-password: ${{ secrets.MSA_PASSWORD }}
+          source-path: \publish_output\
+          # target-delete: false (por defecto) → .env y uploads persisten

@@ -1,0 +1,403 @@
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Panel de Enfermería - Tópico";
+    ViewData["Role"] = "Enfermería (Tópico)";
+}
+
+@section SidebarNav {
+    <a href="javascript:void(0)" class="nav-item active" id="nav-dashboard" onclick="mostrarDashboard()">
+        <i class="ph ph-squares-four"></i>
+        <span>Dashboard / Resumen</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-atencion" onclick="cargarAtencionClinica()">
+        <i class="ph ph-first-aid"></i>
+        <span>Registrar Atención</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-historial" onclick="mostrarHistorial()">
+        <i class="ph ph-clipboard-text"></i>
+        <span>Historial de Pacientes</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-botica" onclick="mostrarBotica()">
+        <i class="ph ph-pill"></i>
+        <span>Control de Botica (M05)</span>
+    </a>
+}
+
+<!-- Contenedor Principal Dinámico (SPA) -->
+<div id="dynamic-main-content">
+
+    <!-- 1. VISTA DASHBOARD / RESUMEN -->
+    <div id="view-dashboard">
+        <div class="page-header">
+            <h1>Panel de Control - Enfermería y Tópico</h1>
+            <p>Gestión de atenciones médicas y salud de la comunidad IESTP Argentina</p>
+            <div class="header-accent"></div>
+        </div>
+
+        <!-- Tarjetas de Estadísticas del Tópico -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+            <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="color: var(--text-secondary); font-size: 0.875rem;">Atenciones Hoy</span>
+                    <i class="ph ph-users-three" style="color: var(--accent-cyan); font-size: 1.5rem;"></i>
+                </div>
+                <h3 style="font-size: 1.75rem; font-weight: 700; color: #fff;">14</h3>
+                <span style="font-size: 0.75rem; color: #10b981;">+3 respecto a ayer</span>
+            </div>
+
+            <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="color: var(--text-secondary); font-size: 0.875rem;">Medicamentos Entregados</span>
+                    <i class="ph ph-pill" style="color: #a78bfa; font-size: 1.5rem;"></i>
+                </div>
+                <h3 style="font-size: 1.75rem; font-weight: 700; color: #fff;">28</h3>
+                <span style="font-size: 0.75rem; color: var(--text-secondary);">Paracetamol, Ibuprofeno, etc.</span>
+            </div>
+
+            <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="color: var(--text-secondary); font-size: 0.875rem;">Alergias Registradas</span>
+                    <i class="ph ph-warning-circle" style="color: #fbbf24; font-size: 1.5rem;"></i>
+                </div>
+                <h3 style="font-size: 1.75rem; font-weight: 700; color: #fff;">4</h3>
+                <span style="font-size: 0.75rem; color: #fbbf24;">Casos bajo observación</span>
+            </div>
+
+            <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="color: var(--text-secondary); font-size: 0.875rem;">Módulo 05 Activo</span>
+                    <i class="ph ph-heartbeat" style="color: #38bdf8; font-size: 1.5rem;"></i>
+                </div>
+                <h3 style="font-size: 1.75rem; font-weight: 700; color: #fff;">En Línea</h3>
+                <span style="font-size: 0.75rem; color: #10b981;">Base de datos conectada</span>
+            </div>
+        </div>
+
+        <!-- Acceso Rápido a la Atención Clínica -->
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 2rem; margin-bottom: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">¿Desea registrar una nueva atención?</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.875rem;">Abra el formulario clínico del Módulo 05 directamente en este panel sin salir ni recargar.</p>
+                </div>
+                <button type="button" onclick="cargarAtencionClinica()" style="background-color: var(--accent-cyan); color: #0a0e17; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="ph-bold ph-plus-circle"></i>
+                    Nueva Atención Clínica
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabla resumen reciente -->
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.5rem;">
+            <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Últimas Atenciones Registradas</h3>
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+                        <th style="padding: 10px;">DNI</th>
+                        <th style="padding: 10px;">Paciente</th>
+                        <th style="padding: 10px;">Motivo</th>
+                        <th style="padding: 10px;">Seguro</th>
+                        <th style="padding: 10px;">Hora</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td style="padding: 10px;">74296138</td>
+                        <td style="padding: 10px; font-weight: 500;">Juan Carlos Pérez</td>
+                        <td style="padding: 10px;">Cefalea intensa y mareos</td>
+                        <td style="padding: 10px;"><span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 2px 8px; border-radius: 4px;">SIS</span></td>
+                        <td style="padding: 10px; color: var(--text-secondary);">08:45 a.m.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td style="padding: 10px;">45892147</td>
+                        <td style="padding: 10px; font-weight: 500;">María Alejandra Quispe</td>
+                        <td style="padding: 10px;">Dolor estomacal agudo</td>
+                        <td style="padding: 10px;"><span style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 2px 8px; border-radius: 4px;">EsSalud</span></td>
+                        <td style="padding: 10px; color: var(--text-secondary);">09:30 a.m.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;">71239845</td>
+                        <td style="padding: 10px; font-weight: 500;">Diego Armando López</td>
+                        <td style="padding: 10px;">Contusión en muñeca derecha</td>
+                        <td style="padding: 10px;"><span style="background: rgba(156, 163, 175, 0.15); color: #9ca3af; padding: 2px 8px; border-radius: 4px;">Ninguno</span></td>
+                        <td style="padding: 10px; color: var(--text-secondary);">11:15 a.m.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 2. VISTA CONTENEDOR ATENCIÓN CLÍNICA (Cargado por AJAX sin cambiar de página) -->
+    <div id="view-atencion-container" style="display: none;"></div>
+
+    <!-- 3. VISTA HISTORIAL -->
+    <div id="view-historial-container" style="display: none;">
+        <div class="page-header">
+            <h1>Historial Clínico del Tópico</h1>
+            <p>Consulta de expedientes y registros anteriores de atención</p>
+            <div class="header-accent"></div>
+        </div>
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 2rem;">
+            <div style="margin-bottom: 2rem;">
+                <label for="dniHistorial" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #e5e7eb;">BUSCAR HISTORIAL POR DNI:</label>
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <input type="text" id="dniHistorial" name="dniHistorial" placeholder="Ingrese DNI..." maxlength="20" style="padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 15, 20, 0.8); color: #fff; width: 100%; max-width: 300px;" />
+                    <button type="button" onclick="cargarHistorialTopico()" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="ph-bold ph-magnifying-glass"></i> Buscar Historial
+                    </button>
+                    <span id="historialStatus" style="font-size: 0.9rem; font-weight: 500;"></span>
+                </div>
+            </div>
+
+            <div id="historialResultados" style="display: none;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: #fff;">Registros de Atención</h3>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-secondary);">
+                                <th style="padding: 12px 10px;">Fecha y Hora</th>
+                                <th style="padding: 12px 10px;">Motivo</th>
+                                <th style="padding: 12px 10px;">Seguro</th>
+                                <th style="padding: 12px 10px;">Alergias</th>
+                                <th style="padding: 12px 10px;">Observación</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historialTableBody">
+                            <!-- Filas dinámicas -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. VISTA BOTICA Y MEDICAMENTOS (Integrada en la raíz) -->
+    <div id="view-botica-container" style="display: none;">
+        <div class="page-header" style="margin-bottom: 2rem;">
+            <h1>Control de Stock en Botica de Tópico</h1>
+            <p>Catálogo de medicamentos, existencias y alertas de reposición</p>
+            <div class="header-accent"></div>
+        </div>
+
+        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: #fff; margin: 0; display: flex; align-items: center; gap: 0.6rem;">
+                    <i class="ph ph-first-aid" style="color: #10b981;"></i> Catálogo de Botica Institucional
+                </h3>
+                <button type="button" onclick="cargarBoticaMedicamentos()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
+                    <i class="ph ph-arrows-clockwise"></i> Actualizar
+                </button>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px;">
+                            <th style="padding: 0.75rem;">ID</th>
+                            <th style="padding: 0.75rem;">Medicamento</th>
+                            <th style="padding: 0.75rem;">Presentación</th>
+                            <th style="padding: 0.75rem;">Stock Disponible</th>
+                            <th style="padding: 0.75rem;">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="boticaTableBody">
+                        <tr>
+                            <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
+                                <i class="ph ph-spinner ph-spin" style="font-size: 1.5rem;"></i> Cargando inventario de botica...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        function setActiveNav(elementId) {
+            document.querySelectorAll('.sidebar-nav .nav-item').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById(elementId);
+            if (target) target.classList.add('active');
+        }
+
+        function cargarAtencionClinica() {
+            setActiveNav('nav-atencion');
+
+            document.getElementById('view-dashboard').style.display = 'none';
+            document.getElementById('view-historial-container').style.display = 'none';
+            document.getElementById('view-botica-container').style.display = 'none';
+            const container = document.getElementById('view-atencion-container');
+            container.style.display = 'block';
+
+            if (!container.dataset.loaded) {
+                container.innerHTML = `
+                    <div style="padding: 3rem; text-align: center; color: var(--text-secondary);">
+                        <i class="ph ph-spinner ph-spin" style="font-size: 2.5rem; color: var(--accent-cyan); margin-bottom: 1rem; display: block;"></i>
+                        <p>Cargando formulario de atención clínica de Modulo05...</p>
+                    </div>
+                `;
+
+                fetch('/Modulo05/Enfermeria/FormAtencion?partial=true', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error de respuesta HTTP: ' + response.status);
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    container.innerHTML = html;
+                    container.dataset.loaded = "true";
+
+                    const scripts = container.querySelectorAll('script');
+                    scripts.forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
+                })
+                .catch(err => {
+                    container.innerHTML = `
+                        <div style="padding: 2rem; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 8px; color: #fca5a5;">
+                            <h4>Error al cargar el formulario clínico</h4>
+                            <p>${err.message}</p>
+                            <button type="button" onclick="cargarAtencionClinica()" style="margin-top: 10px; padding: 6px 12px; cursor: pointer;">Reintentar</button>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        function mostrarDashboard() {
+            setActiveNav('nav-dashboard');
+            document.getElementById('view-atencion-container').style.display = 'none';
+            document.getElementById('view-historial-container').style.display = 'none';
+            document.getElementById('view-botica-container').style.display = 'none';
+            document.getElementById('view-dashboard').style.display = 'block';
+        }
+
+        function mostrarHistorial() {
+            setActiveNav('nav-historial');
+            document.getElementById('view-dashboard').style.display = 'none';
+            document.getElementById('view-atencion-container').style.display = 'none';
+            document.getElementById('view-botica-container').style.display = 'none';
+            document.getElementById('view-historial-container').style.display = 'block';
+        }
+
+        function mostrarBotica() {
+            setActiveNav('nav-botica');
+            document.getElementById('view-dashboard').style.display = 'none';
+            document.getElementById('view-atencion-container').style.display = 'none';
+            document.getElementById('view-historial-container').style.display = 'none';
+            document.getElementById('view-botica-container').style.display = 'block';
+            cargarBoticaMedicamentos();
+        }
+
+        function cargarBoticaMedicamentos() {
+            const tableBody = document.getElementById('boticaTableBody');
+            if (!tableBody) return;
+
+            fetch('/Modulo05/Enfermeria/Medicamentos')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.data && data.data.length > 0) {
+                        tableBody.innerHTML = '';
+                        data.data.forEach(med => {
+                            const tr = document.createElement('tr');
+                            tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+                            tr.style.color = '#e2e8f0';
+
+                            const stockBadge = med.stockActual <= 5
+                                ? `<span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">${med.stockActual} unids (Crítico)</span>`
+                                : `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">${med.stockActual} unidades</span>`;
+
+                            tr.innerHTML = `
+                                <td style="padding: 0.75rem; font-weight: 600;">#${med.idMedicamento}</td>
+                                <td style="padding: 0.75rem; font-weight: 700; color: #fff;">${med.nombre}</td>
+                                <td style="padding: 0.75rem; color: var(--text-secondary);">${med.presentacion || '-'}</td>
+                                <td style="padding: 0.75rem;">${stockBadge}</td>
+                                <td style="padding: 0.75rem;"><span style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">${med.estado || 'Activo'}</span></td>
+                            `;
+                            tableBody.appendChild(tr);
+                        });
+                    } else {
+                        tableBody.innerHTML = '<tr><td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-secondary);">No se registraron medicamentos en botica.</td></tr>';
+                    }
+                })
+                .catch(err => {
+                    tableBody.innerHTML = '<tr><td colspan="5" style="padding: 2rem; text-align: center; color: #ef4444;">Error al cargar datos de botica.</td></tr>';
+                });
+        }
+
+        function cargarHistorialTopico() {
+            const dniInput = document.getElementById('dniHistorial');
+            const statusSpan = document.getElementById('historialStatus');
+            const resultDiv = document.getElementById('historialResultados');
+            const tableBody = document.getElementById('historialTableBody');
+            const dni = dniInput ? dniInput.value.trim() : '';
+
+            if (!dni) {
+                alert('Ingrese el DNI para buscar su historial.');
+                return;
+            }
+
+            if (statusSpan) {
+                statusSpan.style.color = 'var(--text-muted)';
+                statusSpan.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Buscando...';
+            }
+            resultDiv.style.display = 'none';
+
+            fetch('/Modulo05/Enfermeria/Historial?dni=' + encodeURIComponent(dni))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.data && data.data.length > 0) {
+                            if (statusSpan) {
+                                statusSpan.style.color = '#10b981';
+                                statusSpan.innerHTML = '<i class="ph-bold ph-check-circle"></i> ' + data.data.length + ' registro(s) encontrado(s)';
+                            }
+                            tableBody.innerHTML = '';
+                            data.data.forEach(item => {
+                                const tr = document.createElement('tr');
+                                tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+                                
+                                const alergiasText = item.esAlergico ? '<span style="color:#ef4444;">Sí: ' + item.detalleAlergia + '</span>' : 'No';
+                                
+                                tr.innerHTML = `
+                                    <td style="padding: 12px 10px;">${item.fechaHora}</td>
+                                    <td style="padding: 12px 10px; font-weight: 500;">${item.motivo}</td>
+                                    <td style="padding: 12px 10px;">${item.seguroSalud}</td>
+                                    <td style="padding: 12px 10px;">${alergiasText}</td>
+                                    <td style="padding: 12px 10px; color: var(--text-secondary); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.observacion}">${item.observacion || '-'}</td>
+                                `;
+                                tableBody.appendChild(tr);
+                            });
+                            resultDiv.style.display = 'block';
+                        } else {
+                            if (statusSpan) {
+                                statusSpan.style.color = '#f59e0b';
+                                statusSpan.innerHTML = '<i class="ph-bold ph-info"></i> No se encontraron atenciones previas';
+                            }
+                        }
+                    } else {
+                        if (statusSpan) {
+                            statusSpan.style.color = '#ef4444';
+                            statusSpan.innerHTML = '<i class="ph-bold ph-warning"></i> ' + data.message;
+                        }
+                    }
+                })
+                .catch(err => {
+                    if (statusSpan) {
+                        statusSpan.style.color = '#ef4444';
+                        statusSpan.innerHTML = '<i class="ph-bold ph-warning"></i> Error de conexión';
+                    }
+                });
+        }
+    </script>
+}

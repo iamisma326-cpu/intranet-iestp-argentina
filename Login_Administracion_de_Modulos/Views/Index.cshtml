@@ -1,0 +1,277 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Administración de Módulos</title>
+    <link rel="stylesheet" href="~/css/login.css" />
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Left Side -->
+        <div class="left-side">
+            <div class="left-content">
+                <div class="badge-secure">
+                    <i class="ph-fill ph-shield-check"></i>
+                    Plataforma Segura
+                </div>
+                <h1>Tu carrera<br/>tecnológica<br/><span>empieza hoy.</span></h1>
+                <p>Accede al campus virtual y domina las habilidades que el mercado laboral exige.</p>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <h3>4</h3>
+                    <p>Módulos Activos</p>
+                </div>
+                <div class="stat-item">
+                    <h3>100%</h3>
+                    <p>Digital</p>
+                </div>
+                <div class="stat-item">
+                    <h3>24/7</h3>
+                    <p>Disponible</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side -->
+        <div class="right-side">
+            <div class="login-header">
+                <div class="logo-container">
+                    <img src="~/images/logo-argentina.png" alt="Logo Instituto Argentina" class="institute-logo" />
+                </div>
+                <h2>¡Hola de nuevo!</h2>
+                <p>Inicia sesión para acceder a la plataforma institucional.</p>
+            </div>
+
+            <a href="/login-google-oauth" class="btn-google" style="display: flex; justify-content: center; align-items: center; text-decoration: none; gap: 8px;">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="18" height="18" />
+                Continuar con Google
+            </a>
+
+            <div class="divider">
+                <span>O INICIA SESIÓN CON TU USUARIO</span>
+            </div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div style="color: #d9534f; background-color: #f9f2f2; border: 1px solid #d9534f; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                    @ViewBag.Error
+                </div>
+            }
+
+            <form action="/login-dni" method="POST">
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label>DNI del Alumno</label>
+                    <div class="input-wrapper">
+                        <i class="ph ph-identification-card"></i>
+                        <input type="text" name="dni" class="form-control" placeholder="ej. 74296138" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <div class="input-wrapper">
+                        <i class="ph ph-lock"></i>
+                        <input type="password" id="passwordInput" name="clave" class="form-control" placeholder="••••••••" required />
+                        <button type="button" class="btn-toggle-password" onclick="togglePassword()">
+                            <i class="ph ph-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" />
+                        <span>Recordarme</span>
+                    </label>
+                    <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="ph ph-sign-in"></i>
+                    Ingresar al Campus
+                </button>
+            </form>
+
+            <div class="modules-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                    <h3>Acceso Rápido - Modo Demo Local</h3>
+                    <span class="demo-tag" style="margin: 0;">Sin BD</span>
+                </div>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.85rem;">Ingresa a los paneles con una sesión local de prueba sin necesidad de usuario ni contraseña:</p>
+                <div class="module-list">
+                    <a href="/login-demo/topico" class="module-card">
+                        <div class="module-icon icon-enfermeria">
+                            <i class="ph ph-first-aid"></i>
+                        </div>
+                        <div class="module-info">
+                            <h4>Enfermería (Tópico)</h4>
+                            <p>Módulo de Salud y Triaje</p>
+                        </div>
+                        <span class="demo-tag">Probar</span>
+                        <i class="ph ph-caret-right module-arrow"></i>
+                    </a>
+                    
+                    <a href="/login-demo/psicologia" class="module-card">
+                        <div class="module-icon icon-psicologia">
+                            <i class="ph ph-brain"></i>
+                        </div>
+                        <div class="module-info">
+                            <h4>Psicología</h4>
+                            <p>Bienestar Estudiantil y Casos</p>
+                        </div>
+                        <span class="demo-tag">Probar</span>
+                        <i class="ph ph-caret-right module-arrow"></i>
+                    </a>
+
+                    <a href="/login-demo/docente" class="module-card">
+                        <div class="module-icon icon-docente">
+                            <i class="ph ph-chalkboard-teacher"></i>
+                        </div>
+                        <div class="module-info">
+                            <h4>Docente</h4>
+                            <p>Portal Docente y Reporte de Averías</p>
+                        </div>
+                        <span class="demo-tag">Probar</span>
+                        <i class="ph ph-caret-right module-arrow"></i>
+                    </a>
+
+                    <a href="/login-demo/soporte" class="module-card">
+                        <div class="module-icon icon-soporte">
+                            <i class="ph ph-wrench"></i>
+                        </div>
+                        <div class="module-info">
+                            <h4>Admin. Soporte</h4>
+                            <p>Consola Técnica e Incidencias</p>
+                        </div>
+                        <span class="demo-tag">Probar</span>
+                        <i class="ph ph-caret-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Paneles adicionales de prueba -->
+                <div style="margin-top: 0.85rem; padding-top: 0.75rem; border-top: 1px dashed var(--border-color);">
+                    <p style="font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Otros Paneles (Demo):</p>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
+                        <a href="/login-demo/alumno" class="module-card" style="padding: 0.6rem 0.75rem;">
+                            <div class="module-icon icon-alumno" style="width: 2rem; height: 2rem; margin-right: 0.6rem; font-size: 1.1rem;">
+                                <i class="ph ph-student"></i>
+                            </div>
+                            <div class="module-info">
+                                <h4 style="font-size: 0.8rem; margin: 0;">Alumno</h4>
+                            </div>
+                            <i class="ph ph-caret-right module-arrow" style="font-size: 0.8rem;"></i>
+                        </a>
+                        <a href="/login-demo/secretaria" class="module-card" style="padding: 0.6rem 0.75rem;">
+                            <div class="module-icon icon-secretaria" style="width: 2rem; height: 2rem; margin-right: 0.6rem; font-size: 1.1rem;">
+                                <i class="ph ph-files"></i>
+                            </div>
+                            <div class="module-info">
+                                <h4 style="font-size: 0.8rem; margin: 0;">Secretaría</h4>
+                            </div>
+                            <i class="ph ph-caret-right module-arrow" style="font-size: 0.8rem;"></i>
+                        </a>
+                        <a href="/login-demo/practicante" class="module-card" style="padding: 0.6rem 0.75rem;">
+                            <div class="module-icon icon-practicante" style="width: 2rem; height: 2rem; margin-right: 0.6rem; font-size: 1.1rem;">
+                                <i class="ph ph-briefcase"></i>
+                            </div>
+                            <div class="module-info">
+                                <h4 style="font-size: 0.8rem; margin: 0;">Practicante</h4>
+                            </div>
+                            <i class="ph ph-caret-right module-arrow" style="font-size: 0.8rem;"></i>
+                        </a>
+                        <!-- Botón Tesorería ubicado debajo de Secretaría -->
+                        <a href="/login-demo/tesoreria" class="module-card" style="padding: 0.6rem 0.75rem;">
+                            <div class="module-icon icon-tesoreria" style="width: 2rem; height: 2rem; margin-right: 0.6rem; font-size: 1.1rem;">
+                                <i class="ph ph-bank"></i>
+                            </div>
+                            <div class="module-info">
+                                <h4 style="font-size: 0.8rem; margin: 0;">Tesorería</h4>
+                            </div>
+                            <i class="ph ph-caret-right module-arrow" style="font-size: 0.8rem;"></i>
+                        </a>
+                        <a href="/login-demo/admin" class="module-card" style="padding: 0.6rem 0.75rem;">
+                            <div class="module-icon icon-admin" style="width: 2rem; height: 2rem; margin-right: 0.6rem; font-size: 1.1rem;">
+                                <i class="ph ph-shield-star"></i>
+                            </div>
+                            <div class="module-info">
+                                <h4 style="font-size: 0.8rem; margin: 0;">Administrador</h4>
+                            </div>
+                            <i class="ph ph-caret-right module-arrow" style="font-size: 0.8rem;"></i>
+                        </a>
+                        <a href="/login-demo/jefe" class="module-card" style="padding: 0.6rem 0.75rem; border: 1px solid rgba(244, 63, 94, 0.4); background: rgba(244, 63, 94, 0.05);">
+                            <div class="module-icon" style="width: 2rem; height: 2rem; margin-right: 0.6rem; font-size: 1.1rem; background: rgba(244, 63, 94, 0.15); color: #f43f5e; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i class="ph ph-crown"></i>
+                            </div>
+                            <div class="module-info">
+                                <h4 style="font-size: 0.8rem; margin: 0; color: #f43f5e;">Jefe General</h4>
+                            </div>
+                            <i class="ph ph-caret-right module-arrow" style="font-size: 0.8rem; color: #f43f5e;"></i>
+                        </a>
+                        <a href="/login-demo/computacion" class="module-card" style="padding: 0.6rem 0.75rem; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.05);">
+                            <div class="module-icon" style="width: 2rem; height: 2rem; margin-right: 0.6rem; font-size: 1.1rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i class="ph ph-desktop"></i>
+                            </div>
+                            <div class="module-info">
+                                <h4 style="font-size: 0.8rem; margin: 0; color: #38bdf8;">Jefe Computación</h4>
+                            </div>
+                            <i class="ph ph-caret-right module-arrow" style="font-size: 0.8rem; color: #38bdf8;"></i>
+                        </a>
+                        <a href="/login-demo/taller-administracion" class="module-card" style="padding: 0.6rem 0.75rem; border: 1px solid rgba(34, 197, 94, 0.4); background: rgba(34, 197, 94, 0.05);">
+                            <div class="module-icon" style="width: 2rem; height: 2rem; margin-right: 0.6rem; font-size: 1.1rem; background: rgba(34, 197, 94, 0.15); color: #22c55e; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i class="ph ph-chart-bar"></i>
+                            </div>
+                            <div class="module-info">
+                                <h4 style="font-size: 0.8rem; margin: 0; color: #22c55e;">Jefe Administración</h4>
+                            </div>
+                            <i class="ph ph-caret-right module-arrow" style="font-size: 0.8rem; color: #22c55e;"></i>
+                        </a>
+                        <a href="/login-demo/taller-contabilidad" class="module-card" style="padding: 0.6rem 0.75rem; border: 1px solid rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.05);">
+                            <div class="module-icon" style="width: 2rem; height: 2rem; margin-right: 0.6rem; font-size: 1.1rem; background: rgba(245, 158, 11, 0.15); color: #f59e0b; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i class="ph ph-calculator"></i>
+                            </div>
+                            <div class="module-info">
+                                <h4 style="font-size: 0.8rem; margin: 0; color: #f59e0b;">Jefe Contabilidad</h4>
+                            </div>
+                            <i class="ph ph-caret-right module-arrow" style="font-size: 0.8rem; color: #f59e0b;"></i>
+                        </a>
+                        <a href="/login-demo/inventario" class="module-card" style="padding: 0.6rem 0.75rem; border: 1px solid rgba(168, 85, 247, 0.4); background: rgba(168, 85, 247, 0.05);">
+                            <div class="module-icon" style="width: 2rem; height: 2rem; margin-right: 0.6rem; font-size: 1.1rem; background: rgba(168, 85, 247, 0.15); color: #a855f7; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                <i class="ph ph-package"></i>
+                            </div>
+                            <div class="module-info">
+                                <h4 style="font-size: 0.8rem; margin: 0; color: #a855f7;">Encargado Inventario</h4>
+                            </div>
+                            <i class="ph ph-caret-right module-arrow" style="font-size: 0.8rem; color: #a855f7;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('ph-eye');
+                toggleIcon.classList.add('ph-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('ph-eye-slash');
+                toggleIcon.classList.add('ph-eye');
+            }
+        }
+    </script>
+</body>
+</html>

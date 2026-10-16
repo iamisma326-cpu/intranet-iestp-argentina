@@ -1,0 +1,37 @@
+# ==============================================================================
+# CODEOWNERS — Revisión obligatoria por área
+# Sistema de Administración de Módulos - IESTP Argentina
+# ==============================================================================
+# Reglas:
+#   * Núcleo (login, seguridad, configuración): revisión del equipo core.
+#   * Cada módulo: su propio equipo es reviewer natural, pero NO puede
+#     auto-aprobarse — el merge lo valida el guardian (CI) o el dueño.
+#   * Cambie @ismael-ecc por su usuario real de GitHub y añada a cada equipo
+#     como reviewer de su carpeta ANTES de invitarlos al repositorio.
+# ==============================================================================
+
+# 1. NÚCLEO CRÍTICO (Arquitectura, Seguridad, Login y Configuración)
+#    Requiere aprobación del dueño del repo (usted).
+/Login_Administracion_de_Modulos/Program.cs              @ismael-ecc
+/Login_Administracion_de_Modulos/appsettings.json        @ismael-ecc
+/Login_Administracion_de_Modulos/Controllers/           @ismael-ecc
+/Login_Administracion_de_Modulos/Seguridad/             @ismael-ecc
+/Login_Administracion_de_Modulos/Views/                 @ismael-ecc
+/Sql/                                                    @ismael-ecc
+/.github/                                                @ismael-ecc
+
+# 2. MÓDULOS: cada equipo es dueño de su carpeta
+#    (el guardian verificar-rama exige que solo toquen su carpeta)
+#    Añada el handle del equipo correspondiente junto al dueño:
+#    /Login_Administracion_de_Modulos/Areas/Modulo05/   @ismael-ecc @usuario-equipo05
+/Login_Administracion_de_Modulos/Areas/Modulo01/        @ismael-ecc
+/Login_Administracion_de_Modulos/Areas/Modulo02/        @ismael-ecc
+/Login_Administracion_de_Modulos/Areas/Modulo03/        @ismael-ecc
+/Login_Administracion_de_Modulos/Areas/Modulo04/        @ismael-ecc
+/Login_Administracion_de_Modulos/Areas/Modulo05/        @ismael-ecc
+/Login_Administracion_de_Modulos/Areas/Modulo06/        @ismael-ecc
+/Login_Administracion_de_Modulos/Areas/Modulo07/        @ismael-ecc
+
+# 3. Documentación: cualquiera del repo
+*.md                                                    @ismael-ecc
+README.md                                               @ismael-ecc

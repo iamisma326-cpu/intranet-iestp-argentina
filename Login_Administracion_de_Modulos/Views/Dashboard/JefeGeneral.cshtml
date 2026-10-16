@@ -1,0 +1,464 @@
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Jefatura General - Inventario y Almacenes";
+    ViewData["Role"] = "Jefe General";
+}
+
+@section SidebarNav {
+    <!-- Encabezado de Inventario & Almacenes -->
+    <div class="sidebar-brand-box">
+        <div class="brand-icon-wrap">
+            <i class="ph ph-buildings"></i>
+        </div>
+        <div class="brand-details">
+            <h5>IESTP "Argentina"</h5>
+            <p>Inventario & Almacenes</p>
+        </div>
+    </div>
+
+    <!-- SECCIÓN GENERAL (Desplegable) -->
+    <div class="sidebar-dropdown open" id="group-general">
+        <div class="sidebar-dropdown-header" onclick="toggleDropdownJefe('group-general')">
+            <span class="dropdown-title">General</span>
+            <i class="ph ph-caret-down dropdown-caret"></i>
+        </div>
+        <div class="sidebar-dropdown-body">
+            <a href="javascript:void(0)" class="nav-item-jefe" id="nav-jefe-inicio" onclick="mostrarSeccionJefe('seccion-jefe-inicio', this)">
+                <i class="ph ph-house nav-icon"></i>
+                <span class="nav-text">Inicio</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-jefe" id="nav-jefe-dash" onclick="mostrarSeccionJefe('seccion-jefe-dash', this)">
+                <i class="ph ph-squares-four nav-icon"></i>
+                <span class="nav-text">Dashboard</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- SECCIÓN INVENTARIO (Desplegable) -->
+    <div class="sidebar-dropdown open" id="group-inventario">
+        <div class="sidebar-dropdown-header" onclick="toggleDropdownJefe('group-inventario')">
+            <span class="dropdown-title">Inventario</span>
+            <i class="ph ph-caret-down dropdown-caret"></i>
+        </div>
+        <div class="sidebar-dropdown-body">
+            <a href="javascript:void(0)" class="nav-item-jefe active" id="nav-jefe-bienes" onclick="mostrarSeccionJefe('seccion-jefe-bienes', this)">
+                <i class="ph ph-desktop nav-icon"></i>
+                <span class="nav-text">Bienes</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-jefe" id="nav-jefe-clasificaciones" onclick="mostrarSeccionJefe('seccion-jefe-clasificaciones', this)">
+                <i class="ph ph-storefront nav-icon"></i>
+                <span class="nav-text">Clasificaciones</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-jefe" id="nav-jefe-almacenes" onclick="mostrarSeccionJefe('seccion-jefe-almacenes', this)">
+                <i class="ph ph-package nav-icon"></i>
+                <span class="nav-text">Almacenes</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-jefe" id="nav-jefe-ambientes" onclick="mostrarSeccionJefe('seccion-jefe-ambientes', this)">
+                <i class="ph ph-door nav-icon"></i>
+                <span class="nav-text">Ambientes</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-jefe" id="nav-jefe-especialidades" onclick="mostrarSeccionJefe('seccion-jefe-especialidades', this)">
+                <i class="ph ph-gear nav-icon"></i>
+                <span class="nav-text">Especialidades</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- SECCIÓN OPERACIONES (Desplegable) -->
+    <div class="sidebar-dropdown open" id="group-operaciones">
+        <div class="sidebar-dropdown-header" onclick="toggleDropdownJefe('group-operaciones')">
+            <span class="dropdown-title">Operaciones</span>
+            <i class="ph ph-caret-down dropdown-caret"></i>
+        </div>
+        <div class="sidebar-dropdown-body">
+            <a href="javascript:void(0)" class="nav-item-jefe" id="nav-jefe-asignaciones" onclick="mostrarSeccionJefe('seccion-jefe-asignaciones', this)">
+                <i class="ph ph-arrows-left-right nav-icon"></i>
+                <span class="nav-text">Asignaciones</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-jefe" id="nav-jefe-transferencias" onclick="mostrarSeccionJefe('seccion-jefe-transferencias', this)">
+                <i class="ph ph-arrows-left-right nav-icon"></i>
+                <span class="nav-text">Transferencias</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-jefe" id="nav-jefe-inventario-anual" onclick="mostrarSeccionJefe('seccion-jefe-inventario-anual', this)">
+                <i class="ph ph-calendar nav-icon"></i>
+                <span class="nav-text">Inventario Anual</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-jefe" id="nav-jefe-recepciones" onclick="mostrarSeccionJefe('seccion-jefe-recepciones', this)">
+                <i class="ph ph-shopping-cart nav-icon"></i>
+                <span class="nav-text">Recepciones</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- SECCIÓN REPORTES (Desplegable) -->
+    <div class="sidebar-dropdown open" id="group-reportes">
+        <div class="sidebar-dropdown-header" onclick="toggleDropdownJefe('group-reportes')">
+            <span class="dropdown-title">Reportes</span>
+            <i class="ph ph-caret-down dropdown-caret"></i>
+        </div>
+        <div class="sidebar-dropdown-body">
+            <a href="javascript:void(0)" class="nav-item-jefe" id="nav-jefe-reportes" onclick="mostrarSeccionJefe('seccion-jefe-reportes', this)">
+                <i class="ph ph-file-text nav-icon"></i>
+                <span class="nav-text">Reportes</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-jefe" id="nav-jefe-excel" onclick="mostrarSeccionJefe('seccion-jefe-excel', this)">
+                <i class="ph ph-file-xls nav-icon"></i>
+                <span class="nav-text">Exportar Excel</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- SECCIÓN ADMINISTRACIÓN (Desplegable) -->
+    <div class="sidebar-dropdown open" id="group-administracion">
+        <div class="sidebar-dropdown-header" onclick="toggleDropdownJefe('group-administracion')">
+            <span class="dropdown-title">Administración</span>
+            <i class="ph ph-caret-down dropdown-caret"></i>
+        </div>
+        <div class="sidebar-dropdown-body">
+            <a href="javascript:void(0)" class="nav-item-jefe" id="nav-jefe-usuarios" onclick="mostrarSeccionJefe('seccion-jefe-usuarios', this)">
+                <i class="ph ph-users nav-icon"></i>
+                <span class="nav-text">Usuarios</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-jefe" id="nav-jefe-config" onclick="mostrarSeccionJefe('seccion-jefe-config', this)">
+                <i class="ph ph-gear-six nav-icon"></i>
+                <span class="nav-text">Configuración</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+        </div>
+    </div>
+}
+
+<!-- Encabezado Institucional -->
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+        <div style="width: 52px; height: 52px; background: rgba(244, 63, 94, 0.1); border: 1.5px solid rgba(244, 63, 94, 0.35); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #f43f5e;">
+            <i class="ph ph-buildings"></i>
+        </div>
+        <div>
+            <h1 style="font-size: 1.45rem; font-weight: 800; color: #ffffff; margin: 0; line-height: 1.2;">IESTP "Argentina"</h1>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.2rem 0 0 0;">Sistema de Gestión de Inventario para Almacenes</p>
+        </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span style="font-size: 0.75rem; background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); padding: 5px 12px; border-radius: 20px; font-weight: 700;">
+            <i class="ph ph-shield-check"></i> Acceso Total
+        </span>
+        <button onclick="window.print()" class="btn-icon" title="Imprimir Reporte">
+            <i class="ph ph-printer"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Banner Destacado del Rol Jefe General -->
+<div class="role-banner-jefe">
+    <div class="banner-icon">
+        <i class="ph ph-crown"></i>
+    </div>
+    <div>
+        <h3>JEFE GENERAL</h3>
+        <p>Acceso completo a todas las funciones y áreas del inventario institucional (bd.sql)</p>
+    </div>
+</div>
+
+<!-- ========================================================
+     CONTENIDO PRINCIPAL: SECCIONES INTERACTIVAS
+     ======================================================== -->
+
+<!-- 1. SECCIÓN BIENES (Activa por defecto según imagen) -->
+<div id="seccion-jefe-bienes" class="jefe-section active-section">
+    <!-- Métricas rápidas de bienes (tablas: bien, almacen, ambiente) -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.35rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 46px; height: 46px; border-radius: 10px; background-color: rgba(244, 63, 94, 0.15); color: #f43f5e; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                <i class="ph ph-desktop"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 0.2rem;">Total Bienes (`bien`)</p>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0;">524</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.35rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 46px; height: 46px; border-radius: 10px; background-color: rgba(16, 185, 129, 0.15); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                <i class="ph ph-check-circle"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 0.2rem;">En Operación (Bueno)</p>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0;">488</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.35rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 46px; height: 46px; border-radius: 10px; background-color: rgba(245, 158, 11, 0.15); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                <i class="ph ph-wrench"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 0.2rem;">En Mantenimiento</p>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0;">24</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.35rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 46px; height: 46px; border-radius: 10px; background-color: rgba(99, 102, 241, 0.15); color: #818cf8; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                <i class="ph ph-package"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 0.2rem;">Almacenes (`almacen`)</p>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0;">5 Activos</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla Central de Bienes Patrimoniales -->
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+                <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin: 0;">Catálogo General de Bienes Patrimoniales</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0.2rem 0 0 0;">Registros directos sincronizados con la tabla `bien` de bd.sql</p>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+                <button class="btn-logout" style="width: auto; padding: 0.5rem 1rem; background: rgba(244, 63, 94, 0.15); border-color: rgba(244, 63, 94, 0.4); color: #fb7185;" onclick="alert('Abriendo formulario de Registro de Bien en bd.sql')">
+                    <i class="ph ph-plus-circle"></i> Nuevo Bien
+                </button>
+            </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em;">
+                        <th style="padding: 0.75rem 0.5rem;">CBI</th>
+                        <th style="padding: 0.75rem 0.5rem;">Descripción del Bien</th>
+                        <th style="padding: 0.75rem 0.5rem;">Tipo</th>
+                        <th style="padding: 0.75rem 0.5rem;">Marca / Modelo</th>
+                        <th style="padding: 0.75rem 0.5rem;">N° Serie</th>
+                        <th style="padding: 0.75rem 0.5rem;">Almacén</th>
+                        <th style="padding: 0.75rem 0.5rem;">Estado</th>
+                        <th style="padding: 0.75rem 0.5rem; text-align: center;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody style="color: #cbd5e1;">
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace; color: #f43f5e; font-weight: 600;">CBI-2026-001</td>
+                        <td style="padding: 0.85rem 0.5rem; font-weight: 600; color: #fff;">Laptop Core i7 16GB RAM</td>
+                        <td style="padding: 0.85rem 0.5rem;">Cómputo</td>
+                        <td style="padding: 0.85rem 0.5rem;">Dell Latitude 5420</td>
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace;">DL-749204-X</td>
+                        <td style="padding: 0.85rem 0.5rem;">Almacén Central TI</td>
+                        <td style="padding: 0.85rem 0.5rem;">
+                            <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Bueno</span>
+                        </td>
+                        <td style="padding: 0.85rem 0.5rem; text-align: center;">
+                            <button style="background: none; border: none; color: #f43f5e; cursor: pointer; font-size: 1.1rem;" title="Ver Detalle"><i class="ph ph-eye"></i></button>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace; color: #f43f5e; font-weight: 600;">CBI-2026-002</td>
+                        <td style="padding: 0.85rem 0.5rem; font-weight: 600; color: #fff;">Proyector Multimedia 4000 Lumens</td>
+                        <td style="padding: 0.85rem 0.5rem;">Audiovisual</td>
+                        <td style="padding: 0.85rem 0.5rem;">Epson PowerLite X49</td>
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace;">EP-99214-B</td>
+                        <td style="padding: 0.85rem 0.5rem;">Almacén General</td>
+                        <td style="padding: 0.85rem 0.5rem;">
+                            <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Bueno</span>
+                        </td>
+                        <td style="padding: 0.85rem 0.5rem; text-align: center;">
+                            <button style="background: none; border: none; color: #f43f5e; cursor: pointer; font-size: 1.1rem;" title="Ver Detalle"><i class="ph ph-eye"></i></button>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace; color: #f43f5e; font-weight: 600;">CBI-2026-003</td>
+                        <td style="padding: 0.85rem 0.5rem; font-weight: 600; color: #fff;">Switch Administrable 24 Puertos Gigabit</td>
+                        <td style="padding: 0.85rem 0.5rem;">Redes</td>
+                        <td style="padding: 0.85rem 0.5rem;">Cisco Catalyst 2960</td>
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace;">CS-88120-N</td>
+                        <td style="padding: 0.85rem 0.5rem;">Rack Servidores</td>
+                        <td style="padding: 0.85rem 0.5rem;">
+                            <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">En Revisión</span>
+                        </td>
+                        <td style="padding: 0.85rem 0.5rem; text-align: center;">
+                            <button style="background: none; border: none; color: #f43f5e; cursor: pointer; font-size: 1.1rem;" title="Ver Detalle"><i class="ph ph-eye"></i></button>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace; color: #f43f5e; font-weight: 600;">CBI-2026-004</td>
+                        <td style="padding: 0.85rem 0.5rem; font-weight: 600; color: #fff;">Microscopio Óptico Binocular</td>
+                        <td style="padding: 0.85rem 0.5rem;">Laboratorio</td>
+                        <td style="padding: 0.85rem 0.5rem;">Olympus CX23</td>
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace;">OL-55102-M</td>
+                        <td style="padding: 0.85rem 0.5rem;">Almacén Farmacia</td>
+                        <td style="padding: 0.85rem 0.5rem;">
+                            <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Bueno</span>
+                        </td>
+                        <td style="padding: 0.85rem 0.5rem; text-align: center;">
+                            <button style="background: none; border: none; color: #f43f5e; cursor: pointer; font-size: 1.1rem;" title="Ver Detalle"><i class="ph ph-eye"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace; color: #f43f5e; font-weight: 600;">CBI-2026-005</td>
+                        <td style="padding: 0.85rem 0.5rem; font-weight: 600; color: #fff;">Impresora Multifuncional Departamental</td>
+                        <td style="padding: 0.85rem 0.5rem;">Oficina</td>
+                        <td style="padding: 0.85rem 0.5rem;">HP LaserJet Enterprise</td>
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace;">HP-44199-K</td>
+                        <td style="padding: 0.85rem 0.5rem;">Almacén Central TI</td>
+                        <td style="padding: 0.85rem 0.5rem;">
+                            <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Bueno</span>
+                        </td>
+                        <td style="padding: 0.85rem 0.5rem; text-align: center;">
+                            <button style="background: none; border: none; color: #f43f5e; cursor: pointer; font-size: 1.1rem;" title="Ver Detalle"><i class="ph ph-eye"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 2. SECCIÓN INICIO / DASHBOARD GENERAL -->
+<div id="seccion-jefe-inicio" class="jefe-section" style="display: none;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 2rem;">
+        <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;"><i class="ph ph-house" style="color: #f43f5e;"></i> Panel de Inicio - Jefatura de Almacenes</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Vista general de operaciones de recepción, despacho y control de bienes patrimoniales.</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+            <div style="border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; background: rgba(255, 255, 255, 0.02);">
+                <h4 style="color: #f43f5e; margin-bottom: 0.5rem;"><i class="ph ph-arrows-clockwise"></i> Operaciones Recientes</h4>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">3 transferencias de ambiente aprobadas hoy.</p>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">12 bienes nuevos ingresados a Almacén Central.</p>
+            </div>
+            <div style="border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; background: rgba(255, 255, 255, 0.02);">
+                <h4 style="color: #10b981; margin-bottom: 0.5rem;"><i class="ph ph-calendar-check"></i> Inventario Anual Vigente</h4>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Periodo 2026 en ejecución al 68% de avance.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="seccion-jefe-dash" class="jefe-section" style="display: none;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 2rem;">
+        <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;"><i class="ph ph-squares-four" style="color: #f43f5e;"></i> Cuadro de Mando Ejecutivo</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Métricas de distribución por almacén, estado de depreciación y asignaciones activas.</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+            <div style="padding: 1.25rem; background: rgba(244, 63, 94, 0.08); border-radius: 10px; border: 1px solid rgba(244, 63, 94, 0.25);">
+                <h3 style="font-size: 1.8rem; color: #fff;">96.8%</h3>
+                <p style="font-size: 0.8rem; color: #fb7185; margin: 0;">Disponibilidad de Bienes</p>
+            </div>
+            <div style="padding: 1.25rem; background: rgba(16, 185, 129, 0.08); border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.25);">
+                <h3 style="font-size: 1.8rem; color: #fff;">18</h3>
+                <p style="font-size: 0.8rem; color: #10b981; margin: 0;">Ambientes con Asignación Activa</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. SECCIONES RESTANTES SEGÚN TABLAS DE BD -->
+<div id="seccion-jefe-almacenes" class="jefe-section" style="display: none;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 2rem;">
+        <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;"><i class="ph ph-package" style="color: #f43f5e;"></i> Almacenes Institucionales (`almacen`)</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Centros de acopio y custodia de bienes y suministros.</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div style="border: 1px solid var(--border-color); padding: 1.25rem; border-radius: 10px;">
+                <h4 style="color: #fff; margin-bottom: 0.25rem;">Almacén Central TI</h4>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">Ubicación: Pabellón B - Piso 2</p>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">Responsable: Ing. Mario Soporte</p>
+            </div>
+            <div style="border: 1px solid var(--border-color); padding: 1.25rem; border-radius: 10px;">
+                <h4 style="color: #fff; margin-bottom: 0.25rem;">Almacén General Patrimonio</h4>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">Ubicación: Sótano Principal</p>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">Responsable: Lic. Carmen Secretaría</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="seccion-jefe-ambientes" class="jefe-section" style="display: none;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 2rem;">
+        <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;"><i class="ph ph-door" style="color: #f43f5e;"></i> Ambientes y Laboratorios (`ambiente`)</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Salas, oficinas y laboratorios vinculados por especialidad.</p>
+        <p style="color: var(--text-secondary);">Laboratorio de Cómputo 1, Laboratorio de Cómputo 2, Tópico Médico, Sala de Psicología, Aulas Teóricas 101-105.</p>
+    </div>
+</div>
+
+<div id="seccion-jefe-asignaciones" class="jefe-section" style="display: none;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 2rem;">
+        <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;"><i class="ph ph-arrows-left-right" style="color: #f43f5e;"></i> Control de Asignaciones (`asignacion`)</h2>
+        <p style="color: var(--text-secondary);">Asignación de bienes patrimoniales a personal responsable y ambientes educativos.</p>
+    </div>
+</div>
+
+<div id="seccion-jefe-transferencias" class="jefe-section" style="display: none;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 2rem;">
+        <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;"><i class="ph ph-arrows-left-right" style="color: #f43f5e;"></i> Transferencias entre Ambientes (`transferencia`)</h2>
+        <p style="color: var(--text-secondary);">Registro de traslados de bienes entre ambientes de origen y destino con motivo justificado.</p>
+    </div>
+</div>
+
+<div id="seccion-jefe-inventario-anual" class="jefe-section" style="display: none;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 2rem;">
+        <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;"><i class="ph ph-calendar" style="color: #f43f5e;"></i> Proceso de Inventario Anual (`inventario_anual`)</h2>
+        <p style="color: var(--text-secondary);">Verificación física de bienes por año fiscal, estado de conservación y sobrantes/faltantes.</p>
+    </div>
+</div>
+
+<div id="seccion-jefe-generico" class="jefe-section" style="display: none;">
+    <div class="construction-card">
+        <i class="ph ph-buildings construction-icon" style="color: #f43f5e;"></i>
+        <h2 id="generico-titulo" style="color: #fff;">Módulo de Almacén</h2>
+        <p id="generico-desc">Gestión y control patrimonial en sincronización directa con `bd.sql` del IESTP Argentina.</p>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function mostrarSeccionJefe(seccionId, navElement) {
+            // 1. Quitar estado active de todos los enlaces de navegación del jefe
+            const links = document.querySelectorAll('.nav-item-jefe');
+            links.forEach(l => l.classList.remove('active'));
+
+            // 2. Activar el enlace seleccionado
+            if (navElement) {
+                navElement.classList.add('active');
+            }
+
+            // 3. Ocultar todas las secciones
+            const secciones = document.querySelectorAll('.jefe-section');
+            secciones.forEach(s => s.style.display = 'none');
+
+            // 4. Mostrar la sección seleccionada si existe o la sección genérica informativa
+            const target = document.getElementById(seccionId);
+            if (target) {
+                target.style.display = 'block';
+            } else {
+                const generico = document.getElementById('seccion-jefe-generico');
+                if (generico) {
+                    generico.style.display = 'block';
+                    const navText = navElement ? navElement.querySelector('.nav-text')?.innerText : 'Módulo';
+                    document.getElementById('generico-titulo').innerText = navText;
+                    document.getElementById('generico-desc').innerText = 'Vista operativa del submódulo ' + navText + ' conforme a la arquitectura de bd.sql.';
+                }
+            }
+        }
+
+        function toggleDropdownJefe(groupId) {
+            const group = document.getElementById(groupId);
+            if (group) {
+                group.classList.toggle('open');
+            }
+        }
+    </script>
+}

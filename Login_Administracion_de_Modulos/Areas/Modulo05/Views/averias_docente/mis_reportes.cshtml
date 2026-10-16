@@ -1,0 +1,112 @@
+@model List<Login_Administracion_de_Modulos.Areas.Modulo05.Models.TicketAveriaItem>
+@{
+    Layout = null;
+    ViewData["Title"] = "Mis Reportes de Averías";
+}
+
+<div class="page-header" style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; background: linear-gradient(90deg, #f59e0b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 0.5rem 0;">
+                Estado de Mis Reportes de Averías
+            </h1>
+            <p style="color: var(--text-secondary); margin: 0;">Seguimiento en tiempo real de las solicitudes de reparación de aulas y laboratorios</p>
+        </div>
+        <a href="/Modulo05/AveriaDocente/Reporte" class="btn btn-primary" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none; color: white; padding: 0.75rem 1.25rem; border-radius: 10px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);">
+            <i class="ph-bold ph-plus"></i> Nuevo Reporte
+        </a>
+    </div>
+</div>
+
+<!-- Tabla de Reportes -->
+<div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.75rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin: 0; display: flex; align-items: center; gap: 0.6rem;">
+            <i class="ph ph-list-dashes" style="color: #f59e0b;"></i> Historial de Incidencias Enviadas
+        </h3>
+        <span style="font-size: 0.85rem; color: var(--text-secondary);">Total: @(Model?.Count ?? 0) reportes</span>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px;">
+                        <th style="padding: 0.75rem;">ID</th>
+                        <th style="padding: 0.75rem;">Fecha Reporte</th>
+                        <th style="padding: 0.75rem;">Equipo / Código</th>
+                        <th style="padding: 0.75rem;">Falla Reportada</th>
+                        <th style="padding: 0.75rem;">Gravedad</th>
+                        <th style="padding: 0.75rem;">Estado</th>
+                        <th style="padding: 0.75rem;">Solución Técnica</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model)
+                    {
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); color: #e2e8f0;">
+                            <td style="padding: 0.75rem; font-weight: 700; color: #f59e0b;">#@r.IdIncidencia</td>
+                            <td style="padding: 0.75rem; color: #fff;">@r.FechaReporte.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td style="padding: 0.75rem;">
+                                <div style="font-weight: 600; color: #fff;">@r.DescripcionBien</div>
+                                <small style="color: var(--text-secondary);">CBI: @r.CodigoBien @r.MarcaModelo</small>
+                            </td>
+                            <td style="padding: 0.75rem; max-width: 250px;">
+                                <div style="font-weight: 600; color: #f3f4f6;">@r.TipoFalla</div>
+                                <small style="color: var(--text-secondary); display: block;">@r.Descripcion</small>
+                            </td>
+                            <td style="padding: 0.75rem;">
+                                @if (r.Gravedad == "Crítica" || r.Gravedad == "Alta")
+                                {
+                                    <span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">
+                                        @r.Gravedad
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem;">
+                                        @r.Gravedad
+                                    </span>
+                                }
+                            </td>
+                            <td style="padding: 0.75rem;">
+                                @if (r.Estado == "Reparado" || r.Estado == "Resuelto" || r.Estado == "Cerrado")
+                                {
+                                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.3rem 0.7rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">
+                                        <i class="ph-bold ph-check"></i> @r.Estado
+                                    </span>
+                                }
+                                else if (r.Estado == "En Atención" || r.Estado == "En Proceso")
+                                {
+                                    <span style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 0.3rem 0.7rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">
+                                        <i class="ph-bold ph-gear"></i> @r.Estado
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; padding: 0.3rem 0.7rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">
+                                        <i class="ph-bold ph-clock"></i> Pendiente
+                                    </span>
+                                }
+                            </td>
+                            <td style="padding: 0.75rem; color: #94a3b8; font-size: 0.9rem;">
+                                @(string.IsNullOrWhiteSpace(r.SolucionAplicada) ? "En espera de revisión técnica" : r.SolucionAplicada)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div style="text-align: center; padding: 3rem 1rem; color: var(--text-secondary);">
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto; font-size: 2rem; color: var(--text-muted);">
+                <i class="ph ph-check-circle"></i>
+            </div>
+            <h4 style="color: #fff; font-size: 1.1rem; margin-bottom: 0.5rem;">No tienes averías pendientes</h4>
+            <p style="font-size: 0.95rem; margin: 0;">Todos los equipos de tus aulas y laboratorios se encuentran reportados como operativos.</p>
+        </div>
+    }
+</div>

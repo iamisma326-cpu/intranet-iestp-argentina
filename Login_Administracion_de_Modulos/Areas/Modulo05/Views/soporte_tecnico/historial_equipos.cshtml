@@ -1,0 +1,117 @@
+@model List<Login_Administracion_de_Modulos.Areas.Modulo05.Models.ActivoHardwareItem>
+@{
+    Layout = null;
+    ViewData["Title"] = "Historial y Trazabilidad de Equipos";
+}
+
+<div class="page-header" style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; background: linear-gradient(90deg, #0ea5e9, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 0.5rem 0;">
+                Historial y Trazabilidad de Activos de Hardware
+            </h1>
+            <p style="color: var(--text-secondary); margin: 0;">Consulta de historial de fallas, mantenimiento y ubicación de equipos en laboratorios</p>
+        </div>
+        <a href="/Dashboard/Soporte" class="btn" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 0.75rem 1.25rem; border-radius: 10px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+            <i class="ph ph-arrow-left"></i> Volver al Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Buscador de Equipos -->
+<div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem;">
+    <form method="get" action="/Modulo05/Soporte/HistorialEquipos" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        <label for="filtro" style="color: #fff; font-weight: 600; font-size: 0.95rem;">Filtrar Equipo (CBI, Serie o Descripción):</label>
+        <input type="text" id="filtro" name="filtro" value="@(ViewBag.Filtro ?? "")" placeholder="Ej: Laptop, Dell, CBI-2024..." style="background: rgba(15,15,20,0.8); border: 1px solid var(--border-glass); color: #fff; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.95rem; width: 300px;" />
+        <button type="submit" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;">
+            <i class="ph-bold ph-magnifying-glass"></i> Buscar Activos
+        </button>
+        @if (!string.IsNullOrEmpty(ViewBag.Filtro as string))
+        {
+            <a href="/Modulo05/Soporte/HistorialEquipos" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; margin-left: 0.5rem;">Limpiar filtro</a>
+        }
+    </form>
+</div>
+
+<!-- Listado de Equipos e Historial de Fallas -->
+<div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.75rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin: 0; display: flex; align-items: center; gap: 0.6rem;">
+            <i class="ph ph-hard-drives" style="color: #0ea5e9;"></i> Inventario de Hardware y Registro de Fallas
+        </h3>
+        <span style="font-size: 0.85rem; color: var(--text-secondary);">Total activos: @(Model?.Count ?? 0)</span>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px;">
+                        <th style="padding: 0.75rem;">ID Bien</th>
+                        <th style="padding: 0.75rem;">Código CBI</th>
+                        <th style="padding: 0.75rem;">Descripción</th>
+                        <th style="padding: 0.75rem;">Marca / Modelo</th>
+                        <th style="padding: 0.75rem;">N° Serie</th>
+                        <th style="padding: 0.75rem;">Estado Físico</th>
+                        <th style="padding: 0.75rem;">Fallas Históricas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in Model)
+                    {
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); color: #e2e8f0;">
+                            <td style="padding: 0.75rem; font-weight: 700; color: #0ea5e9;">#@a.IdBien</td>
+                            <td style="padding: 0.75rem;">
+                                <span style="background: rgba(14,165,233,0.15); color: #38bdf8; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600; font-size: 0.85rem;">
+                                    @(string.IsNullOrWhiteSpace(a.Cbi) ? "S/C" : a.Cbi)
+                                </span>
+                            </td>
+                            <td style="padding: 0.75rem; font-weight: 600; color: #fff;">@a.Descripcion</td>
+                            <td style="padding: 0.75rem; color: #e2e8f0;">@a.Marca @a.Modelo</td>
+                            <td style="padding: 0.75rem; color: var(--text-secondary); font-family: monospace;">
+                                @(string.IsNullOrWhiteSpace(a.Serie) ? "SIN-SERIE" : a.Serie)
+                            </td>
+                            <td style="padding: 0.75rem;">
+                                @if (a.Estado == "Operativo" || a.Estado == "Bueno")
+                                {
+                                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem;">
+                                        @a.Estado
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem;">
+                                        @a.Estado
+                                    </span>
+                                }
+                            </td>
+                            <td style="padding: 0.75rem;">
+                                @if (a.TotalFallasRegistradas > 0)
+                                {
+                                    <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">
+                                        @a.TotalFallasRegistradas Incidencias
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="color: var(--text-secondary); font-size: 0.85rem;">0 fallas</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div style="text-align: center; padding: 3rem 1rem; color: var(--text-secondary);">
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto; font-size: 2rem; color: var(--text-muted);">
+                <i class="ph ph-desktop"></i>
+            </div>
+            <h4 style="color: #fff; font-size: 1.1rem; margin-bottom: 0.5rem;">No se encontraron equipos</h4>
+            <p style="font-size: 0.95rem; margin: 0;">Pruebe con otro término de búsqueda o código de bien.</p>
+        </div>
+    }
+</div>

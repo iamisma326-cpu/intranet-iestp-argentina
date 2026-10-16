@@ -1,0 +1,149 @@
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Jefatura de Soporte e Inventario";
+    ViewData["Role"] = "Jefe de Soporte";
+}
+
+@section SidebarNav {
+    <a href="javascript:void(0)" class="nav-item active" id="nav-sop-dash" onclick="mostrarSeccionSoporte('seccion-sop-dash', this)">
+        <i class="ph ph-squares-four"></i>
+        <span>Dashboard TI</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-sop-consola" onclick="cargarConsolaSoporte(this)">
+        <i class="ph ph-wrench"></i>
+        <span>Consola Técnica (M05)</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-sop-scanner" onclick="cargarScannerSoporte(this)">
+        <i class="ph ph-barcode"></i>
+        <span>Escaneo / Equipos (M05)</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-sop-incidencias" onclick="mostrarSeccionSoporte('seccion-sop-incidencias', this)">
+        <i class="ph ph-warning-octagon"></i>
+        <span>Incidencias Técnicas</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-sop-requerimientos" onclick="mostrarSeccionSoporte('seccion-sop-requerimientos', this)">
+        <i class="ph ph-headset"></i>
+        <span>Requerimientos</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-sop-bienes" onclick="mostrarSeccionSoporte('seccion-sop-bienes', this)">
+        <i class="ph ph-desktop"></i>
+        <span>Inventario de Bienes</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-sop-ambientes" onclick="mostrarSeccionSoporte('seccion-sop-ambientes', this)">
+        <i class="ph ph-door"></i>
+        <span>Ambientes y Labs</span>
+    </a>
+}
+
+<div class="page-header">
+    <h1>Jefatura de Soporte y Control Patrimonial</h1>
+    <p>Administración de infraestructura de TI, bienes, laboratorios e incidencias (Módulo 6 - bd.sql)</p>
+    <div class="header-accent"></div>
+</div>
+
+<!-- Contenedor Secciones Soporte -->
+<div id="seccion-sop-dash" class="sop-section active-section">
+    <!-- Tarjetas de Resumen basadas en tablas de bd.sql -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-desktop"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Total Bienes (bien)</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">482</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(239, 68, 68, 0.1); color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-warning-octagon"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Incidencias Abiertas</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">5 Activas</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-headset"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Requerimientos Pendientes</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">8 Solicitudes</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(16, 185, 129, 0.1); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-door"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Ambientes / Labs</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">14 Activos</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mesa de Incidencias Técnicas Recientes (Tabla: incidencias) -->
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="ph ph-warning-circle" style="color: #ef4444;"></i> Incidencias Técnicas Registradas (Tabla: incidencias)
+        </h3>
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+                    <th style="padding: 0.75rem 0.5rem;">ID</th>
+                    <th style="padding: 0.75rem 0.5rem;">Bien / Equipo</th>
+                    <th style="padding: 0.75rem 0.5rem;">Tipo Falla</th>
+                    <th style="padding: 0.75rem 0.5rem;">Gravedad</th>
+                    <th style="padding: 0.75rem 0.5rem;">Técnico Asignado</th>
+                    <th style="padding: 0.75rem 0.5rem;">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 600; color: var(--accent-cyan);">#INC-102</td>
+                    <td style="padding: 0.75rem 0.5rem;">PC-DELL-OPTIPLEX (Lab 02)</td>
+                    <td style="padding: 0.75rem 0.5rem;">Falla en fuente de poder</td>
+                    <td style="padding: 0.75rem 0.5rem;"><span style="color: #ef4444; font-weight: 600;">Alta</span></td>
+                    <td style="padding: 0.75rem 0.5rem; color: var(--text-secondary);">Luis Practicante</td>
+                    <td style="padding: 0.75rem 0.5rem;"><span style="color: #f59e0b; font-weight: 600;">En Proceso</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 600; color: var(--accent-cyan);">#INC-101</td>
+                    <td style="padding: 0.75rem 0.5rem;">Proyector Epson (Aula 104)</td>
+                    <td style="padding: 0.75rem 0.5rem;">Lámpara parpadea / sin señal HDMI</td>
+                    <td style="padding: 0.75rem 0.5rem;"><span style="color: #f59e0b; font-weight: 600;">Media</span></td>
+                    <td style="padding: 0.75rem 0.5rem; color: var(--text-secondary);">Mario Soporte</td>
+                    <td style="padding: 0.75rem 0.5rem;"><span style="color: #f59e0b; font-weight: 600;">En Proceso</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 600; color: var(--accent-cyan);">#INC-099</td>
+                    <td style="padding: 0.75rem 0.5rem;">Switch Cisco 24p (Lab Redes)</td>
+                    <td style="padding: 0.75rem 0.5rem;">Puerto 12 sin enlace</td>
+                    <td style="padding: 0.75rem 0.5rem;"><span style="color: #10b981; font-weight: 600;">Baja</span></td>
+                    <td style="padding: 0.75rem 0.5rem; color: var(--text-secondary);">Luis Practicante</td>
+                    <td style="padding: 0.75rem 0.5rem;"><span style="color: #10b981; font-weight: 600;">Resuelto</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function mostrarSeccionSoporte(idSeccion, el) {
+        document.querySelectorAll('.sop-section').forEach(sec => sec.style.display = 'none');
+        document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => item.classList.remove('active'));
+        
+        var objetivo = document.getElementById(idSeccion);
+        if (objetivo) {
+            objetivo.style.display = 'block';
+        } else {
+            document.getElementById('seccion-sop-dash').style.display = 'block';
+        }
+
+        if (el) el.classList.add('active');
+    }
+</script>

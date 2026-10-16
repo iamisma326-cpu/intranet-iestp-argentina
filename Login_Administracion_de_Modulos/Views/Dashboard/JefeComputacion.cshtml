@@ -1,0 +1,426 @@
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Jefatura de Taller - Computación";
+    ViewData["Role"] = "Jefe de Taller Computación";
+}
+
+@section SidebarNav {
+    <!-- Encabezado de Inventario & Almacenes -->
+    <div class="sidebar-brand-box" style="border-color: rgba(56, 189, 248, 0.25);">
+        <div class="brand-icon-wrap" style="background: rgba(2, 132, 199, 0.15); border-color: rgba(56, 189, 248, 0.35); color: #38bdf8;">
+            <i class="ph ph-buildings"></i>
+        </div>
+        <div class="brand-details">
+            <h5>IESTP "Argentina"</h5>
+            <p>Inventario & Almacenes</p>
+        </div>
+    </div>
+
+    <!-- SECCIÓN GENERAL (Desplegable) -->
+    <div class="sidebar-dropdown sidebar-dropdown-computacion open" id="group-comp-general">
+        <div class="sidebar-dropdown-header" onclick="toggleDropdownComp('group-comp-general')">
+            <span class="dropdown-title">General</span>
+            <i class="ph ph-caret-down dropdown-caret"></i>
+        </div>
+        <div class="sidebar-dropdown-body">
+            <a href="javascript:void(0)" class="nav-item-computacion" id="nav-comp-inicio" onclick="mostrarSeccionComp('seccion-comp-inicio', this)">
+                <i class="ph ph-house nav-icon"></i>
+                <span class="nav-text">Inicio</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-computacion" id="nav-comp-dash" onclick="mostrarSeccionComp('seccion-comp-dash', this)">
+                <i class="ph ph-squares-four nav-icon"></i>
+                <span class="nav-text">Dashboard</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- SECCIÓN INVENTARIO (Desplegable) -->
+    <div class="sidebar-dropdown sidebar-dropdown-computacion open" id="group-comp-inventario">
+        <div class="sidebar-dropdown-header" onclick="toggleDropdownComp('group-comp-inventario')">
+            <span class="dropdown-title">Inventario</span>
+            <i class="ph ph-caret-down dropdown-caret"></i>
+        </div>
+        <div class="sidebar-dropdown-body">
+            <a href="javascript:void(0)" class="nav-item-computacion active" id="nav-comp-bienes" onclick="mostrarSeccionComp('seccion-comp-bienes', this)">
+                <i class="ph ph-desktop nav-icon"></i>
+                <span class="nav-text">Bienes</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-computacion" id="nav-comp-almacenes" onclick="mostrarSeccionComp('seccion-comp-almacenes', this)">
+                <i class="ph ph-package nav-icon"></i>
+                <span class="nav-text">Almacenes</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-computacion" id="nav-comp-ambientes" onclick="mostrarSeccionComp('seccion-comp-ambientes', this)">
+                <i class="ph ph-door nav-icon"></i>
+                <span class="nav-text">Ambientes</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-computacion" id="nav-comp-especialidades" onclick="mostrarSeccionComp('seccion-comp-especialidades', this)">
+                <i class="ph ph-gear nav-icon"></i>
+                <span class="nav-text">Especialidades</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- SECCIÓN OPERACIONES (Desplegable) -->
+    <div class="sidebar-dropdown sidebar-dropdown-computacion open" id="group-comp-operaciones">
+        <div class="sidebar-dropdown-header" onclick="toggleDropdownComp('group-comp-operaciones')">
+            <span class="dropdown-title">Operaciones</span>
+            <i class="ph ph-caret-down dropdown-caret"></i>
+        </div>
+        <div class="sidebar-dropdown-body">
+            <a href="javascript:void(0)" class="nav-item-computacion" id="nav-comp-asignaciones" onclick="mostrarSeccionComp('seccion-comp-asignaciones', this)">
+                <i class="ph ph-arrows-left-right nav-icon"></i>
+                <span class="nav-text">Asignaciones</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-computacion" id="nav-comp-transferencias" onclick="mostrarSeccionComp('seccion-comp-transferencias', this)">
+                <i class="ph ph-arrows-left-right nav-icon"></i>
+                <span class="nav-text">Transferencias</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-computacion" id="nav-comp-inventario-anual" onclick="mostrarSeccionComp('seccion-comp-inventario-anual', this)">
+                <i class="ph ph-calendar nav-icon"></i>
+                <span class="nav-text">Inventario Anual</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- SECCIÓN REPORTES (Desplegable) -->
+    <div class="sidebar-dropdown sidebar-dropdown-computacion open" id="group-comp-reportes">
+        <div class="sidebar-dropdown-header" onclick="toggleDropdownComp('group-comp-reportes')">
+            <span class="dropdown-title">Reportes</span>
+            <i class="ph ph-caret-down dropdown-caret"></i>
+        </div>
+        <div class="sidebar-dropdown-body">
+            <a href="javascript:void(0)" class="nav-item-computacion" id="nav-comp-reportes" onclick="mostrarSeccionComp('seccion-comp-reportes', this)">
+                <i class="ph ph-file-text nav-icon"></i>
+                <span class="nav-text">Reportes</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+            <a href="javascript:void(0)" class="nav-item-computacion" id="nav-comp-excel" onclick="mostrarSeccionComp('seccion-comp-excel', this)">
+                <i class="ph ph-file-xls nav-icon"></i>
+                <span class="nav-text">Exportar Excel</span>
+                <i class="ph ph-caret-right nav-arrow"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Tarjeta Inferior de Área Asignada (Visible en el panel) -->
+    <div class="area-footer-box">
+        <i class="ph ph-laptop area-icon"></i>
+        <div class="area-info">
+            <h5>Área: Computación</h5>
+            <p>Usuario: Jefe Computación</p>
+        </div>
+    </div>
+}
+
+<!-- Encabezado Institucional -->
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+        <div style="width: 52px; height: 52px; background: rgba(2, 132, 199, 0.12); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #38bdf8;">
+            <i class="ph ph-desktop"></i>
+        </div>
+        <div>
+            <h1 style="font-size: 1.45rem; font-weight: 800; color: #ffffff; margin: 0; line-height: 1.2;">IESTP "Argentina"</h1>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.2rem 0 0 0;">Sistema de Gestión de Inventario para Almacenes - Área de Computación</p>
+        </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span style="font-size: 0.75rem; background: rgba(2, 132, 199, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 5px 12px; border-radius: 20px; font-weight: 700;">
+            <i class="ph ph-shield-check"></i> Gestión de Taller
+        </span>
+        <button onclick="window.print()" class="btn-icon" title="Imprimir Inventario de Taller">
+            <i class="ph ph-printer"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Banner Destacado del Rol Jefe de Taller Computación -->
+<div class="role-banner-computacion">
+    <div class="banner-icon">
+        <i class="ph ph-desktop"></i>
+    </div>
+    <div>
+        <h3>JEFE DE TALLER COMPUTACIÓN</h3>
+        <p>Solo ve y gestiona su área de Computación (especialidad: Computación e Informática - bd.sql)</p>
+    </div>
+</div>
+
+<!-- ========================================================
+     CONTENIDO PRINCIPAL: SECCIONES INTERACTIVAS DE COMPUTACIÓN
+     ======================================================== -->
+
+<!-- 1. SECCIÓN BIENES (Activa por defecto según imagen) -->
+<div id="seccion-comp-bienes" class="comp-section active-section">
+    <!-- Tarjetas de métricas del área de computación -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.35rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 46px; height: 46px; border-radius: 10px; background-color: rgba(2, 132, 199, 0.15); color: #38bdf8; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                <i class="ph ph-desktop"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 0.2rem;">Bienes Computación (`bien`)</p>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0;">184 Equipos</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.35rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 46px; height: 46px; border-radius: 10px; background-color: rgba(16, 185, 129, 0.15); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                <i class="ph ph-check-circle"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 0.2rem;">Operativos en Aulas/Labs</p>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0;">172</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.35rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 46px; height: 46px; border-radius: 10px; background-color: rgba(245, 158, 11, 0.15); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                <i class="ph ph-wrench"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 0.2rem;">En Taller (Mantenimiento)</p>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0;">12</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.35rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 46px; height: 46px; border-radius: 10px; background-color: rgba(99, 102, 241, 0.15); color: #818cf8; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                <i class="ph ph-door"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 0.2rem;">Laboratorios Cómputo</p>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0;">4 Ambientes</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Bienes Asignados al Área de Computación -->
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+                <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin: 0;">Inventario de Bienes de Computación</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0.2rem 0 0 0;">Filtro exclusivo para el área técnica de Computación e Informática (`bd.sql`)</p>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+                <button class="btn-logout" style="width: auto; padding: 0.5rem 1rem; background: rgba(2, 132, 199, 0.15); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;" onclick="alert('Registrando verificación de equipo en Laboratorio de Computación')">
+                    <i class="ph ph-barcode"></i> Verificar Equipo
+                </button>
+            </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em;">
+                        <th style="padding: 0.75rem 0.5rem;">CBI</th>
+                        <th style="padding: 0.75rem 0.5rem;">Equipo / Descripción</th>
+                        <th style="padding: 0.75rem 0.5rem;">Marca y Modelo</th>
+                        <th style="padding: 0.75rem 0.5rem;">N° Serie</th>
+                        <th style="padding: 0.75rem 0.5rem;">Ambiente / Lab</th>
+                        <th style="padding: 0.75rem 0.5rem;">Responsable</th>
+                        <th style="padding: 0.75rem 0.5rem;">Estado</th>
+                        <th style="padding: 0.75rem 0.5rem; text-align: center;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody style="color: #cbd5e1;">
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace; color: #38bdf8; font-weight: 600;">CBI-COMP-001</td>
+                        <td style="padding: 0.85rem 0.5rem; font-weight: 600; color: #fff;">Workstation Core i9 32GB RAM RTX</td>
+                        <td style="padding: 0.85rem 0.5rem;">HP Z2 Tower G9</td>
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace;">HP-Z2-99014</td>
+                        <td style="padding: 0.85rem 0.5rem;">Lab. Cómputo 01 (Desarrollo)</td>
+                        <td style="padding: 0.85rem 0.5rem;">Jefe Computación</td>
+                        <td style="padding: 0.85rem 0.5rem;">
+                            <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Operativo</span>
+                        </td>
+                        <td style="padding: 0.85rem 0.5rem; text-align: center;">
+                            <button style="background: none; border: none; color: #38bdf8; cursor: pointer; font-size: 1.1rem;" title="Ver Ficha Técnica"><i class="ph ph-file-text"></i></button>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace; color: #38bdf8; font-weight: 600;">CBI-COMP-002</td>
+                        <td style="padding: 0.85rem 0.5rem; font-weight: 600; color: #fff;">Switch Administrable Capa 3 48P</td>
+                        <td style="padding: 0.85rem 0.5rem;">Cisco Catalyst 3850</td>
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace;">CS-3850-8422</td>
+                        <td style="padding: 0.85rem 0.5rem;">Rack Servidores Cómputo</td>
+                        <td style="padding: 0.85rem 0.5rem;">Jefe Computación</td>
+                        <td style="padding: 0.85rem 0.5rem;">
+                            <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Operativo</span>
+                        </td>
+                        <td style="padding: 0.85rem 0.5rem; text-align: center;">
+                            <button style="background: none; border: none; color: #38bdf8; cursor: pointer; font-size: 1.1rem;" title="Ver Ficha Técnica"><i class="ph ph-file-text"></i></button>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace; color: #38bdf8; font-weight: 600;">CBI-COMP-003</td>
+                        <td style="padding: 0.85rem 0.5rem; font-weight: 600; color: #fff;">Proyector Láser Interactivo WUXGA</td>
+                        <td style="padding: 0.85rem 0.5rem;">Epson EB-735Fi</td>
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace;">EP-735-5519</td>
+                        <td style="padding: 0.85rem 0.5rem;">Lab. Cómputo 02 (Redes)</td>
+                        <td style="padding: 0.85rem 0.5rem;">Docente Encargado</td>
+                        <td style="padding: 0.85rem 0.5rem;">
+                            <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Operativo</span>
+                        </td>
+                        <td style="padding: 0.85rem 0.5rem; text-align: center;">
+                            <button style="background: none; border: none; color: #38bdf8; cursor: pointer; font-size: 1.1rem;" title="Ver Ficha Técnica"><i class="ph ph-file-text"></i></button>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace; color: #38bdf8; font-weight: 600;">CBI-COMP-004</td>
+                        <td style="padding: 0.85rem 0.5rem; font-weight: 600; color: #fff;">Laptop Docente Core i7 16GB SSD</td>
+                        <td style="padding: 0.85rem 0.5rem;">Lenovo ThinkPad T14</td>
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace;">LN-T14-33100</td>
+                        <td style="padding: 0.85rem 0.5rem;">Taller de Ensamblaje</td>
+                        <td style="padding: 0.85rem 0.5rem;">Jefe Computación</td>
+                        <td style="padding: 0.85rem 0.5rem;">
+                            <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">En Mantenimiento</span>
+                        </td>
+                        <td style="padding: 0.85rem 0.5rem; text-align: center;">
+                            <button style="background: none; border: none; color: #38bdf8; cursor: pointer; font-size: 1.1rem;" title="Ver Ficha Técnica"><i class="ph ph-file-text"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace; color: #38bdf8; font-weight: 600;">CBI-COMP-005</td>
+                        <td style="padding: 0.85rem 0.5rem; font-weight: 600; color: #fff;">Servidor Rack 2U Dual Xeon 64GB</td>
+                        <td style="padding: 0.85rem 0.5rem;">Dell PowerEdge R740</td>
+                        <td style="padding: 0.85rem 0.5rem; font-family: monospace;">DL-PE-740-X1</td>
+                        <td style="padding: 0.85rem 0.5rem;">Rack Servidores Cómputo</td>
+                        <td style="padding: 0.85rem 0.5rem;">Jefe Computación</td>
+                        <td style="padding: 0.85rem 0.5rem;">
+                            <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Operativo</span>
+                        </td>
+                        <td style="padding: 0.85rem 0.5rem; text-align: center;">
+                            <button style="background: none; border: none; color: #38bdf8; cursor: pointer; font-size: 1.1rem;" title="Ver Ficha Técnica"><i class="ph ph-file-text"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 2. SECCIÓN INICIO / DASHBOARD -->
+<div id="seccion-comp-inicio" class="comp-section" style="display: none;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 2rem;">
+        <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;"><i class="ph ph-house" style="color: #38bdf8;"></i> Inicio - Taller de Computación</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Panel de control y operatividad técnica de los laboratorios y equipos informáticos.</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+            <div style="border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; background: rgba(2, 132, 199, 0.04);">
+                <h4 style="color: #38bdf8; margin-bottom: 0.5rem;"><i class="ph ph-desktop"></i> Estado de Laboratorios</h4>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Lab 1: 30 PCs operativas (100%)</p>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Lab 2: 28 PCs operativas, 2 en mantenimiento preventivo</p>
+            </div>
+            <div style="border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; background: rgba(2, 132, 199, 0.04);">
+                <h4 style="color: #10b981; margin-bottom: 0.5rem;"><i class="ph ph-calendar-check"></i> Próxima Revisión</h4>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Mantenimiento preventivo programado para el fin de semana.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="seccion-comp-dash" class="comp-section" style="display: none;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 2rem;">
+        <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;"><i class="ph ph-squares-four" style="color: #38bdf8;"></i> Métricas de Computación e Informática</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Rendimiento, capacidad de almacenamiento y disponibilidad de estaciones de trabajo.</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+            <div style="padding: 1.25rem; background: rgba(2, 132, 199, 0.08); border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.25);">
+                <h3 style="font-size: 1.8rem; color: #fff;">93.5%</h3>
+                <p style="font-size: 0.8rem; color: #38bdf8; margin: 0;">Disponibilidad de PCs</p>
+            </div>
+            <div style="padding: 1.25rem; background: rgba(16, 185, 129, 0.08); border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.25);">
+                <h3 style="font-size: 1.8rem; color: #fff;">4 Ambientes</h3>
+                <p style="font-size: 0.8rem; color: #10b981; margin: 0;">Laboratorios Vinculados</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. SECCIONES RESTANTES -->
+<div id="seccion-comp-almacenes" class="comp-section" style="display: none;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 2rem;">
+        <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;"><i class="ph ph-package" style="color: #38bdf8;"></i> Almacén de Cómputo (`almacen`)</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Custodia técnica de partes, repuestos, discos y periféricos para el área de Computación.</p>
+        <div style="border: 1px solid var(--border-color); padding: 1.25rem; border-radius: 10px; max-width: 450px;">
+            <h4 style="color: #fff; margin-bottom: 0.25rem;">Subalmacén de Partes TI</h4>
+            <p style="font-size: 0.8rem; color: var(--text-secondary);">Ubicación: Pabellón A - Laboratorio 1 Anexo</p>
+            <p style="font-size: 0.8rem; color: var(--text-secondary);">Responsable: Jefe de Taller Computación</p>
+        </div>
+    </div>
+</div>
+
+<div id="seccion-comp-ambientes" class="comp-section" style="display: none;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 2rem;">
+        <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;"><i class="ph ph-door" style="color: #38bdf8;"></i> Ambientes de Computación (`ambiente`)</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Laboratorios y aulas asignadas exclusivamente a la especialidad de Computación e Informática:</p>
+        <ul style="color: var(--text-secondary); line-height: 1.8; padding-left: 1.25rem;">
+            <li><strong style="color: #fff;">Laboratorio de Cómputo 01</strong> - 35 Estaciones de Trabajo</li>
+            <li><strong style="color: #fff;">Laboratorio de Cómputo 02</strong> - 30 Estaciones de Redes</li>
+            <li><strong style="color: #fff;">Taller de Ensamblaje y Conectividad</strong> - 15 Bancos de Prueba</li>
+            <li><strong style="color: #fff;">Centro de Datos y Servidores</strong> - Rack Principal</li>
+        </ul>
+    </div>
+</div>
+
+<div id="seccion-comp-especialidades" class="comp-section" style="display: none;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 2rem;">
+        <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;"><i class="ph ph-gear" style="color: #38bdf8;"></i> Especialidad Asignada (`especialidad`)</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Área técnica a cargo: <strong>Computación e Informática</strong> (Estado: Activo en bd.sql).</p>
+    </div>
+</div>
+
+<div id="seccion-comp-generico" class="comp-section" style="display: none;">
+    <div class="construction-card">
+        <i class="ph ph-desktop construction-icon" style="color: #38bdf8;"></i>
+        <h2 id="comp-generico-titulo" style="color: #fff;">Módulo de Taller Computación</h2>
+        <p id="comp-generico-desc">Gestión y control de equipamiento tecnológico del área de Computación conforme a `bd.sql`.</p>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function mostrarSeccionComp(seccionId, navElement) {
+            // 1. Quitar estado active de todos los enlaces de navegación de computación
+            const links = document.querySelectorAll('.nav-item-computacion');
+            links.forEach(l => l.classList.remove('active'));
+
+            // 2. Activar el enlace seleccionado
+            if (navElement) {
+                navElement.classList.add('active');
+            }
+
+            // 3. Ocultar todas las secciones
+            const secciones = document.querySelectorAll('.comp-section');
+            secciones.forEach(s => s.style.display = 'none');
+
+            // 4. Mostrar la sección seleccionada si existe o la sección genérica informativa
+            const target = document.getElementById(seccionId);
+            if (target) {
+                target.style.display = 'block';
+            } else {
+                const generico = document.getElementById('seccion-comp-generico');
+                if (generico) {
+                    generico.style.display = 'block';
+                    const navText = navElement ? navElement.querySelector('.nav-text')?.innerText : 'Módulo';
+                    document.getElementById('comp-generico-titulo').innerText = navText;
+                    document.getElementById('comp-generico-desc').innerText = 'Operatividad del submódulo ' + navText + ' para el área de Computación e Informática.';
+                }
+            }
+        }
+
+        function toggleDropdownComp(groupId) {
+            const group = document.getElementById(groupId);
+            if (group) {
+                group.classList.toggle('open');
+            }
+        }
+    </script>
+}

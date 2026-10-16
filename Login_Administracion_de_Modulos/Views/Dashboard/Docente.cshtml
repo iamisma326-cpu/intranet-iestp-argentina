@@ -1,0 +1,274 @@
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Portal Docente";
+    ViewData["Role"] = "Docente Académico";
+}
+
+@section SidebarNav {
+    <a href="javascript:void(0)" class="nav-item active" id="nav-doc-dash" onclick="mostrarSeccionDocente('seccion-dashboard', this)">
+        <i class="ph ph-squares-four"></i>
+        <span>Dashboard</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-doc-cursos" onclick="mostrarSeccionDocente('seccion-cursos', this)">
+        <i class="ph ph-books"></i>
+        <span>Mis Cursos</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-doc-asistencia" onclick="mostrarSeccionDocente('seccion-asistencia', this)">
+        <i class="ph ph-student"></i>
+        <span>Asistencia</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-doc-notas" onclick="mostrarSeccionDocente('seccion-notas', this)">
+        <i class="ph ph-exam"></i>
+        <span>Calificaciones</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-doc-reportar" onclick="cargarReporteDocente(this)">
+        <i class="ph ph-warning-octagon"></i>
+        <span>Reportar Avería (M05)</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-doc-mis-reportes" onclick="cargarMisReportesDocente(this)">
+        <i class="ph ph-clipboard-text"></i>
+        <span>Mis Reportes (M05)</span>
+    </a>
+}
+
+<div class="page-header">
+    <h1>Portal Docente</h1>
+    <p>Gestión académica, control de estudiantes y soporte de ambientes de clase</p>
+    <div class="header-accent"></div>
+</div>
+
+<!-- Contenedor de Secciones -->
+<div id="seccion-dashboard" class="doc-section active-section">
+    <!-- Tarjetas de Resumen -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-books"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Cursos a Cargo</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">4 Cursos</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(16, 185, 129, 0.1); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-student"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Alumnos Inscritos</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">132 Alumnos</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-warning-octagon"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Incidencias de Aula</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">1 Reportada</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(168, 85, 247, 0.1); color: #a855f7; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-headset"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Requerimientos TI</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">0 Pendientes</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mis Asignaturas -->
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="ph ph-chalkboard-teacher" style="color: var(--accent-cyan);"></i> Cursos Asignados en el Ciclo Actual
+        </h3>
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+                    <th style="padding: 0.75rem 0.5rem;">Código</th>
+                    <th style="padding: 0.75rem 0.5rem;">Unidad Didáctica</th>
+                    <th style="padding: 0.75rem 0.5rem;">Especialidad</th>
+                    <th style="padding: 0.75rem 0.5rem;">Aula / Ambiente</th>
+                    <th style="padding: 0.75rem 0.5rem;">Alumnos</th>
+                    <th style="padding: 0.75rem 0.5rem; text-align: right;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 600; color: var(--accent-cyan);">DSI-401</td>
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 500;">Desarrollo de Servicios Web</td>
+                    <td style="padding: 0.75rem 0.5rem; color: var(--text-secondary);">Desarrollo de Sistemas</td>
+                    <td style="padding: 0.75rem 0.5rem;">Lab 02 (Pabellón B)</td>
+                    <td style="padding: 0.75rem 0.5rem;">34</td>
+                    <td style="padding: 0.75rem 0.5rem; text-align: right;">
+                        <span style="display: inline-block; padding: 0.35rem 0.75rem; border-radius: 6px; background-color: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); font-weight: 600; font-size: 0.75rem; cursor: pointer;">Registrar Notas</span>
+                    </td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 600; color: var(--accent-cyan);">DSI-204</td>
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 500;">Bases de Datos Avanzadas</td>
+                    <td style="padding: 0.75rem 0.5rem; color: var(--text-secondary);">Desarrollo de Sistemas</td>
+                    <td style="padding: 0.75rem 0.5rem;">Lab 01 (Pabellón A)</td>
+                    <td style="padding: 0.75rem 0.5rem;">32</td>
+                    <td style="padding: 0.75rem 0.5rem; text-align: right;">
+                        <span style="display: inline-block; padding: 0.35rem 0.75rem; border-radius: 6px; background-color: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); font-weight: 600; font-size: 0.75rem; cursor: pointer;">Registrar Notas</span>
+                    </td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 600; color: var(--accent-cyan);">ARC-302</td>
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 500;">Arquitectura de Servidores</td>
+                    <td style="padding: 0.75rem 0.5rem; color: var(--text-secondary);">Redes y Comunicaciones</td>
+                    <td style="padding: 0.75rem 0.5rem;">Lab Redes (Pabellón C)</td>
+                    <td style="padding: 0.75rem 0.5rem;">36</td>
+                    <td style="padding: 0.75rem 0.5rem; text-align: right;">
+                        <span style="display: inline-block; padding: 0.35rem 0.75rem; border-radius: 6px; background-color: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); font-weight: 600; font-size: 0.75rem; cursor: pointer;">Registrar Notas</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Sección Incidencias de Aula (Basado en tablas 'incidencias' y 'ambiente' de bd.sql) -->
+<div id="seccion-incidencias" class="doc-section" style="display: none;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+        <h3 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="ph ph-warning-octagon" style="color: #f59e0b;"></i> Reporte de Incidencias en Ambientes y Equipos
+        </h3>
+        <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.5rem;">
+            Registra fallas técnicas o desperfectos en proyectores, computadoras o redes de tu aula. El reporte es canalizado directamente al Módulo de Soporte Técnico (tabla <code>incidencias</code>).
+        </p>
+
+        <form style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+            <div>
+                <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Ambiente / Aula (Tabla: ambiente)</label>
+                <select style="width: 100%; padding: 0.65rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; color: #fff;">
+                    <option>Lab 01 - Pabellón A</option>
+                    <option>Lab 02 - Pabellón B</option>
+                    <option>Aula 104 - Pabellón Principal</option>
+                    <option>Lab Redes - Pabellón C</option>
+                </select>
+            </div>
+            <div>
+                <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Tipo de Falla</label>
+                <select style="width: 100%; padding: 0.65rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; color: #fff;">
+                    <option>Proyector multimedia no enciende / sin señal</option>
+                    <option>PC Docente con lentitud o sin red</option>
+                    <option>Puntos de red / Switch sin conectividad</option>
+                    <option>Software no instalado / Licencia vencida</option>
+                </select>
+            </div>
+            <div>
+                <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Gravedad</label>
+                <select style="width: 100%; padding: 0.65rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; color: #fff;">
+                    <option>Alta (Interrumpe la clase)</option>
+                    <option>Media (Afecta parcialmente)</option>
+                    <option>Baja (Observación preventiva)</option>
+                </select>
+            </div>
+            <div style="grid-column: 1 / -1;">
+                <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.35rem;">Descripción detallada de la falla</label>
+                <textarea rows="3" placeholder="Describe brevemente el problema ocurrido..." style="width: 100%; padding: 0.65rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; color: #fff;"></textarea>
+            </div>
+            <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end;">
+                <button type="button" style="padding: 0.75rem 1.5rem; background-color: var(--accent-cyan); color: #000; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="ph ph-paper-plane-tilt"></i> Enviar Reporte a Soporte
+                </button>
+            </div>
+        </form>
+    </div>
+    <!-- Contenedor Dinámico Formulario Reporte Avería (M05) -->
+    <div id="seccion-reportar-averia" class="doc-section" style="display: none;"></div>
+
+    <!-- Contenedor Dinámico Historial de Reportes (M05) -->
+    <div id="seccion-mis-reportes" class="doc-section" style="display: none;"></div>
+</div>
+
+<script>
+    function mostrarSeccionDocente(idSeccion, el) {
+        document.querySelectorAll('.doc-section').forEach(sec => sec.style.display = 'none');
+        document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => item.classList.remove('active'));
+        
+        var objetivo = document.getElementById(idSeccion);
+        if (objetivo) {
+            objetivo.style.display = 'block';
+        } else {
+            document.getElementById('seccion-dashboard').style.display = 'block';
+        }
+
+        if (el) el.classList.add('active');
+    }
+
+    function cargarReporteDocente(el) {
+        mostrarSeccionDocente('seccion-reportar-averia', el);
+        const container = document.getElementById('seccion-reportar-averia');
+
+        if (!container.dataset.loaded) {
+            container.innerHTML = `
+                <div style="padding: 3rem; text-align: center; color: var(--text-secondary);">
+                    <i class="ph ph-spinner ph-spin" style="font-size: 2.5rem; color: #f59e0b; margin-bottom: 1rem; display: block;"></i>
+                    <p>Cargando formulario de reporte de averías de Módulo 05...</p>
+                </div>
+            `;
+
+            fetch('/Modulo05/AveriaDocente/Reporte?partial=true', {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.text())
+            .then(html => {
+                container.innerHTML = html;
+                container.dataset.loaded = "true";
+
+                const scripts = container.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
+            })
+            .catch(err => {
+                container.innerHTML = `<div style="padding: 2rem; color: #ef4444;">Error al cargar formulario: ${err.message}</div>`;
+            });
+        }
+    }
+
+    function cargarMisReportesDocente(el) {
+        mostrarSeccionDocente('seccion-mis-reportes', el);
+        const container = document.getElementById('seccion-mis-reportes');
+
+        if (!container.dataset.loaded) {
+            container.innerHTML = `
+                <div style="padding: 3rem; text-align: center; color: var(--text-secondary);">
+                    <i class="ph ph-spinner ph-spin" style="font-size: 2.5rem; color: #f59e0b; margin-bottom: 1rem; display: block;"></i>
+                    <p>Cargando lista de reportes de Módulo 05...</p>
+                </div>
+            `;
+
+            fetch('/Modulo05/AveriaDocente/MisReportes?partial=true', {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.text())
+            .then(html => {
+                container.innerHTML = html;
+                container.dataset.loaded = "true";
+
+                const scripts = container.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
+            })
+            .catch(err => {
+                container.innerHTML = `<div style="padding: 2rem; color: #ef4444;">Error al cargar reportes: ${err.message}</div>`;
+            });
+        }
+    }
+</script>

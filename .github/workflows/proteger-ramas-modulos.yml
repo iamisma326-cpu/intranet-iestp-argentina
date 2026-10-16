@@ -1,0 +1,96 @@
+name: Protección de Ramas por Módulo
+
+on:
+  push:
+    branches-ignore:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  verificar_alcance_modulo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Descargar historial completo del repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 2. Validar que la rama modifique únicamente su módulo asignado
+        shell: bash
+        run: |
+          set -e
+
+          # 1. Identificar la rama actual y la base de comparación
+          BRANCH_NAME=""
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            BRANCH_NAME="$GITHUB_HEAD_REF"
+            BASE_REF="origin/$GITHUB_BASE_REF"
+          else
+            BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+            if git rev-parse --verify origin/master >/dev/null 2>&1; then
+              BASE_REF="origin/master"
+            elif git rev-parse --verify origin/main >/dev/null 2>&1; then
+              BASE_REF="origin/main"
+            else
+              BASE_REF="HEAD~1"
+            fi
+          fi
+
+          echo "=========================================================="
+          echo "Rama evaluada: $BRANCH_NAME"
+          echo "Referencia base para diff: $BASE_REF"
+          echo "=========================================================="
+
+          LOWER_BRANCH=$(echo "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]')
+
+          # 2. Detectar si la rama pertenece a un módulo específico (ej: modulo04/inventario, modulo05/topico, feature/modulo02)
+          if [[ "$LOWER_BRANCH" =~ (modulo[0-9]{2}) ]]; then
+            MODULO_ID="${BASH_REMATCH[1]}"
+            MOD_NUM="${MODULO_ID#modulo}"
+            MOD_FOLDER="Modulo${MOD_NUM}"
+            CARPETA_PERMITIDA="Login_Administracion_de_Modulos/Areas/${MOD_FOLDER}/"
+
+            echo "Módulo asignado: $MOD_FOLDER"
+            echo "Carpeta exclusiva autorizada: $CARPETA_PERMITIDA"
+            echo "----------------------------------------------------------"
+
+            # 3. Obtener lista de archivos modificados
+            CHANGED_FILES=$(git diff --name-only "$BASE_REF"...HEAD 2>/dev/null || git diff --name-only HEAD~1 HEAD 2>/dev/null || true)
+
+            if [ -z "$CHANGED_FILES" ]; then
+              echo "No se encontraron archivos modificados en el diff."
+              exit 0
+            fi
+
+            echo "Archivos modificados detectados:"
+            echo "$CHANGED_FILES"
+            echo "----------------------------------------------------------"
+
+            VIOLACIONES=0
+            while IFS= read -r file; do
+              [ -z "$file" ] && continue
+              if [[ "$file" != "$CARPETA_PERMITIDA"* ]]; then
+                echo "❌ [PROHIBIDO] Intento de modificar archivo fuera de $CARPETA_PERMITIDA -> $file"
+                VIOLACIONES=$((VIOLACIONES + 1))
+              else
+                echo "✅ [PERMITIDO] $file"
+              fi
+            done <<< "$CHANGED_FILES"
+
+            if [ "$VIOLACIONES" -gt 0 ]; then
+              echo ""
+              echo "🚨 ERROR DE SEGURIDAD Y GOBERNANZA: Se detectaron $VIOLACIONES archivo(s) prohibidos."
+              echo "La rama '$BRANCH_NAME' tiene permisos limitados a: $CARPETA_PERMITIDA"
+              echo "Está terminantemente prohibido modificar el Núcleo (Login, Program.cs, appsettings.json) o carpetas de otros módulos desde esta rama."
+              exit 1
+            fi
+
+            echo ""
+            echo "🎉 Validación de rama exitosa: Todos los cambios respetan el ámbito de $CARPETA_PERMITIDA."
+          else
+            echo "ℹ️ La rama '$BRANCH_NAME' no es de módulo individual. Se procesa como rama de integración o mantenimiento del núcleo."
+          fi

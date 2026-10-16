@@ -1,0 +1,258 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "Reporte Rápido de Averías de Aula";
+}
+
+<style>
+    :root {
+        --primary-doc: #f59e0b;
+        --secondary-doc: #ef4444;
+        --dark-card: #1e1e2d;
+        --border-glass: rgba(255, 255, 255, 0.1);
+    }
+
+    .doc-header {
+        margin-bottom: 2rem;
+    }
+
+    .doc-header h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #f59e0b, #ef4444);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+
+    .doc-form-container {
+        max-width: 960px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .doc-fieldset {
+        background: rgba(30, 30, 45, 0.65);
+        backdrop-filter: blur(14px);
+        border: 1px solid var(--border-glass);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    }
+
+    .doc-legend {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(90deg, #f59e0b, #d97706);
+        padding: 0.4rem 1.2rem;
+        border-radius: 8px;
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+    }
+
+    .doc-form-group {
+        margin-bottom: 1.2rem;
+    }
+
+    .doc-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #e5e7eb;
+        font-size: 0.9rem;
+    }
+
+    .doc-input, .doc-select, .doc-textarea {
+        width: 100%;
+        background: rgba(15, 15, 20, 0.8);
+        border: 1px solid var(--border-glass);
+        color: #fff;
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+    }
+
+    .doc-input:focus, .doc-select:focus, .doc-textarea:focus {
+        outline: none;
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+    }
+
+    .doc-btn-submit {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+        border: none;
+        padding: 0.9rem 2rem;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+    }
+
+    .doc-btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+    }
+</style>
+
+<div class="doc-header">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1>Reporte Rápido de Averías de Aula</h1>
+            <p style="color: var(--text-secondary); margin: 0;">Notifique al instante fallas técnicas en laboratorios o aulas para asistencia inmediata de Soporte</p>
+        </div>
+        <a href="/Dashboard/Docente" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 0.75rem 1.25rem; border-radius: 10px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+            <i class="ph ph-arrow-left"></i> Volver al Portal Docente
+        </a>
+    </div>
+</div>
+
+<div class="doc-form-container">
+    <form id="formAveriaDocente" onsubmit="event.preventDefault(); enviarReporteDocente();">
+
+        <!-- I. UBICACIÓN Y EQUIPO -->
+        <fieldset class="doc-fieldset">
+            <legend class="doc-legend"><i class="ph-bold ph-map-pin"></i> I. Ubicación y Equipo Afectado</legend>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+                <div class="doc-form-group">
+                    <label class="doc-label" for="ambiente">Ambiente / Laboratorio / Aula *</label>
+                    <select id="ambiente" name="ambiente" class="doc-select" required>
+                        <option value="Laboratorio de Cómputo 01">Laboratorio de Cómputo 01</option>
+                        <option value="Laboratorio de Cómputo 02">Laboratorio de Cómputo 02</option>
+                        <option value="Laboratorio de Redes y Conectividad">Laboratorio de Redes y Conectividad</option>
+                        <option value="Aula 201 - Pabellón A">Aula 201 - Pabellón A</option>
+                        <option value="Aula 305 - Pabellón B">Aula 305 - Pabellón B</option>
+                        <option value="Auditorio Institucional">Auditorio Institucional</option>
+                    </select>
+                </div>
+                <div class="doc-form-group">
+                    <label class="doc-label" for="codigoBien">Código de Bien (CBI) o N° de Máquina</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="codigoBien" name="codigoBien" class="doc-input" placeholder="Ej: CBI-2024-001 o PC-05" />
+                        <button type="button" onclick="buscarEquipoDocente()" style="background: rgba(255,255,255,0.1); border: 1px solid var(--border-glass); color: #fff; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">
+                            <i class="ph ph-magnifying-glass"></i>
+                        </button>
+                    </div>
+                    <span id="equipoDocStatus" style="font-size: 0.8rem; color: #10b981; margin-top: 0.3rem; display: block;"></span>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- II. TIPO Y GRAVEDAD DE LA FALLA -->
+        <fieldset class="doc-fieldset">
+            <legend class="doc-legend"><i class="ph-bold ph-wrench"></i> II. Detalle de la Falla Técnica</legend>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+                <div class="doc-form-group">
+                    <label class="doc-label" for="tipoFalla">Tipo de Problema *</label>
+                    <select id="tipoFalla" name="tipoFalla" class="doc-select" required>
+                        <option value="PC no enciende / Sin Energía">PC no enciende / Sin Energía</option>
+                        <option value="Proyector Multimedia sin Imagen/Señal">Proyector Multimedia sin Imagen/Señal</option>
+                        <option value="Sin Conexión a Internet / Cable de Red">Sin Conexión a Internet / Cable de Red</option>
+                        <option value="Teclado / Mouse / Monitor Dañado">Teclado / Mouse / Monitor Dañado</option>
+                        <option value="Software no abre / Licencia Caducada">Software no abre / Licencia Caducada</option>
+                        <option value="Problemas con Audio / Micrófono">Problemas con Audio / Micrófono</option>
+                        <option value="Otro Problema">Otro Problema Técnico</option>
+                    </select>
+                </div>
+
+                <div class="doc-form-group">
+                    <label class="doc-label" for="gravedad">Nivel de Impacto en Clase *</label>
+                    <select id="gravedad" name="gravedad" class="doc-select" required>
+                        <option value="Baja">Baja - No detiene la sesión de clase</option>
+                        <option value="Media" selected>Media - Alumno sin máquina / Trabajo en parejas</option>
+                        <option value="Alta">Alta - Proyector o docente sin equipo / Clase afectada</option>
+                        <option value="Crítica">Crítica - Laboratorio completo sin red o energía</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="doc-form-group">
+                <label class="doc-label" for="descripcion">Descripción del Problema y Síntomas Observados *</label>
+                <textarea id="descripcion" name="descripcion" class="doc-textarea" rows="4" placeholder="Describa qué ocurrió (Ej: Al presionar el botón de encendido hace 3 pitidos y no da video en pantalla...)" required></textarea>
+            </div>
+        </fieldset>
+
+        <!-- ACCIONES -->
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; align-items: center; margin-top: 1rem;">
+            <button type="submit" class="doc-btn-submit">
+                <i class="ph-bold ph-paper-plane-tilt"></i> Enviar Reporte de Avería
+            </button>
+        </div>
+        <div id="resultadoDocente" style="margin-top: 1rem; font-weight: 700; font-size: 0.95rem; text-align: right;"></div>
+    </form>
+</div>
+
+<script>
+    function buscarEquipoDocente() {
+        const cod = document.getElementById('codigoBien').value.trim();
+        const status = document.getElementById('equipoDocStatus');
+        if (!cod) {
+            alert('Ingrese un código de equipo');
+            return;
+        }
+        status.textContent = 'Buscando equipo en PostgreSQL...';
+        fetch('/Modulo05/AveriaDocente/BuscarEquipo?criterio=' + encodeURIComponent(cod))
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    status.textContent = '✓ ' + data.descripcion + ' (' + data.marcaModelo + ')';
+                    status.style.color = '#10b981';
+                } else {
+                    status.textContent = '⚠ ' + data.message;
+                    status.style.color = '#f59e0b';
+                }
+            })
+            .catch(() => {
+                status.textContent = 'Error al consultar';
+                status.style.color = '#ef4444';
+            });
+    }
+
+    function enviarReporteDocente() {
+        const form = document.getElementById('formAveriaDocente');
+        const desc = document.getElementById('descripcion').value.trim();
+        const resDiv = document.getElementById('resultadoDocente');
+
+        if (!desc) {
+            alert('Debe ingresar la descripción de la falla.');
+            return;
+        }
+
+        const formData = new FormData(form);
+
+        fetch('/Modulo05/AveriaDocente/GuardarReporte', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                resDiv.style.color = '#10b981';
+                resDiv.innerHTML = '<i class="ph-bold ph-check-circle"></i> ' + data.message;
+                alert(data.message || 'Reporte enviado con éxito');
+                form.reset();
+                document.getElementById('equipoDocStatus').textContent = '';
+            } else {
+                resDiv.style.color = '#ef4444';
+                resDiv.innerHTML = '<i class="ph-bold ph-warning"></i> ' + data.message;
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(err => {
+            resDiv.style.color = '#ef4444';
+            resDiv.textContent = 'Error de conexión: ' + err.message;
+        });
+    }
+</script>

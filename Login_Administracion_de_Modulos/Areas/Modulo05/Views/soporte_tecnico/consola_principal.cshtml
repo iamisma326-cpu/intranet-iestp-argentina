@@ -1,0 +1,239 @@
+@model List<Login_Administracion_de_Modulos.Areas.Modulo05.Models.TicketAveriaItem>
+@{
+    Layout = null;
+    ViewData["Title"] = "Consola Técnica de Soporte TI";
+}
+
+<div class="page-header" style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; background: linear-gradient(90deg, #0ea5e9, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 0.5rem 0;">
+                Consola Principal de Soporte Técnico y Mantenimiento
+            </h1>
+            <p style="color: var(--text-secondary); margin: 0;">Gestión de tickets de averías, escaneo de activos informáticos y control de reparaciones</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+            <a href="/Modulo05/Soporte/HistorialEquipos" class="btn" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 0.75rem 1.25rem; border-radius: 10px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                <i class="ph-bold ph-magnifying-glass"></i> Escanear Activo
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Barra de Escaneo Rápido de Activo / Etiqueta -->
+<div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.25);">
+    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        <div style="width: 44px; height: 44px; border-radius: 10px; background: rgba(14, 165, 233, 0.15); color: #0ea5e9; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+            <i class="ph-fill ph-barcode"></i>
+        </div>
+        <div style="flex: 1; min-width: 250px;">
+            <label for="codigoScanner" style="display: block; font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin-bottom: 0.3rem;">
+                Escáner de Código de Bien (CBI) / N° de Serie
+            </label>
+            <input type="text" id="codigoScanner" placeholder="Pase el lector de código de barras o escriba CBI-2024-001..." style="width: 100%; background: rgba(15,15,20,0.8); border: 1px solid var(--border-glass); color: #fff; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box;" onkeypress="if(event.key === 'Enter') escanearActivoRapido()" />
+        </div>
+        <button type="button" onclick="escanearActivoRapido()" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; border: none; padding: 0.85rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.25rem;">
+            <i class="ph-bold ph-qr-code"></i> Consultar Ficha
+        </button>
+    </div>
+    <div id="resultadoScanner" style="margin-top: 1rem; font-size: 0.9rem; font-weight: 600; display: none; padding: 1rem; border-radius: 8px; background: rgba(255,255,255,0.03);"></div>
+</div>
+
+<!-- Métricas de Soporte -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+        <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 1.75rem;">
+            <i class="ph-fill ph-clock-countdown"></i>
+        </div>
+        <div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin: 0;">Pendientes de Revisión</p>
+            <h3 style="font-size: 1.8rem; font-weight: 800; color: #fff; margin: 0.2rem 0 0 0;">
+                @(Model?.Count(t => t.Estado == "Pendiente") ?? 0)
+            </h3>
+        </div>
+    </div>
+
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+        <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(59, 130, 246, 0.15); color: #3b82f6; display: flex; align-items: center; justify-content: center; font-size: 1.75rem;">
+            <i class="ph-fill ph-wrench"></i>
+        </div>
+        <div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin: 0;">En Reparación</p>
+            <h3 style="font-size: 1.8rem; font-weight: 800; color: #fff; margin: 0.2rem 0 0 0;">
+                @(Model?.Count(t => t.Estado == "En Atención" || t.Estado == "En Proceso") ?? 0)
+            </h3>
+        </div>
+    </div>
+
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+        <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.75rem;">
+            <i class="ph-fill ph-check-fat"></i>
+        </div>
+        <div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin: 0;">Equipos Reparados</p>
+            <h3 style="font-size: 1.8rem; font-weight: 800; color: #fff; margin: 0.2rem 0 0 0;">
+                @(Model?.Count(t => t.Estado == "Reparado" || t.Estado == "Resuelto") ?? 0)
+            </h3>
+        </div>
+    </div>
+
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+        <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(239, 68, 68, 0.15); color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 1.75rem;">
+            <i class="ph-fill ph-fire"></i>
+        </div>
+        <div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin: 0;">Incidencias Críticas</p>
+            <h3 style="font-size: 1.8rem; font-weight: 800; color: #fff; margin: 0.2rem 0 0 0;">
+                @(Model?.Count(t => t.Gravedad == "Crítica" || t.Gravedad == "Alta") ?? 0)
+            </h3>
+        </div>
+    </div>
+</div>
+
+<!-- Cola de Tickets Técnicos -->
+<div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.75rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin: 0; display: flex; align-items: center; gap: 0.6rem;">
+            <i class="ph ph-tray" style="color: #0ea5e9;"></i> Cola de Tickets de Incidencias Técnicas
+        </h3>
+
+        <!-- Filtros por Estado -->
+        <div style="display: flex; gap: 0.5rem;">
+            <a href="/Modulo05/Soporte/ConsolaPrincipal" style="padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; text-decoration: none; color: #fff; background: @(string.IsNullOrEmpty(ViewBag.FiltroEstado as string) ? "#0284c7" : "rgba(255,255,255,0.06)");">Todos</a>
+            <a href="/Modulo05/Soporte/ConsolaPrincipal?estado=Pendiente" style="padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; text-decoration: none; color: #fbbf24; background: @(ViewBag.FiltroEstado == "Pendiente" ? "#0284c7" : "rgba(255,255,255,0.06)");">Pendientes</a>
+            <a href="/Modulo05/Soporte/ConsolaPrincipal?estado=En%20Atencion" style="padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; text-decoration: none; color: #60a5fa; background: @(ViewBag.FiltroEstado == "En Atencion" ? "#0284c7" : "rgba(255,255,255,0.06)");">En Proceso</a>
+            <a href="/Modulo05/Soporte/ConsolaPrincipal?estado=Reparado" style="padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; text-decoration: none; color: #34d399; background: @(ViewBag.FiltroEstado == "Reparado" ? "#0284c7" : "rgba(255,255,255,0.06)");">Reparados</a>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px;">
+                        <th style="padding: 0.75rem;">Ticket #</th>
+                        <th style="padding: 0.75rem;">Fecha</th>
+                        <th style="padding: 0.75rem;">Equipo / Activo</th>
+                        <th style="padding: 0.75rem;">Tipo de Falla</th>
+                        <th style="padding: 0.75rem;">Gravedad</th>
+                        <th style="padding: 0.75rem;">Estado</th>
+                        <th style="padding: 0.75rem;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model)
+                    {
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); color: #e2e8f0;">
+                            <td style="padding: 0.75rem; font-weight: 700; color: #0ea5e9;">#@t.IdIncidencia</td>
+                            <td style="padding: 0.75rem; color: #fff;">@t.FechaReporte.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td style="padding: 0.75rem;">
+                                <div style="font-weight: 600; color: #fff;">@t.DescripcionBien</div>
+                                <small style="color: var(--text-secondary);">CBI: @t.CodigoBien (@t.MarcaModelo)</small>
+                            </td>
+                            <td style="padding: 0.75rem; max-width: 250px;">
+                                <div style="font-weight: 600; color: #f1f5f9;">@t.TipoFalla</div>
+                                <small style="color: var(--text-secondary); display: block;">@t.Descripcion</small>
+                            </td>
+                            <td style="padding: 0.75rem;">
+                                @if (t.Gravedad == "Crítica" || t.Gravedad == "Alta")
+                                {
+                                    <span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">
+                                        @t.Gravedad
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem;">
+                                        @t.Gravedad
+                                    </span>
+                                }
+                            </td>
+                            <td style="padding: 0.75rem;">
+                                @if (t.Estado == "Reparado" || t.Estado == "Resuelto")
+                                {
+                                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.3rem 0.7rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">
+                                        Reparado
+                                    </span>
+                                }
+                                else if (t.Estado == "En Atención")
+                                {
+                                    <span style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 0.3rem 0.7rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">
+                                        En Atención
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; padding: 0.3rem 0.7rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">
+                                        Pendiente
+                                    </span>
+                                }
+                            </td>
+                            <td style="padding: 0.75rem;">
+                                <a href="/Modulo05/Soporte/Atender/@t.IdIncidencia" style="background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; padding: 0.45rem 0.9rem; border-radius: 6px; font-weight: 600; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                    <i class="ph-bold ph-wrench"></i> Atender
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div style="text-align: center; padding: 3rem 1rem; color: var(--text-secondary);">
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto; font-size: 2rem; color: var(--text-muted);">
+                <i class="ph ph-check-fat"></i>
+            </div>
+            <h4 style="color: #fff; font-size: 1.1rem; margin-bottom: 0.5rem;">No hay tickets pendientes con este filtro</h4>
+            <p style="font-size: 0.95rem; margin: 0;">Todos los equipos reportados se encuentran atendidos satisfactoriamente.</p>
+        </div>
+    }
+</div>
+
+<script>
+    function escanearActivoRapido() {
+        const cod = document.getElementById('codigoScanner').value.trim();
+        const resDiv = document.getElementById('resultadoScanner');
+
+        if (!cod) {
+            alert('Por favor ingrese o escanee un código de bien o serie.');
+            return;
+        }
+
+        resDiv.style.display = 'block';
+        resDiv.style.color = 'var(--text-secondary)';
+        resDiv.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Consultando hardware en base de datos PostgreSQL...';
+
+        fetch('/Modulo05/Soporte/EscanearActivo?codigo=' + encodeURIComponent(cod))
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    resDiv.style.color = '#38bdf8';
+                    resDiv.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                            <div>
+                                <strong style="color: #fff; font-size: 1rem;">${data.descripcion}</strong> (${data.marca} ${data.modelo})
+                                <div style="color: var(--text-secondary); margin-top: 0.2rem;">
+                                    CBI: <span style="color: #f59e0b;">${data.cbi || 'S/C'}</span> | Serie: ${data.serie || 'S/S'} | Ubicación: <span style="color: #10b981;">${data.ambiente}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <span style="background: rgba(14,165,233,0.2); color: #38bdf8; padding: 0.3rem 0.7rem; border-radius: 6px; font-weight: 700;">
+                                    ${data.estado} - Historial: ${data.totalFallas} fallas
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resDiv.style.color = '#f87171';
+                    resDiv.innerHTML = '<i class="ph-bold ph-x-circle"></i> ' + data.message;
+                }
+            })
+            .catch(err => {
+                resDiv.style.color = '#f87171';
+                resDiv.textContent = 'Error de conexión: ' + err.message;
+            });
+    }
+</script>

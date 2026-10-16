@@ -1,0 +1,870 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "Registro de Atención Médica - Tópico";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ISTP ARGENTINA - Tópico</title>
+    <!-- Phosphor Icons & Google Fonts -->
+    <link rel="stylesheet" href="https://unpkg.com/@@phosphor-icons/web@2.1.1/src/index.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #050811;
+            /* Patrón de cuadrícula fina (grid) idéntico a la captura */
+            background-image: 
+                linear-gradient(rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
+            background-size: 36px 36px;
+            background-position: center center;
+            color: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* ================= 1. BARRA SUPERIOR (HEADER) ================= */
+        .clinic-header-bar {
+            width: 100%;
+            max-width: 1240px;
+            margin: 1rem auto 1.5rem auto;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-brand-group {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+        }
+
+        .brand-logo-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .brand-icon-box {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.35rem;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+        }
+
+        .brand-text {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.2px;
+        }
+
+        .brand-text span {
+            color: #0284c7;
+        }
+
+        .badge-topico {
+            background: rgba(14, 165, 233, 0.12);
+            border: 1px solid rgba(14, 165, 233, 0.35);
+            color: #38bdf8;
+            padding: 0.35rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .badge-topico i {
+            font-size: 1rem;
+        }
+
+        .header-actions-group {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        /* Badge PostgreSQL: Online */
+        .badge-status-db {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 9999px;
+            padding: 0.4rem 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .dot-pulse-green {
+            width: 8px;
+            height: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        /* Cápsula de Usuario */
+        .user-capsule {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 9999px;
+            padding: 0.3rem 0.9rem 0.3rem 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+
+        .user-avatar-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.05rem;
+        }
+
+        .user-meta {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
+        }
+
+        .user-name {
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .user-role-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: #38bdf8;
+            letter-spacing: 0.5px;
+        }
+
+        /* Botón Logout */
+        .btn-logout {
+            width: 36px;
+            height: 36px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            border-radius: 8px;
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.18);
+            border-color: #ef4444;
+            color: #fca5a5;
+            transform: translateY(-1px);
+        }
+
+        /* ================= 2. CONTENEDOR PRINCIPAL ================= */
+        .clinic-container {
+            width: 100%;
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 1.5rem 3rem 1.5rem;
+        }
+
+        .clinic-card {
+            background: #0c1427;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 2.2rem 2.5rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+        }
+
+        /* Títulos de sección */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #00d2ff;
+            font-size: 0.95rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 1.3rem;
+        }
+
+        .section-header i {
+            font-size: 1.25rem;
+            color: #00d2ff;
+        }
+
+        /* Etiquetas */
+        .form-label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Controles */
+        .form-control {
+            width: 100%;
+            background: #060b17;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            color: #ffffff;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: #64748b;
+        }
+
+        /* Fila de Paciente (4 columnas) */
+        .grid-paciente {
+            display: grid;
+            grid-template-columns: 1.25fr 1.35fr 1.15fr 0.95fr;
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        /* Grupo de búsqueda de DNI */
+        .dni-search-box {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .dni-search-box .form-control {
+            flex: 1;
+        }
+
+        .btn-search {
+            background: #2563eb;
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 0 1.35rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 0.2s ease, transform 0.15s ease;
+        }
+
+        .btn-search:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .status-dni-text {
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-top: 0.35rem;
+            min-height: 1.1rem;
+        }
+
+        /* Inputs de solo lectura con candado */
+        .readonly-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .readonly-wrap i {
+            position: absolute;
+            left: 1rem;
+            color: #475569;
+            font-size: 0.95rem;
+            pointer-events: none;
+        }
+
+        .readonly-wrap .form-control {
+            padding-left: 2.3rem;
+            background: #070c18;
+            border-color: #172033;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        /* Separador entre secciones */
+        .section-divider {
+            margin-top: 2.2rem;
+        }
+
+        /* Fila Clínica Superior (3 columnas) */
+        .grid-clinica-top {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.45fr;
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        .date-wrap {
+            position: relative;
+        }
+
+        .date-wrap i {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            pointer-events: none;
+        }
+
+        .select-custom {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1rem;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
+
+        /* Recuadro Especial de Alergias */
+        .alergias-box {
+            background: rgba(239, 68, 68, 0.04);
+            border: 1px solid rgba(239, 68, 68, 0.28);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-height: 82px;
+            justify-content: center;
+        }
+
+        .alergias-check-row {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .alergias-check-row input[type="checkbox"] {
+            width: 1.1rem;
+            height: 1.1rem;
+            accent-color: #ef4444;
+            cursor: pointer;
+        }
+
+        .alergias-title {
+            color: #f87171;
+            font-size: 0.88rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .alergias-title i {
+            font-size: 1rem;
+        }
+
+        .alergias-input {
+            background: rgba(6, 11, 23, 0.85);
+            border: 1px solid rgba(239, 68, 68, 0.22);
+            border-radius: 6px;
+            padding: 0.5rem 0.8rem;
+            color: #ffffff;
+            font-size: 0.85rem;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .alergias-input:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+        }
+
+        /* Fila Textareas (3 columnas) */
+        .grid-textareas {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.25rem;
+            margin-top: 1.35rem;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 82px;
+            line-height: 1.45;
+        }
+
+        /* Botones Inferiores */
+        .form-actions-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-clear {
+            background: #0e172a;
+            border: 1px solid #1e293b;
+            color: #cbd5e1;
+            padding: 0.75rem 1.85rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-clear:hover {
+            background: #1e293b;
+            color: #ffffff;
+        }
+
+        .btn-save {
+            background: #2563eb;
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            padding: 0.75rem 2rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
+            transition: background-color 0.2s ease, transform 0.15s ease;
+        }
+
+        .btn-save:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        /* Responsividad */
+        @@media (max-width: 1024px) {
+            .grid-paciente {
+                grid-template-columns: 1fr 1fr;
+            }
+            .grid-clinica-top {
+                grid-template-columns: 1fr 1fr;
+            }
+            .grid-clinica-top > div:last-child {
+                grid-column: span 2;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .clinic-header-bar {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            .header-actions-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .grid-paciente,
+            .grid-clinica-top,
+            .grid-textareas {
+                grid-template-columns: 1fr;
+            }
+            .grid-clinica-top > div:last-child {
+                grid-column: span 1;
+            }
+            .clinic-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= 1. BARRA SUPERIOR (HEADER) ================= -->
+    <header class="clinic-header-bar">
+        <div class="header-brand-group">
+            <div class="brand-logo-pill">
+                <div class="brand-icon-box">
+                    <i class="ph-fill ph-graduation-cap"></i>
+                </div>
+                <div class="brand-text">ISTP ARGENTINA<span>.</span></div>
+            </div>
+            <div class="badge-topico">
+                <i class="ph-fill ph-first-aid"></i>
+                <span>Tópico</span>
+            </div>
+        </div>
+
+        <div class="header-actions-group">
+            <!-- Badge de estado con punto verde brillante -->
+            <div class="badge-status-db">
+                <div class="dot-pulse-green"></div>
+                <span>PostgreSQL: Online</span>
+            </div>
+
+            <!-- Cápsula de perfil de usuario -->
+            <div class="user-capsule">
+                <div class="user-avatar-circle">
+                    <i class="ph-fill ph-user"></i>
+                </div>
+                <div class="user-meta">
+                    <div class="user-name">Lic. Elena (Tópico)</div>
+                    <div class="user-role-label">ENFERMERIA</div>
+                </div>
+            </div>
+
+            <!-- Botón rojo bordeado para salir/logout -->
+            <a href="/Login/CerrarSesion" class="btn-logout" title="Cerrar Sesión">
+                <i class="ph-bold ph-sign-out"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- ================= 2. CONTENEDOR CENTRAL ================= -->
+    <main class="clinic-container">
+        <div class="clinic-card">
+            <form id="formAtencionClinica" onsubmit="event.preventDefault(); guardarAtencionClinica();">
+
+                <!-- SECCIÓN I: IDENTIFICACIÓN DEL PACIENTE -->
+                <div class="section-header">
+                    <i class="ph-bold ph-identification-badge"></i>
+                    <span>I. IDENTIFICACIÓN DEL PACIENTE</span>
+                </div>
+
+                <div class="grid-paciente">
+                    <!-- 1. Campo BUSCAR DNI -->
+                    <div>
+                        <label class="form-label" for="buscarDni">BUSCAR DNI</label>
+                        <div class="dni-search-box">
+                            <input type="text" id="buscarDni" name="buscarDni" class="form-control" placeholder="Ingrese DNI..." maxlength="8" autocomplete="off" />
+                            <button type="button" id="btnBuscarDni" class="btn-search" onclick="buscarPacienteDni()">
+                                <i class="ph-bold ph-magnifying-glass"></i> Buscar
+                            </button>
+                        </div>
+                        <div id="dniStatus" class="status-dni-text"></div>
+                    </div>
+
+                    <!-- 2. APELLIDOS Y NOMBRES -->
+                    <div>
+                        <label class="form-label" for="apellidosNombres">APELLIDOS Y NOMBRES</label>
+                        <div class="readonly-wrap">
+                            <i class="ph-fill ph-lock-simple"></i>
+                            <input type="text" id="apellidosNombres" name="apellidosNombres" class="form-control" placeholder="- - -" readonly />
+                        </div>
+                    </div>
+
+                    <!-- 3. CARRERA / PROGRAMA -->
+                    <div>
+                        <label class="form-label" for="carreraPrograma">CARRERA / PROGRAMA</label>
+                        <div class="readonly-wrap">
+                            <i class="ph-fill ph-lock-simple"></i>
+                            <input type="text" id="carreraPrograma" name="carreraPrograma" class="form-control" placeholder="- - -" readonly />
+                        </div>
+                    </div>
+
+                    <!-- 4. CICLO / TURNO -->
+                    <div>
+                        <label class="form-label" for="cicloTurno">CICLO / TURNO</label>
+                        <div class="readonly-wrap">
+                            <i class="ph-fill ph-lock-simple"></i>
+                            <input type="text" id="cicloTurno" name="cicloTurno" class="form-control" placeholder="- - -" readonly />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN II: REGISTRO DE ATENCIÓN CLÍNICA -->
+                <div class="section-header section-divider">
+                    <i class="ph-bold ph-stethoscope"></i>
+                    <span>II. REGISTRO DE ATENCIÓN CLÍNICA</span>
+                </div>
+
+                <!-- Fila 1 (3 columnas) -->
+                <div class="grid-clinica-top">
+                    <!-- 1. FECHA Y HORA -->
+                    <div>
+                        <label class="form-label" for="fechaHora">FECHA Y HORA</label>
+                        <div class="date-wrap">
+                            <input type="text" id="fechaHora" name="fechaHora" class="form-control" value="10/11/2026 04:55 PM" />
+                            <i class="ph ph-calendar"></i>
+                        </div>
+                    </div>
+
+                    <!-- 2. TIPO SEGURO SALUD -->
+                    <div>
+                        <label class="form-label" for="tipoSeguroSalud">TIPO SEGURO SALUD</label>
+                        <select id="tipoSeguroSalud" name="tipoSeguroSalud" class="form-control select-custom">
+                            <option value="Ninguno">Ninguno detectado</option>
+                            <option value="EsSalud">EsSalud</option>
+                            <option value="SIS">SIS</option>
+                            <option value="Privado">Seguro Privado / EPS</option>
+                        </select>
+                    </div>
+
+                    <!-- 3. ALERGIAS -->
+                    <div>
+                        <label class="form-label">ALERGIAS</label>
+                        <div class="alergias-box">
+                            <label class="alergias-check-row" for="reportaAlergias">
+                                <input type="checkbox" id="reportaAlergias" name="reportaAlergias" value="true" checked onchange="toggleAlergias(this)" />
+                                <span class="alergias-title">
+                                    <i class="ph-fill ph-warning"></i> Paciente reporta alergias
+                                </span>
+                            </label>
+                            <input type="text" id="especificarAlergias" name="especificarAlergias" class="alergias-input" placeholder="Especificar alergias..." />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fila 2 (3 columnas Textareas) -->
+                <div class="grid-textareas">
+                    <!-- 1. MOTIVO DE ATENCIÓN * -->
+                    <div>
+                        <label class="form-label" for="motivoAtencion">MOTIVO DE ATENCIÓN *</label>
+                        <textarea id="motivoAtencion" name="motivoAtencion" class="form-control form-textarea" rows="3" placeholder="Cefalea, contusión, dolor estomacal..." required></textarea>
+                    </div>
+
+                    <!-- 2. MEDICAMENTOS ADMINISTRADOS -->
+                    <div>
+                        <label class="form-label" for="medicamentosAdministrados">MEDICAMENTOS ADMINISTRADOS</label>
+                        <textarea id="medicamentosAdministrados" name="medicamentosAdministrados" class="form-control form-textarea" rows="3" placeholder="Paracetamol 500mg, etc..."></textarea>
+                    </div>
+
+                    <!-- 3. OBSERVACIONES / TRATAMIENTO -->
+                    <div>
+                        <label class="form-label" for="observacionesTratamiento">OBSERVACIONES / TRATAMIENTO</label>
+                        <textarea id="observacionesTratamiento" name="observacionesTratamiento" class="form-control form-textarea" rows="3" placeholder="Reposo por 30 mins..."></textarea>
+                    </div>
+                </div>
+
+                <!-- BOTONES INFERIORES -->
+                <div class="form-actions-bar">
+                    <span id="resultadoAtencion" style="margin-right: auto; font-size: 0.85rem; font-weight: 700;"></span>
+                    <button type="button" id="btnLimpiar" class="btn-clear" onclick="limpiarFormulario()">Limpiar</button>
+                    <button type="submit" id="btnGuardar" class="btn-save">
+                        <i class="ph-bold ph-floppy-disk"></i> Guardar Atención
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Formateador y carga de fecha actual si no tiene valor
+        (function initFechaHora() {
+            const inputFecha = document.getElementById('fechaHora');
+            if (inputFecha && !inputFecha.value) {
+                const now = new Date();
+                const day = String(now.getDate()).padStart(2, '0');
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const year = now.getFullYear();
+                let hours = now.getHours();
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                const hoursFormatted = String(hours).padStart(2, '0');
+                inputFecha.value = `${day}/${month}/${year} ${hoursFormatted}:${minutes} ${ampm}`;
+            }
+        })();
+
+        // Enter key en campo DNI para buscar
+        (function initEnterKeyDni() {
+            const dniInput = document.getElementById('buscarDni');
+            if (dniInput) {
+                dniInput.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        buscarPacienteDni();
+                    }
+                });
+            }
+        })();
+
+        function toggleAlergias(chk) {
+            const inputAlergias = document.getElementById('especificarAlergias');
+            if (inputAlergias) {
+                if (chk.checked) {
+                    inputAlergias.style.display = 'block';
+                    inputAlergias.focus();
+                } else {
+                    inputAlergias.value = '';
+                }
+            }
+        }
+
+        // Búsqueda AJAX de paciente por DNI
+        function buscarPacienteDni() {
+            const dniInput = document.getElementById('buscarDni');
+            const statusSpan = document.getElementById('dniStatus');
+            const dni = dniInput ? dniInput.value.trim() : '';
+
+            if (!dni || dni.length < 8) {
+                alert('Por favor ingrese un número de DNI válido de 8 dígitos.');
+                if (dniInput) dniInput.focus();
+                return;
+            }
+
+            if (statusSpan) {
+                statusSpan.style.color = '#94a3b8';
+                statusSpan.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Consultando PostgreSQL...';
+            }
+
+            fetch('/Modulo05/Enfermeria/BuscarPaciente?dni=' + encodeURIComponent(dni))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        if (statusSpan) {
+                            statusSpan.style.color = '#10b981';
+                            statusSpan.innerHTML = '<i class="ph-bold ph-check-circle"></i> Paciente encontrado';
+                        }
+                        const nomInput = document.getElementById('apellidosNombres');
+                        const carInput = document.getElementById('carreraPrograma');
+                        const cicInput = document.getElementById('cicloTurno');
+
+                        if (nomInput) nomInput.value = (data.apellidos + ' ' + data.nombres).trim();
+                        if (carInput) carInput.value = data.carrera || 'Desarrollo de Sistemas de Información';
+                        if (cicInput) cicInput.value = data.cicloTurno || 'IV Ciclo / Turno Noche';
+                    } else {
+                        if (statusSpan) {
+                            statusSpan.style.color = '#f87171';
+                            statusSpan.innerHTML = '<i class="ph-bold ph-x-circle"></i> ' + (data.message || 'No encontrado');
+                        }
+                        const nomInput = document.getElementById('apellidosNombres');
+                        const carInput = document.getElementById('carreraPrograma');
+                        const cicInput = document.getElementById('cicloTurno');
+                        if (nomInput) nomInput.value = '';
+                        if (carInput) carInput.value = '';
+                        if (cicInput) cicInput.value = '';
+                    }
+                })
+                .catch(err => {
+                    if (statusSpan) {
+                        statusSpan.style.color = '#f87171';
+                        statusSpan.textContent = 'Error al consultar DNI';
+                    }
+                });
+        }
+
+        // Guardar atención
+        function guardarAtencionClinica() {
+            const form = document.getElementById('formAtencionClinica');
+            const dniInput = document.getElementById('buscarDni');
+            const motivo = document.getElementById('motivoAtencion');
+            const resultadoDiv = document.getElementById('resultadoAtencion');
+
+            const dni = dniInput ? dniInput.value.trim() : '';
+            if (!dni) {
+                alert('Debe buscar e ingresar el DNI del paciente antes de guardar.');
+                if (dniInput) dniInput.focus();
+                return;
+            }
+
+            if (!motivo || !motivo.value.trim()) {
+                alert('El campo "MOTIVO DE ATENCIÓN" es obligatorio.');
+                if (motivo) motivo.focus();
+                return;
+            }
+
+            const formData = new FormData(form);
+
+            if (resultadoDiv) {
+                resultadoDiv.style.color = '#94a3b8';
+                resultadoDiv.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Guardando atención...';
+            }
+
+            fetch('/Modulo05/Enfermeria/GuardarAtencion', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (resultadoDiv) {
+                        resultadoDiv.style.color = '#10b981';
+                        resultadoDiv.innerHTML = '<i class="ph-bold ph-check-circle"></i> ' + data.message;
+                    }
+                    alert(data.message || 'Atención registrada con éxito');
+                    limpiarFormulario();
+                } else {
+                    if (resultadoDiv) {
+                        resultadoDiv.style.color = '#f87171';
+                        resultadoDiv.innerHTML = '<i class="ph-bold ph-warning"></i> ' + data.message;
+                    }
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(err => {
+                if (resultadoDiv) {
+                    resultadoDiv.style.color = '#f87171';
+                    resultadoDiv.textContent = 'Error de conexión: ' + err.message;
+                }
+            });
+        }
+
+        function limpiarFormulario() {
+            const form = document.getElementById('formAtencionClinica');
+            if (form) form.reset();
+
+            const nomInput = document.getElementById('apellidosNombres');
+            const carInput = document.getElementById('carreraPrograma');
+            const cicInput = document.getElementById('cicloTurno');
+            const statusSpan = document.getElementById('dniStatus');
+            const resultadoDiv = document.getElementById('resultadoAtencion');
+
+            if (nomInput) nomInput.value = '';
+            if (carInput) carInput.value = '';
+            if (cicInput) cicInput.value = '';
+            if (statusSpan) statusSpan.innerHTML = '';
+            if (resultadoDiv) resultadoDiv.innerHTML = '';
+        }
+    </script>
+</body>
+</html>

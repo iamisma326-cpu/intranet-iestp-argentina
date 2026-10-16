@@ -1,0 +1,534 @@
+@model List<Login_Administracion_de_Modulos.Areas.Modulo05.Models.AtencionMedicaItem>
+@{
+    bool isPartial = Context.Request.Headers["X-Requested-With"] == "XMLHttpRequest" || Context.Request.Query["partial"] == "true";
+    if (!isPartial)
+    {
+        Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    }
+    else
+    {
+        Layout = null;
+    }
+    ViewData["Title"] = "Historial Clínico del Paciente";
+    ViewData["Role"] = "Enfermería (Tópico)";
+    string dniBuscado = ViewBag.DniBuscado as string ?? "";
+    bool tieneRegistros = Model != null && Model.Any();
+}
+
+<style>
+    /* Estilos Premium para Historial Clínico de Pacientes */
+    .historial-container {
+        color: #f3f4f6;
+        font-family: inherit;
+    }
+    .historial-header {
+        margin-bottom: 1.75rem;
+    }
+    .historial-header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #10b981, #06b6d4);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0 0 0.5rem 0;
+    }
+    .historial-search-card {
+        background: var(--bg-card, #121826);
+        border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.75rem;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    }
+    .historial-search-card label {
+        display: block;
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 0.6rem;
+    }
+    .historial-input-group {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .historial-input-wrapper {
+        position: relative;
+        width: 320px;
+        max-width: 100%;
+    }
+    .historial-input-wrapper input {
+        width: 100%;
+        background: rgba(15, 15, 25, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #fff;
+        padding: 0.8rem 1rem 0.8rem 2.75rem;
+        border-radius: 10px;
+        font-size: 1rem;
+        outline: none;
+        transition: all 0.2s ease;
+        letter-spacing: 1px;
+    }
+    .historial-input-wrapper input:focus {
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+    .historial-input-wrapper .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        font-size: 1.15rem;
+        pointer-events: none;
+    }
+    .btn-search {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.6rem;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+        transition: all 0.2s;
+    }
+    .btn-search:hover {
+        opacity: 0.92;
+        transform: translateY(-1px);
+    }
+    .btn-clear {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #e2e8f0;
+        padding: 0.8rem 1.2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-clear:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+    }
+    .patient-summary-box {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.05));
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+    }
+    .patient-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 700;
+    }
+</style>
+
+<div class="historial-container">
+    <!-- Encabezado -->
+    <div class="historial-header">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h1>Historial Clínico de Atenciones</h1>
+                <p style="color: var(--text-secondary, #9ca3af); margin: 0;">Consulta cronológica de consultas médicas, tratamientos y prescripciones en Tópico</p>
+            </div>
+            <a href="/Modulo05/Enfermeria/FormAtencion" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981, #059669); border: none; color: white; padding: 0.75rem 1.25rem; border-radius: 10px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
+                <i class="ph-bold ph-plus"></i> Nueva Atención
+            </a>
+        </div>
+    </div>
+
+    <!-- Buscador de Paciente por DNI -->
+    <div class="historial-search-card">
+        <form id="formHistorialDni" method="get" action="/Modulo05/Enfermeria/HistorialPaciente" onsubmit="return manejarEnvioBusqueda(event);">
+            <label for="dniBuscadorInput">
+                <i class="ph-bold ph-identification-card" style="color: #10b981; margin-right: 0.35rem;"></i>
+                Buscar por DNI del Paciente (Estudiante / Docente):
+            </label>
+            <div class="historial-input-group">
+                <div class="historial-input-wrapper">
+                    <i class="ph-bold ph-magnifying-glass search-icon"></i>
+                    <input type="text" 
+                           id="dniBuscadorInput" 
+                           name="dni" 
+                           value="@dniBuscado" 
+                           placeholder="Ingrese 8 dígitos de DNI..." 
+                           maxlength="8" 
+                           autocomplete="off"
+                           inputmode="numeric"
+                           pattern="[0-9]{8}"
+                           required />
+                </div>
+                <button type="submit" id="btnBuscarHistorial" class="btn-search">
+                    <i class="ph-bold ph-magnifying-glass"></i> Consultar Historial
+                </button>
+                <button type="button" id="btnLimpiarFiltro" class="btn-clear" onclick="limpiarBusquedaHistorial()">
+                    <i class="ph ph-arrow-counter-clockwise"></i> Limpiar
+                </button>
+                <span id="dniBusquedaFeedback" style="font-size: 0.9rem; font-weight: 600; margin-left: 0.5rem;"></span>
+            </div>
+        </form>
+    </div>
+
+    <!-- Ficha de Información del Paciente (Visible al encontrarlo) -->
+    <div id="patientSummaryCard" class="patient-summary-box" style="display: @(tieneRegistros ? "flex" : "none");">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+                <i class="ph-bold ph-user"></i>
+            </div>
+            <div>
+                <h3 id="pacienteNombreCompleto" style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0 0 0.25rem 0;">
+                    @if (tieneRegistros)
+                    {
+                        var primerItem = Model!.First();
+                        @($"{primerItem.PacienteApellidos} {primerItem.PacienteNombres}")
+                    }
+                    else
+                    {
+                        <text>Paciente Seleccionado</text>
+                    }
+                </h3>
+                <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+                    <span id="badgeDniPaciente" class="patient-badge" style="background: rgba(255,255,255,0.08); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.12);">
+                        <i class="ph-bold ph-identification-badge"></i> DNI: <span id="txtDniPaciente">@(tieneRegistros ? Model!.First().NumeroDocumento : dniBuscado)</span>
+                    </span>
+                    <span id="badgeSeguroPaciente" class="patient-badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">
+                        <i class="ph ph-shield-check"></i> Seguro: <span id="txtSeguroPaciente">@(tieneRegistros ? (Model!.First().SeguroSalud ?? "SIS") : "SIS / Activo")</span>
+                    </span>
+                    <span id="badgeTotalAtenciones" class="patient-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+                        <i class="ph-bold ph-heartbeat"></i> Atenciones: <span id="txtTotalAtenciones">@(Model?.Count ?? 0)</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+            <a id="btnNuevaAtencionDirecta" href="/Modulo05/Enfermeria/FormAtencion" class="btn" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; padding: 0.55rem 1rem; border-radius: 8px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.9rem;">
+                <i class="ph-bold ph-plus-circle"></i> Registrar Atención
+            </a>
+            <button type="button" onclick="window.print()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 0.55rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.9rem;">
+                <i class="ph ph-printer"></i> Imprimir Reporte
+            </button>
+        </div>
+    </div>
+
+    <!-- Resultados del Historial -->
+    <div style="background: var(--bg-card, #121826); border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1)); border-radius: 16px; padding: 1.75rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <h3 style="font-size: 1.2rem; font-weight: 700; color: #fff; margin: 0; display: flex; align-items: center; gap: 0.6rem;">
+                <i class="ph ph-file-text" style="color: #10b981;"></i> Registro Histórico de Consultas
+            </h3>
+            <span id="contadorRegistrosBadge" style="font-size: 0.85rem; color: var(--text-secondary, #9ca3af); font-weight: 600;">
+                @(tieneRegistros ? $"{Model!.Count} registro(s) encontrado(s)" : "")
+            </span>
+        </div>
+
+        <div id="historialTableContainer" style="overflow-x: auto; display: @(tieneRegistros ? "block" : "none");">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary, #9ca3af); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px;">
+                        <th style="padding: 0.75rem;">Fecha y Hora</th>
+                        <th style="padding: 0.75rem;">Paciente</th>
+                        <th style="padding: 0.75rem;">Motivo Consulta</th>
+                        <th style="padding: 0.75rem;">Alergias</th>
+                        <th style="padding: 0.75rem;">Medicamento / Tratamiento</th>
+                        <th style="padding: 0.75rem;">Seguro</th>
+                    </tr>
+                </thead>
+                <tbody id="historialTableBody">
+                    @if (tieneRegistros)
+                    {
+                        foreach (var atencion in Model!)
+                        {
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); color: #e2e8f0;">
+                                <td style="padding: 0.75rem; font-weight: 600; color: #fff; white-space: nowrap;">
+                                    @atencion.FechaHora.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+                                <td style="padding: 0.75rem;">
+                                    <div style="font-weight: 700; color: #fff;">@atencion.PacienteNombres @atencion.PacienteApellidos</div>
+                                    <small style="color: var(--text-secondary, #9ca3af);">DNI: @atencion.NumeroDocumento</small>
+                                </td>
+                                <td style="padding: 0.75rem; max-width: 260px;">
+                                    <div style="font-weight: 600; color: #e2e8f0;">@atencion.Motivo</div>
+                                    @if (!string.IsNullOrWhiteSpace(atencion.Observacion))
+                                    {
+                                        <small style="color: var(--text-secondary, #9ca3af); display: block; margin-top: 0.2rem;">@atencion.Observacion</small>
+                                    }
+                                </td>
+                                <td style="padding: 0.75rem;">
+                                    @if (atencion.EsAlergico)
+                                    {
+                                        <span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.85rem; font-weight: 700;">
+                                            @(atencion.DetalleAlergia ?? "Alérgico Reportado")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">
+                                            Sin Alergias
+                                        </span>
+                                    }
+                                </td>
+                                <td style="padding: 0.75rem; color: #38bdf8; font-weight: 600;">
+                                    @(atencion.MedicamentoNombre ?? "Atención ambulatoria / Reposo")
+                                </td>
+                                <td style="padding: 0.75rem;">
+                                    <span style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">
+                                        @(atencion.SeguroSalud ?? "SIS")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Estado vacío o sin resultados -->
+        <div id="historialEmptyState" style="text-align: center; padding: 3rem 1rem; color: var(--text-secondary, #9ca3af); display: @(tieneRegistros ? "none" : "block");">
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto; font-size: 2rem; color: #9ca3af;">
+                <i id="emptyStateIcon" class="ph ph-folder-open"></i>
+            </div>
+            <h4 id="emptyStateTitle" style="color: #fff; font-size: 1.15rem; margin-bottom: 0.5rem; font-weight: 700;">
+                @if (!string.IsNullOrEmpty(dniBuscado))
+                {
+                    <text>No se encontraron registros para el DNI @dniBuscado</text>
+                }
+                else
+                {
+                    <text>Consulta de Historial Clínico</text>
+                }
+            </h4>
+            <p id="emptyStateDescription" style="font-size: 0.95rem; margin: 0 auto; max-width: 480px;">
+                @if (!string.IsNullOrEmpty(dniBuscado))
+                {
+                    <text>Verifique el número ingresado o registre una nueva atención para este paciente en el sistema.</text>
+                }
+                else
+                {
+                    <text>Ingrese los 8 dígitos del DNI del estudiante o docente en el buscador para consultar su ficha médica y atenciones anteriores.</text>
+                }
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Búsqueda inteligente por DNI en el Historial de Enfermería
+    (function initHistorialSearch() {
+        const inputDni = document.getElementById('dniBuscadorInput');
+        if (!inputDni) return;
+
+        // Auto-búsqueda inmediata cuando se completen 8 dígitos
+        inputDni.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, ''); // Solo números
+            if (this.value.length === 8) {
+                buscarHistorialPorDni(this.value.trim());
+            } else if (this.value.length === 0) {
+                const feedback = document.getElementById('dniBusquedaFeedback');
+                if (feedback) feedback.innerHTML = '';
+            }
+        });
+
+        // Evento presionar tecla Enter
+        inputDni.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const dni = inputDni.value.trim();
+                if (dni.length === 8) {
+                    buscarHistorialPorDni(dni);
+                } else {
+                    mostrarFeedback('Ingrese exactamente 8 dígitos del DNI.', '#f87171');
+                }
+            }
+        });
+    })();
+
+    function manejarEnvioBusqueda(event) {
+        if (event) event.preventDefault();
+        const inputDni = document.getElementById('dniBuscadorInput');
+        const dni = inputDni ? inputDni.value.trim() : '';
+
+        if (!dni || dni.length !== 8) {
+            mostrarFeedback('Ingrese un DNI válido de 8 dígitos.', '#f87171');
+            if (inputDni) inputDni.focus();
+            return false;
+        }
+
+        buscarHistorialPorDni(dni);
+        return false;
+    }
+
+    function mostrarFeedback(mensaje, color) {
+        const feedback = document.getElementById('dniBusquedaFeedback');
+        if (feedback) {
+            feedback.style.color = color;
+            feedback.innerHTML = mensaje;
+        }
+    }
+
+    function limpiarBusquedaHistorial() {
+        const inputDni = document.getElementById('dniBuscadorInput');
+        if (inputDni) {
+            inputDni.value = '';
+            inputDni.focus();
+        }
+
+        mostrarFeedback('', '');
+
+        // Ocultar tarjeta y tabla
+        document.getElementById('patientSummaryCard').style.display = 'none';
+        document.getElementById('historialTableContainer').style.display = 'none';
+        document.getElementById('historialTableBody').innerHTML = '';
+        document.getElementById('contadorRegistrosBadge').textContent = '';
+
+        // Restaurar estado vacío inicial
+        const emptyState = document.getElementById('historialEmptyState');
+        emptyState.style.display = 'block';
+        document.getElementById('emptyStateIcon').className = 'ph ph-folder-open';
+        document.getElementById('emptyStateTitle').textContent = 'Consulta de Historial Clínico';
+        document.getElementById('emptyStateDescription').textContent = 'Ingrese los 8 dígitos del DNI del estudiante o docente en el buscador para consultar su ficha médica y atenciones anteriores.';
+
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState({}, '', '/Modulo05/Enfermeria/HistorialPaciente');
+        }
+    }
+
+    function buscarHistorialPorDni(dni) {
+        if (!dni || dni.length !== 8) return;
+
+        mostrarFeedback('<i class="ph ph-spinner ph-spin"></i> Consultando paciente y registros...', '#38bdf8');
+
+        // Actualizar URL sin recargar
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState({}, '', '/Modulo05/Enfermeria/HistorialPaciente?dni=' + encodeURIComponent(dni));
+        }
+
+        // 1. Consultar Padrón de Personas para datos del paciente
+        Promise.all([
+            fetch('/Modulo05/Enfermeria/BuscarPaciente?dni=' + encodeURIComponent(dni)).then(r => r.json()).catch(() => null),
+            fetch('/Modulo05/Enfermeria/Historial?dni=' + encodeURIComponent(dni)).then(r => r.json()).catch(() => null)
+        ])
+        .then(([pacienteRes, historialRes]) => {
+            const tableContainer = document.getElementById('historialTableContainer');
+            const tableBody = document.getElementById('historialTableBody');
+            const emptyState = document.getElementById('historialEmptyState');
+            const summaryCard = document.getElementById('patientSummaryCard');
+            const badgeCount = document.getElementById('contadorRegistrosBadge');
+
+            const pacienteExiste = pacienteRes && pacienteRes.success;
+            const tieneHistorial = historialRes && historialRes.success && historialRes.data && historialRes.data.length > 0;
+            const atenciones = tieneHistorial ? historialRes.data : [];
+
+            if (pacienteExiste) {
+                const nombreCompleto = (pacienteRes.apellidos + ' ' + pacienteRes.nombres).trim();
+                document.getElementById('pacienteNombreCompleto').textContent = nombreCompleto;
+                document.getElementById('txtDniPaciente').textContent = dni;
+                document.getElementById('txtSeguroPaciente').textContent = pacienteRes.tipoSeguro || 'SIS Gratuito';
+                document.getElementById('txtTotalAtenciones').textContent = atenciones.length;
+                summaryCard.style.display = 'flex';
+
+                mostrarFeedback('<i class="ph-bold ph-check-circle"></i> Paciente encontrado: ' + nombreCompleto, '#10b981');
+            } else if (tieneHistorial) {
+                const primer = atenciones[0];
+                const nom = (primer.pacienteApellidos || '') + ' ' + (primer.pacienteNombres || '');
+                document.getElementById('pacienteNombreCompleto').textContent = nom.trim() || 'Paciente DNI: ' + dni;
+                document.getElementById('txtDniPaciente').textContent = dni;
+                document.getElementById('txtSeguroPaciente').textContent = primer.seguroSalud || 'SIS';
+                document.getElementById('txtTotalAtenciones').textContent = atenciones.length;
+                summaryCard.style.display = 'flex';
+
+                mostrarFeedback('<i class="ph-bold ph-check-circle"></i> Registros encontrados: ' + atenciones.length, '#10b981');
+            } else {
+                summaryCard.style.display = 'none';
+                mostrarFeedback('<i class="ph-bold ph-warning"></i> No se encontró a nadie con el DNI ' + dni, '#f87171');
+            }
+
+            // Renderizar la tabla de atenciones
+            if (tieneHistorial) {
+                tableBody.innerHTML = '';
+                badgeCount.textContent = atenciones.length + ' registro(s) encontrado(s)';
+
+                atenciones.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+                    tr.style.color = '#e2e8f0';
+
+                    const alergiasHtml = item.esAlergico
+                        ? `<span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.85rem; font-weight: 700;">${item.detalleAlergia || 'Alérgico Reportado'}</span>`
+                        : `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">Sin Alergias</span>`;
+
+                    const obsHtml = item.observacion
+                        ? `<small style="color: var(--text-secondary, #9ca3af); display: block; margin-top: 0.2rem;">${item.observacion}</small>`
+                        : '';
+
+                    tr.innerHTML = `
+                        <td style="padding: 0.75rem; font-weight: 600; color: #fff; white-space: nowrap;">
+                            ${item.fechaHora || '-'}
+                        </td>
+                        <td style="padding: 0.75rem;">
+                            <div style="font-weight: 700; color: #fff;">${item.pacienteNombres || ''} ${item.pacienteApellidos || ''}</div>
+                            <small style="color: var(--text-secondary, #9ca3af);">DNI: ${item.numeroDocumento || dni}</small>
+                        </td>
+                        <td style="padding: 0.75rem; max-width: 260px;">
+                            <div style="font-weight: 600; color: #e2e8f0;">${item.motivo || '-'}</div>
+                            ${obsHtml}
+                        </td>
+                        <td style="padding: 0.75rem;">
+                            ${alergiasHtml}
+                        </td>
+                        <td style="padding: 0.75rem; color: #38bdf8; font-weight: 600;">
+                            ${item.medicamentoNombre || item.medicamento || 'Atención ambulatoria / Reposo'}
+                        </td>
+                        <td style="padding: 0.75rem;">
+                            <span style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">
+                                ${item.seguroSalud || 'SIS'}
+                            </span>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+
+                tableContainer.style.display = 'block';
+                emptyState.style.display = 'none';
+            } else {
+                tableContainer.style.display = 'none';
+                tableBody.innerHTML = '';
+                badgeCount.textContent = '0 registros';
+                emptyState.style.display = 'block';
+
+                if (pacienteExiste) {
+                    document.getElementById('emptyStateIcon').className = 'ph ph-user-check';
+                    document.getElementById('emptyStateTitle').textContent = 'El paciente no tiene atenciones previas en Tópico';
+                    document.getElementById('emptyStateDescription').innerHTML = `Se encontró a <strong>${pacienteRes.apellidos} ${pacienteRes.nombres}</strong> en el padrón institucional. Puede registrar su primera atención haciendo clic en <strong>Nueva Atención</strong>.`;
+                } else {
+                    document.getElementById('emptyStateIcon').className = 'ph ph-warning-circle';
+                    document.getElementById('emptyStateTitle').textContent = `No se encontró a nadie con el DNI ${dni}`;
+                    document.getElementById('emptyStateDescription').textContent = 'Verifique el número ingresado o asegúrese de que la persona esté registrada en el sistema institucional.';
+                }
+            }
+        })
+        .catch(err => {
+            mostrarFeedback('<i class="ph-bold ph-warning"></i> Error de conexión al consultar el DNI', '#f87171');
+        });
+    }
+</script>

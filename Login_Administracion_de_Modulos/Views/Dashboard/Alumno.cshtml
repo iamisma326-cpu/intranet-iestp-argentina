@@ -1,0 +1,186 @@
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Portal del Estudiante";
+    ViewData["Role"] = "Alumno";
+}
+
+@section SidebarNav {
+    <a href="javascript:void(0)" class="nav-item active" id="nav-alu-dash" onclick="mostrarSeccionAlumno('seccion-alu-dash', this)">
+        <i class="ph ph-house"></i>
+        <span>Inicio</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-alu-matricula" onclick="mostrarSeccionAlumno('seccion-alu-matricula', this)">
+        <i class="ph ph-file-text"></i>
+        <span>Mi matrícula</span>
+        <span style="background-color: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; margin-left: auto;">1</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-alu-tramites" onclick="mostrarSeccionAlumno('seccion-alu-tramites', this)">
+        <i class="ph ph-file"></i>
+        <span>Mis trámites</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-alu-pagos" onclick="mostrarSeccionAlumno('seccion-alu-pagos', this)">
+        <i class="ph ph-credit-card"></i>
+        <span>Mis pagos</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-alu-buzon" onclick="mostrarSeccionAlumno('seccion-alu-buzon', this)">
+        <i class="ph ph-chat-circle"></i>
+        <span>Buzón</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-alu-whatsapp" onclick="mostrarSeccionAlumno('seccion-alu-whatsapp', this)">
+        <i class="ph ph-whatsapp-logo"></i>
+        <span>WhatsApp</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-alu-catalogo" onclick="mostrarSeccionAlumno('seccion-alu-catalogo', this)">
+        <i class="ph ph-squares-four"></i>
+        <span>Catálogo TUPA</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-alu-salud" onclick="mostrarSeccionAlumno('seccion-alu-salud', this)">
+        <i class="ph ph-heartbeat"></i>
+        <span>Tópico y Salud (M05)</span>
+    </a>
+}
+
+<div class="page-header">
+    <h1>Portal del Estudiante</h1>
+    <p>Seguimiento académico, bienestar integral y servicios estudiantiles del IESTP Argentina</p>
+    <div class="header-accent"></div>
+</div>
+
+<!-- Contenedor Dinámico Alumno -->
+<div id="seccion-alu-dash" class="alu-section active-section">
+    <!-- Tarjetas de Información Estudiantil -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-graduation-cap"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Especialidad (bd.sql)</p>
+                <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff;">Desarrollo de Sistemas</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(16, 185, 129, 0.1); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-chart-line-up"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Promedio Ponderado</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">17.4</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(236, 72, 153, 0.1); color: #ec4899; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-heartbeat"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Historial Tópico (Módulo 5)</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">2 Atenciones</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(168, 85, 247, 0.1); color: #a855f7; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-brain"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Citas Psicología</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">1 Registrada</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Horario y Cursos Actuales -->
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="ph ph-book-open" style="color: var(--accent-cyan);"></i> Unidades Didácticas Matriculadas (Semestre IV)
+        </h3>
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+                    <th style="padding: 0.75rem 0.5rem;">Código</th>
+                    <th style="padding: 0.75rem 0.5rem;">Curso</th>
+                    <th style="padding: 0.75rem 0.5rem;">Docente</th>
+                    <th style="padding: 0.75rem 0.5rem;">Créditos</th>
+                    <th style="padding: 0.75rem 0.5rem;">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 600; color: var(--accent-cyan);">DSI-401</td>
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 500;">Desarrollo de Servicios Web</td>
+                    <td style="padding: 0.75rem 0.5rem; color: var(--text-secondary);">Prof. Carlos Docente</td>
+                    <td style="padding: 0.75rem 0.5rem;">4.0</td>
+                    <td style="padding: 0.75rem 0.5rem;"><span style="color: #10b981; font-weight: 600;">En Curso</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 600; color: var(--accent-cyan);">DSI-204</td>
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 500;">Bases de Datos Avanzadas</td>
+                    <td style="padding: 0.75rem 0.5rem; color: var(--text-secondary);">Ing. Jorge Ramos</td>
+                    <td style="padding: 0.75rem 0.5rem;">3.5</td>
+                    <td style="padding: 0.75rem 0.5rem;"><span style="color: #10b981; font-weight: 600;">En Curso</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 600; color: var(--accent-cyan);">ARC-302</td>
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 500;">Arquitectura de Servidores</td>
+                    <td style="padding: 0.75rem 0.5rem; color: var(--text-secondary);">Ing. María Quispe</td>
+                    <td style="padding: 0.75rem 0.5rem;">3.0</td>
+                    <td style="padding: 0.75rem 0.5rem;"><span style="color: #10b981; font-weight: 600;">En Curso</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Sección Salud (Tópico y Psicología) -->
+<div id="seccion-alu-salud" class="alu-section" style="display: none;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+        <h3 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="ph ph-first-aid" style="color: #ec4899;"></i> Registro de Atenciones en Tópico de Salud
+        </h3>
+        <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.5rem;">
+            Historial médico de atenciones recibidas en enfermería conforme a la tabla <code>atenciones_topico</code>.
+        </p>
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+                    <th style="padding: 0.75rem 0.5rem;">Fecha y Hora</th>
+                    <th style="padding: 0.75rem 0.5rem;">Motivo de Atención</th>
+                    <th style="padding: 0.75rem 0.5rem;">Medicamento Suministrado</th>
+                    <th style="padding: 0.75rem 0.5rem;">Seguro Salud</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 0.5rem; color: var(--accent-cyan);">15/09/2026 10:30</td>
+                    <td style="padding: 0.75rem 0.5rem;">Cefalea intensa y mareos leves</td>
+                    <td style="padding: 0.75rem 0.5rem;">Paracetamol 500mg</td>
+                    <td style="padding: 0.75rem 0.5rem;">SIS</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 0.5rem; color: var(--accent-cyan);">02/08/2026 15:45</td>
+                    <td style="padding: 0.75rem 0.5rem;">Dolor abdominal leve</td>
+                    <td style="padding: 0.75rem 0.5rem;">Hioscina Compuesta</td>
+                    <td style="padding: 0.75rem 0.5rem;">SIS</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function mostrarSeccionAlumno(idSeccion, el) {
+        document.querySelectorAll('.alu-section').forEach(sec => sec.style.display = 'none');
+        document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => item.classList.remove('active'));
+        
+        var objetivo = document.getElementById(idSeccion);
+        if (objetivo) {
+            objetivo.style.display = 'block';
+        } else {
+            document.getElementById('seccion-alu-dash').style.display = 'block';
+        }
+
+        if (el) el.classList.add('active');
+    }
+</script>

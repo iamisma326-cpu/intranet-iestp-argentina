@@ -1,0 +1,135 @@
+@model List<Login_Administracion_de_Modulos.Areas.Modulo05.Models.MedicamentoItem>
+@{
+    Layout = null;
+    ViewData["Title"] = "Panel de Enfermería y Tópico";
+}
+
+<div class="page-header" style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; background: linear-gradient(90deg, #10b981, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 0.5rem 0;">
+                Módulo de Tópico Médico y Enfermería
+            </h1>
+            <p style="color: var(--text-secondary); margin: 0;">Gestión clínica integral, atenciones ambulatorias y control de botica estudiantil</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+            <a href="/Modulo05/Enfermeria/FormAtencion" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981, #059669); border: none; color: white; padding: 0.75rem 1.25rem; border-radius: 10px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
+                <i class="ph-bold ph-plus"></i> Registrar Atención
+            </a>
+            <a href="/Modulo05/Enfermeria/HistorialPaciente" class="btn" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 0.75rem 1.25rem; border-radius: 10px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                <i class="ph-bold ph-magnifying-glass"></i> Buscar Historial
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Tarjetas de Métricas -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+        <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.75rem;">
+            <i class="ph-fill ph-heartbeat"></i>
+        </div>
+        <div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin: 0;">Atenciones Hoy</p>
+            <h3 style="font-size: 1.8rem; font-weight: 800; color: #fff; margin: 0.2rem 0 0 0;">12</h3>
+        </div>
+    </div>
+
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+        <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(6, 182, 212, 0.15); color: #06b6d4; display: flex; align-items: center; justify-content: center; font-size: 1.75rem;">
+            <i class="ph-fill ph-pill"></i>
+        </div>
+        <div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin: 0;">Stock Medicamentos</p>
+            <h3 style="font-size: 1.8rem; font-weight: 800; color: #fff; margin: 0.2rem 0 0 0;">@(Model?.Count ?? 0) Registrados</h3>
+        </div>
+    </div>
+
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+        <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 1.75rem;">
+            <i class="ph-fill ph-warning"></i>
+        </div>
+        <div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin: 0;">Alertas Alergias</p>
+            <h3 style="font-size: 1.8rem; font-weight: 800; color: #fff; margin: 0.2rem 0 0 0;">3 Casos</h3>
+        </div>
+    </div>
+
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+        <div style="width: 52px; height: 52px; border-radius: 12px; background: rgba(168, 85, 247, 0.15); color: #a855f7; display: flex; align-items: center; justify-content: center; font-size: 1.75rem;">
+            <i class="ph-fill ph-shield-check"></i>
+        </div>
+        <div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin: 0;">Afiliación SIS/Seguro</p>
+            <h3 style="font-size: 1.8rem; font-weight: 800; color: #fff; margin: 0.2rem 0 0 0;">94%</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Sección Botica y Medicamentos Disponibles -->
+<div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.75rem; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin: 0; display: flex; align-items: center; gap: 0.6rem;">
+            <i class="ph ph-first-aid" style="color: #10b981;"></i> Control de Stock en Botica de Tópico (PostgreSQL)
+        </h3>
+        <span style="font-size: 0.85rem; color: var(--text-secondary);">Actualizado en tiempo real</span>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px;">
+                    <th style="padding: 0.75rem;">ID</th>
+                    <th style="padding: 0.75rem;">Medicamento</th>
+                    <th style="padding: 0.75rem;">Presentación</th>
+                    <th style="padding: 0.75rem;">Stock Disponible</th>
+                    <th style="padding: 0.75rem;">Vencimiento</th>
+                    <th style="padding: 0.75rem;">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var med in Model)
+                    {
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); color: #e2e8f0;">
+                            <td style="padding: 0.75rem; font-weight: 600;">#@med.IdMedicamento</td>
+                            <td style="padding: 0.75rem; font-weight: 700; color: #fff;">@med.Nombre</td>
+                            <td style="padding: 0.75rem; color: var(--text-secondary);">@med.Presentacion</td>
+                            <td style="padding: 0.75rem;">
+                                @if (med.StockActual <= 5)
+                                {
+                                    <span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">
+                                        @med.StockActual unids (Crítico)
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">
+                                        @med.StockActual unidades
+                                    </span>
+                                }
+                            </td>
+                            <td style="padding: 0.75rem; color: var(--text-secondary);">
+                                @(med.FechaVencimiento != DateTime.MinValue ? med.FechaVencimiento.ToString("dd/MM/yyyy") : "Vigente")
+                            </td>
+                            <td style="padding: 0.75rem;">
+                                <span style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">
+                                    @(med.Estado ?? "Activo")
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
+                            No hay medicamentos registrados en el catálogo de botica.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

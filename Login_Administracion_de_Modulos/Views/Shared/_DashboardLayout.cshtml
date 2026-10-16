@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Intranet IESTP Argentina</title>
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@@phosphor-icons/web"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="top-header">
+        <div class="logo-container">
+            <i class="ph-fill ph-graduation-cap"></i>
+        </div>
+        <div class="header-actions">
+            @if (Context.Session.GetString("EsDemo") == "true")
+            {
+                <span style="font-size: 0.72rem; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 10px; border-radius: 20px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;">
+                    <i class="ph ph-shield-check"></i> Sesión Demo Local
+                </span>
+            }
+            <div class="profile-avatar-small">
+                @(ViewBag.UserInitials ?? "RF")
+            </div>
+            <a href="/logout" class="btn-icon" title="Cerrar Sesión">
+                <i class="ph ph-sign-out"></i>
+            </a>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-profile">
+                <div class="profile-avatar-large">
+                    @(ViewBag.UserInitials ?? "RF")
+                    <span class="online-dot"></span>
+                </div>
+                <div class="profile-info">
+                    <h4>@(ViewBag.UserName ?? "Lic. Rosa Fernández")</h4>
+                    <p>@(ViewBag.UserRole ?? ViewData["Role"] ?? "Enfermería (Tópico)")</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                @RenderSection("SidebarNav", required: false)
+            </nav>
+
+            <div class="sidebar-footer">
+                @if (Context.Session.GetString("EsDemo") == "true")
+                {
+                    <a href="/" class="btn-logout" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa; margin-bottom: 0.5rem;" title="Volver al selector de roles demo">
+                        <i class="ph ph-swap"></i>
+                        Cambiar Panel (Demo)
+                    </a>
+                }
+                <a href="/logout" class="btn-logout">
+                    <i class="ph ph-sign-out"></i>
+                    Cerrar Sesión
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="main-content-container">
+            @RenderBody()
+        </main>
+    </div>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

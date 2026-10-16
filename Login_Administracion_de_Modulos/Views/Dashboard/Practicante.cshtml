@@ -1,0 +1,130 @@
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Panel de Soporte - Practicante";
+    ViewData["Role"] = "Practicante TI";
+}
+
+@section SidebarNav {
+    <a href="javascript:void(0)" class="nav-item active" id="nav-prac-dash" onclick="mostrarSeccionPracticante('seccion-prac-dash', this)">
+        <i class="ph ph-squares-four"></i>
+        <span>Mis Tareas</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-prac-incidencias" onclick="mostrarSeccionPracticante('seccion-prac-incidencias', this)">
+        <i class="ph ph-wrench"></i>
+        <span>Incidencias Asignadas</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-prac-requerimientos" onclick="mostrarSeccionPracticante('seccion-prac-requerimientos', this)">
+        <i class="ph ph-headset"></i>
+        <span>Requerimientos</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-prac-ambientes" onclick="mostrarSeccionPracticante('seccion-prac-ambientes', this)">
+        <i class="ph ph-door"></i>
+        <span>Revisión de Ambientes</span>
+    </a>
+    <a href="/Modulo05/Soporte/ConsolaPrincipal" class="nav-item" id="nav-prac-consola">
+        <i class="ph ph-wrench"></i>
+        <span>Consola Técnica (M05)</span>
+    </a>
+    <a href="/Modulo05/Soporte/HistorialEquipos" class="nav-item" id="nav-prac-scanner">
+        <i class="ph ph-barcode"></i>
+        <span>Escaneo de Equipos (M05)</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-prac-soluciones" onclick="mostrarSeccionPracticante('seccion-prac-soluciones', this)">
+        <i class="ph ph-check-circle"></i>
+        <span>Soluciones Aplicadas</span>
+    </a>
+}
+
+<div class="page-header">
+    <h1>Panel Operativo de Prácticas TI</h1>
+    <p>Atención de incidencias de campo, mantenimiento de equipos y soporte a laboratorios (Módulo 6 - bd.sql)</p>
+    <div class="header-accent"></div>
+</div>
+
+<div id="seccion-prac-dash" class="prac-section active-section">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-wrench"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Incidencias Asignadas</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">3 Pendientes</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-headset"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Requerimientos de Aula</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">2 Solicitudes</h3>
+            </div>
+        </div>
+
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background-color: rgba(16, 185, 129, 0.1); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="ph ph-check-circle"></i>
+            </div>
+            <div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Resueltos del Mes</p>
+                <h3 style="font-size: 1.6rem; font-weight: 700; color: #fff;">18 Equipos</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tareas pendientes -->
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="ph ph-list-checks" style="color: var(--accent-cyan);"></i> Órdenes de Trabajo Técnicas Asignadas (tecnico_id)
+        </h3>
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+                    <th style="padding: 0.75rem 0.5rem;">Ticket</th>
+                    <th style="padding: 0.75rem 0.5rem;">Ambiente / Lab</th>
+                    <th style="padding: 0.75rem 0.5rem;">Descripción</th>
+                    <th style="padding: 0.75rem 0.5rem;">Prioridad</th>
+                    <th style="padding: 0.75rem 0.5rem; text-align: right;">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 600; color: var(--accent-cyan);">#REQ-045</td>
+                    <td style="padding: 0.75rem 0.5rem;">Lab 02 (Pabellón B)</td>
+                    <td style="padding: 0.75rem 0.5rem;">Actualizar Visual Studio Code en 15 máquinas</td>
+                    <td style="padding: 0.75rem 0.5rem;"><span style="color: #f59e0b; font-weight: 600;">Media</span></td>
+                    <td style="padding: 0.75rem 0.5rem; text-align: right;">
+                        <span style="display: inline-block; padding: 0.35rem 0.75rem; border-radius: 6px; background-color: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); font-weight: 600; font-size: 0.75rem; cursor: pointer;">Registrar Cierre</span>
+                    </td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.75rem 0.5rem; font-weight: 600; color: var(--accent-cyan);">#INC-102</td>
+                    <td style="padding: 0.75rem 0.5rem;">Lab 01 (Pabellón A)</td>
+                    <td style="padding: 0.75rem 0.5rem;">Revisión de cableado estructurado y jack RJ45</td>
+                    <td style="padding: 0.75rem 0.5rem;"><span style="color: #ef4444; font-weight: 600;">Alta</span></td>
+                    <td style="padding: 0.75rem 0.5rem; text-align: right;">
+                        <span style="display: inline-block; padding: 0.35rem 0.75rem; border-radius: 6px; background-color: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); font-weight: 600; font-size: 0.75rem; cursor: pointer;">Registrar Cierre</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function mostrarSeccionPracticante(idSeccion, el) {
+        document.querySelectorAll('.prac-section').forEach(sec => sec.style.display = 'none');
+        document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => item.classList.remove('active'));
+        
+        var objetivo = document.getElementById(idSeccion);
+        if (objetivo) {
+            objetivo.style.display = 'block';
+        } else {
+            document.getElementById('seccion-prac-dash').style.display = 'block';
+        }
+
+        if (el) el.classList.add('active');
+    }
+</script>

@@ -1,0 +1,1420 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg-main: #0a0e17;
+    --bg-sidebar: #0b1120;
+    --bg-card: #111827;
+    --text-primary: #ffffff;
+    --text-secondary: #9ca3af;
+    --accent-cyan: #00f2fe;
+    --border-color: #1f2937;
+    --sidebar-width: 280px;
+    --header-height: 60px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Header */
+.top-header {
+    height: var(--header-height);
+    background-color: var(--bg-sidebar);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+
+.logo-container {
+    width: 32px;
+    height: 32px;
+    background-color: var(--accent-cyan);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    font-size: 1.2rem;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.profile-avatar-small {
+    width: 36px;
+    height: 36px;
+    background-color: #fce7f3; /* Light pink/gold from design */
+    color: #9d174d;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+}
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-icon:hover {
+    background-color: var(--border-color);
+    color: #fff;
+}
+
+/* Layout */
+.dashboard-layout {
+    display: flex;
+    padding-top: var(--header-height);
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    bottom: 0;
+    top: var(--header-height);
+    left: 0;
+}
+
+.sidebar-profile {
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.profile-avatar-large {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    background-color: #fce7f3;
+    color: #9d174d;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.online-dot {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 12px;
+    height: 12px;
+    background-color: #10b981;
+    border: 2px solid var(--bg-sidebar);
+    border-radius: 50%;
+}
+
+.profile-info h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.25rem;
+}
+
+.profile-info p {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.sidebar-nav {
+    padding: 1.5rem 1rem;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.nav-item i {
+    font-size: 1.25rem;
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+.nav-item.active {
+    background-color: rgba(0, 242, 254, 0.1);
+    color: var(--accent-cyan);
+}
+
+.sidebar-footer {
+    padding: 1.5rem 1rem;
+}
+
+.btn-logout {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.btn-logout:hover {
+    background-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: 2.5rem;
+}
+
+.page-header {
+    margin-bottom: 2.5rem;
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.header-accent {
+    width: 32px;
+    height: 2px;
+    background-color: var(--accent-cyan);
+    margin-top: 1rem;
+}
+
+/* Construction Card */
+.construction-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 400px;
+}
+
+.construction-icon {
+    font-size: 4rem;
+    color: var(--accent-cyan);
+    margin-bottom: 1.5rem;
+}
+
+.construction-card h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.construction-card p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    max-width: 400px;
+    line-height: 1.5;
+}
+
+/* ========================================================
+   Sidebar & Panel Jefe General (Inventario & Almacenes)
+   ======================================================== */
+.sidebar-category {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.9rem 0.5rem 0.35rem 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.nav-item-jefe {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    color: #cbd5e1;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 0.25rem;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+    font-weight: 500;
+    position: relative;
+    cursor: pointer;
+}
+
+.nav-item-jefe i.nav-icon {
+    font-size: 1.2rem;
+    color: #f43f5e;
+    flex-shrink: 0;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.nav-item-jefe span.nav-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nav-item-jefe i.nav-arrow {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-left: auto;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.nav-item-jefe:hover {
+    background-color: rgba(244, 63, 94, 0.1);
+    color: #ffffff;
+}
+
+.nav-item-jefe:hover i.nav-arrow {
+    color: #fda4af;
+    transform: translateX(2px);
+}
+
+.nav-item-jefe:hover i.nav-icon {
+    color: #fda4af;
+}
+
+.nav-item-jefe.active {
+    background: linear-gradient(90deg, rgba(225, 29, 72, 0.5) 0%, rgba(159, 18, 57, 0.4) 100%);
+    border: 1px solid rgba(244, 63, 94, 0.4);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.15);
+}
+
+.nav-item-jefe.active i.nav-icon {
+    color: #ffffff;
+}
+
+.nav-item-jefe.active i.nav-arrow {
+    color: #fda4af;
+}
+
+/* Brand header dentro del sidebar */
+.sidebar-brand-box {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0.85rem;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+}
+
+.sidebar-brand-box .brand-icon-wrap {
+    width: 38px;
+    height: 38px;
+    background: rgba(244, 63, 94, 0.12);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f43f5e;
+    font-size: 1.35rem;
+    flex-shrink: 0;
+}
+
+.sidebar-brand-box .brand-details h5 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.sidebar-brand-box .brand-details p {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin: 2px 0 0 0;
+}
+
+/* Banner de Rol Jefe General */
+.role-banner-jefe {
+    background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%);
+    border: 1px solid #fda4af;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    color: #9f1239;
+}
+
+.role-banner-jefe .banner-icon {
+    width: 48px;
+    height: 48px;
+    background: #ffffff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: #e11d48;
+    box-shadow: 0 4px 6px -1px rgba(225, 29, 72, 0.1);
+    flex-shrink: 0;
+}
+
+.role-banner-jefe h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin: 0;
+    color: #be123c;
+    text-transform: uppercase;
+}
+
+.role-banner-jefe p {
+    font-size: 0.85rem;
+    margin: 2px 0 0 0;
+    color: #881337;
+    font-weight: 500;
+}
+
+/* ========================================================
+   Menús Desplegables en Sidebar (Dropdowns / Acordeón)
+   ======================================================== */
+.sidebar-dropdown {
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.sidebar-dropdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.55rem 0.65rem;
+    cursor: pointer;
+    border-radius: 8px;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.sidebar-dropdown-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-dropdown-header .dropdown-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color 0.2s ease;
+}
+
+.sidebar-dropdown-header:hover .dropdown-title {
+    color: #f1f5f9;
+}
+
+.sidebar-dropdown-header .dropdown-caret {
+    font-size: 0.85rem;
+    color: #64748b;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
+}
+
+.sidebar-dropdown-header:hover .dropdown-caret {
+    color: #f43f5e;
+}
+
+/* Rotación del caret según estado */
+.sidebar-dropdown.open .sidebar-dropdown-header .dropdown-caret {
+    transform: rotate(0deg);
+    color: #fb7185;
+}
+
+.sidebar-dropdown:not(.open) .sidebar-dropdown-header .dropdown-caret {
+    transform: rotate(-90deg);
+}
+
+.sidebar-dropdown-body {
+    padding-left: 0.25rem;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.2s ease;
+}
+
+.sidebar-dropdown:not(.open) .sidebar-dropdown-body {
+    display: none;
+}
+
+/* ========================================================
+   Sidebar & Panel Jefe de Taller Computación (Tema Azul)
+   ======================================================== */
+.role-banner-computacion {
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    border: 1px solid #7dd3fc;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    color: #0369a1;
+}
+
+.role-banner-computacion .banner-icon {
+    width: 48px;
+    height: 48px;
+    background: #ffffff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: #0284c7;
+    box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.15);
+    flex-shrink: 0;
+}
+
+.role-banner-computacion h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin: 0;
+    color: #0369a1;
+    text-transform: uppercase;
+}
+
+.role-banner-computacion p {
+    font-size: 0.85rem;
+    margin: 2px 0 0 0;
+    color: #0c4a6e;
+    font-weight: 500;
+}
+
+.nav-item-computacion {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    color: #cbd5e1;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 0.25rem;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+    font-weight: 500;
+    position: relative;
+    cursor: pointer;
+}
+
+.nav-item-computacion i.nav-icon {
+    font-size: 1.2rem;
+    color: #38bdf8;
+    flex-shrink: 0;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.nav-item-computacion span.nav-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nav-item-computacion i.nav-arrow {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-left: auto;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.nav-item-computacion:hover {
+    background-color: rgba(56, 189, 248, 0.12);
+    color: #ffffff;
+}
+
+.nav-item-computacion:hover i.nav-arrow {
+    color: #7dd3fc;
+    transform: translateX(2px);
+}
+
+.nav-item-computacion:hover i.nav-icon {
+    color: #7dd3fc;
+}
+
+.nav-item-computacion.active {
+    background: linear-gradient(90deg, rgba(2, 132, 199, 0.55) 0%, rgba(3, 105, 161, 0.45) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.5);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.nav-item-computacion.active i.nav-icon {
+    color: #ffffff;
+}
+
+.nav-item-computacion.active i.nav-arrow {
+    color: #7dd3fc;
+}
+
+.sidebar-dropdown-computacion.open .sidebar-dropdown-header .dropdown-caret {
+    color: #38bdf8;
+}
+
+.sidebar-dropdown-computacion .sidebar-dropdown-header:hover .dropdown-caret {
+    color: #38bdf8;
+}
+
+/* Tarjeta Inferior de Área Asignada */
+.area-footer-box {
+    margin-top: 1.25rem;
+    padding: 0.85rem 1rem;
+    background: #ffffff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.area-footer-box .area-icon {
+    font-size: 1.8rem;
+    color: #0284c7;
+    flex-shrink: 0;
+}
+
+.area-footer-box .area-info h5 {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+}
+
+.area-footer-box .area-info p {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin: 2px 0 0 0;
+}
+
+/* ========================================================
+   Sidebar & Panel Jefe de Taller Administración (Tema Verde)
+   ======================================================== */
+.role-banner-admin-taller {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    border: 1px solid #86efac;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    color: #15803d;
+}
+
+.role-banner-admin-taller .banner-icon {
+    width: 48px;
+    height: 48px;
+    background: #ffffff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: #16a34a;
+    box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.15);
+    flex-shrink: 0;
+}
+
+.role-banner-admin-taller h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin: 0;
+    color: #15803d;
+    text-transform: uppercase;
+}
+
+.role-banner-admin-taller p {
+    font-size: 0.85rem;
+    margin: 2px 0 0 0;
+    color: #14532d;
+    font-weight: 500;
+}
+
+.nav-item-admin-taller {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    color: #cbd5e1;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 0.25rem;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+    font-weight: 500;
+    position: relative;
+    cursor: pointer;
+}
+
+.nav-item-admin-taller i.nav-icon {
+    font-size: 1.2rem;
+    color: #22c55e;
+    flex-shrink: 0;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.nav-item-admin-taller span.nav-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nav-item-admin-taller i.nav-arrow {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-left: auto;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.nav-item-admin-taller:hover {
+    background-color: rgba(34, 197, 94, 0.12);
+    color: #ffffff;
+}
+
+.nav-item-admin-taller:hover i.nav-arrow {
+    color: #86efac;
+    transform: translateX(2px);
+}
+
+.nav-item-admin-taller:hover i.nav-icon {
+    color: #86efac;
+}
+
+.nav-item-admin-taller.active {
+    background: linear-gradient(90deg, rgba(22, 163, 74, 0.55) 0%, rgba(21, 128, 61, 0.45) 100%);
+    border: 1px solid rgba(74, 222, 128, 0.5);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+}
+
+.nav-item-admin-taller.active i.nav-icon {
+    color: #ffffff;
+}
+
+.nav-item-admin-taller.active i.nav-arrow {
+    color: #86efac;
+}
+
+.sidebar-dropdown-admin-taller.open .sidebar-dropdown-header .dropdown-caret {
+    color: #22c55e;
+}
+
+.sidebar-dropdown-admin-taller .sidebar-dropdown-header:hover .dropdown-caret {
+    color: #22c55e;
+}
+
+/* ========================================================
+   Sidebar & Panel Jefe de Taller Contabilidad (Tema Ámbar)
+   ======================================================== */
+.role-banner-conta {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 1px solid #fcd34d;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    color: #b45309;
+}
+
+.role-banner-conta .banner-icon {
+    width: 48px;
+    height: 48px;
+    background: #ffffff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: #d97706;
+    box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.15);
+    flex-shrink: 0;
+}
+
+.role-banner-conta h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin: 0;
+    color: #b45309;
+    text-transform: uppercase;
+}
+
+.role-banner-conta p {
+    font-size: 0.85rem;
+    margin: 2px 0 0 0;
+    color: #92400e;
+    font-weight: 500;
+}
+
+.nav-item-conta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    color: #cbd5e1;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 0.25rem;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+    font-weight: 500;
+    position: relative;
+    cursor: pointer;
+}
+
+.nav-item-conta i.nav-icon {
+    font-size: 1.2rem;
+    color: #f59e0b;
+    flex-shrink: 0;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.nav-item-conta span.nav-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nav-item-conta i.nav-arrow {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-left: auto;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.nav-item-conta:hover {
+    background-color: rgba(245, 158, 11, 0.12);
+    color: #ffffff;
+}
+
+.nav-item-conta:hover i.nav-arrow {
+    color: #fde68a;
+    transform: translateX(2px);
+}
+
+.nav-item-conta:hover i.nav-icon {
+    color: #fde68a;
+}
+
+.nav-item-conta.active {
+    background: linear-gradient(90deg, rgba(217, 119, 6, 0.55) 0%, rgba(180, 83, 9, 0.45) 100%);
+    border: 1px solid rgba(251, 191, 36, 0.5);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+}
+
+.nav-item-conta.active i.nav-icon {
+    color: #ffffff;
+}
+
+.nav-item-conta.active i.nav-arrow {
+    color: #fde68a;
+}
+
+.sidebar-dropdown-conta.open .sidebar-dropdown-header .dropdown-caret {
+    color: #f59e0b;
+}
+
+.sidebar-dropdown-conta .sidebar-dropdown-header:hover .dropdown-caret {
+    color: #f59e0b;
+}
+
+/* ========================================================
+   Sidebar & Panel Encargado de Inventario (Tema Púrpura)
+   ======================================================== */
+.role-banner-inventario {
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+    border: 1px solid #d8b4fe;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    color: #6b21a8;
+}
+
+.role-banner-inventario .banner-icon {
+    width: 48px;
+    height: 48px;
+    background: #ffffff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: #7c3aed;
+    box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.15);
+    flex-shrink: 0;
+}
+
+.role-banner-inventario h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin: 0;
+    color: #6b21a8;
+    text-transform: uppercase;
+}
+
+.role-banner-inventario p {
+    font-size: 0.85rem;
+    margin: 2px 0 0 0;
+    color: #581c87;
+    font-weight: 500;
+}
+
+.nav-item-inventario {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    color: #cbd5e1;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 0.25rem;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+    font-weight: 500;
+    position: relative;
+    cursor: pointer;
+}
+
+.nav-item-inventario i.nav-icon {
+    font-size: 1.2rem;
+    color: #c084fc;
+    flex-shrink: 0;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.nav-item-inventario span.nav-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nav-item-inventario i.nav-arrow {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-left: auto;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.nav-item-inventario:hover {
+    background-color: rgba(168, 85, 247, 0.12);
+    color: #ffffff;
+}
+
+.nav-item-inventario:hover i.nav-arrow {
+    color: #d8b4fe;
+    transform: translateX(2px);
+}
+
+.nav-item-inventario:hover i.nav-icon {
+    color: #d8b4fe;
+}
+
+.nav-item-inventario.active {
+    background: linear-gradient(90deg, rgba(124, 58, 237, 0.55) 0%, rgba(109, 40, 217, 0.45) 100%);
+    border: 1px solid rgba(168, 85, 247, 0.5);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+}
+
+.nav-item-inventario.active i.nav-icon {
+    color: #ffffff;
+}
+
+.nav-item-inventario.active i.nav-arrow {
+    color: #d8b4fe;
+}
+
+.sidebar-dropdown-inventario.open .sidebar-dropdown-header .dropdown-caret {
+    color: #a855f7;
+}
+
+.sidebar-dropdown-inventario .sidebar-dropdown-header:hover .dropdown-caret {
+    color: #a855f7;
+}
+
+/* ========================================================
+   ESTILOS EXCLUSIVOS DEL ROL: TESORERÍA (Trámites y Matrícula)
+   ======================================================== */
+
+.sidebar-brand-tesoreria {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+    margin-bottom: 1rem;
+}
+
+.sidebar-brand-tesoreria .brand-icon-wrap {
+    width: 38px;
+    height: 38px;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f59e0b;
+    font-size: 1.35rem;
+    flex-shrink: 0;
+}
+
+.sidebar-brand-tesoreria .brand-details h5 {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.sidebar-brand-tesoreria .brand-details p {
+    font-size: 0.7rem;
+    color: #fbbf24;
+    margin: 2px 0 0 0;
+    font-weight: 500;
+}
+
+.nav-item-tesoreria {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: 8px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.86rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-bottom: 0.3rem;
+    position: relative;
+    border: 1px solid transparent;
+}
+
+.nav-item-tesoreria i.nav-icon {
+    font-size: 1.15rem;
+    color: #94a3b8;
+    transition: color 0.2s ease;
+    width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-item-tesoreria .nav-text {
+    flex: 1;
+}
+
+.nav-item-tesoreria:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-item-tesoreria:hover i.nav-icon {
+    color: #f8fafc;
+}
+
+.nav-item-tesoreria.active {
+    background: #0f1d38;
+    border: 1px solid rgba(59, 130, 246, 0.45);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.nav-item-tesoreria.active i.nav-icon {
+    color: #38bdf8;
+}
+
+.tesoreria-badge-pill {
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 9999px;
+    padding: 1px 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    margin-left: auto;
+}
+
+.tesoreria-profile-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.75rem 0.85rem;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    margin-top: 1.5rem;
+}
+
+.tesoreria-profile-card .avatar-mb {
+    width: 36px;
+    height: 36px;
+    background: #b45309;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.tesoreria-profile-card .profile-text {
+    flex: 1;
+    overflow: hidden;
+}
+
+.tesoreria-profile-card .profile-text h5 {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.tesoreria-profile-card .profile-text p {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    margin: 1px 0 0 0;
+}
+
+.tesoreria-profile-card .btn-salir-tesoreria {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    color: #cbd5e1;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.tesoreria-profile-card .btn-salir-tesoreria:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+    color: #ffffff;
+}
+
+/* Contenedor Claro Exclusivo de Tesorería (Coincide con captura) */
+.tesoreria-dashboard-light {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    color: #0f172a;
+    min-height: 85vh;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.tesoreria-light-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tesoreria-light-topbar .crumb-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.tesoreria-light-topbar .actions-group {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.pill-semester {
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.bell-btn {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #475569;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.bell-btn .bell-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-tag-tesoreria {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.kpi-card-light {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.35rem 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.kpi-card-light .kpi-label {
+    font-size: 0.82rem;
+    color: #64748b;
+    font-weight: 500;
+    margin: 0 0 0.4rem 0;
+}
+
+.kpi-card-light .kpi-value {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 0.3rem 0;
+    line-height: 1.1;
+}
+
+.kpi-card-light .kpi-subtext {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin: 0;
+}
+
+.panel-card-light {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.panel-card-light .panel-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+}
+
+.voucher-item-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid #f1f5f9;
+    border-radius: 10px;
+    background: #fafafa;
+    flex-wrap: wrap;
+}
+
+.voucher-item-box .voucher-info-group {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.voucher-thumb-icon {
+    width: 40px;
+    height: 40px;
+    background: #fef9c3;
+    border: 1px solid #fef08a;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ca8a04;
+    font-size: 1.35rem;
+}
+
+.voucher-item-box .voucher-text h4 {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.2rem 0;
+}
+
+.voucher-item-box .voucher-text p {
+    font-size: 0.78rem;
+    color: #64748b;
+    margin: 0;
+}
+
+.btn-validar-dark {
+    background: #0f172a;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.55rem 1.4rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-validar-dark:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
+}
+
+.quick-action-btn-light {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.85rem 1.25rem;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    color: #1e293b;
+    font-size: 0.86rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.quick-action-btn-light:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
+    transform: translateY(-1px);
+}

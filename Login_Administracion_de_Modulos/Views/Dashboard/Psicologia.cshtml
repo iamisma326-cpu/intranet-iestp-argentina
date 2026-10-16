@@ -1,0 +1,144 @@
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Panel de Psicología y Bienestar";
+    ViewData["Role"] = "Bienestar Estudiantil";
+}
+
+@section SidebarNav {
+    <a href="javascript:void(0)" class="nav-item active" id="nav-psy-dashboard" onclick="mostrarDashboardPsico()">
+        <i class="ph ph-squares-four"></i>
+        <span>Dashboard / Bienestar</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-psy-sesion" onclick="cargarSesionPsico()">
+        <i class="ph ph-plus-circle"></i>
+        <span>Nueva Sesión (M05)</span>
+    </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-psy-expediente" onclick="cargarExpedientePsico()">
+        <i class="ph ph-folder-user"></i>
+        <span>Expediente Alumno (M05)</span>
+    </a>
+}
+
+<!-- Contenedor Principal Dinámico (SPA) -->
+<div id="dynamic-main-content">    <!-- 1. VISTA DASHBOARD / RESUMEN (Módulo 05: Psicología) -->
+    <div id="view-psy-dashboard">
+        @await Html.PartialAsync("~/Areas/Modulo05/Views/psicologia/panel_psicologia.cshtml")
+    </div>
+
+    <!-- 2. CONTENEDOR DINÁMICO DE FORMULARIO DE SESIÓN (Modulo 05) -->
+    <div id="view-sesion-container" style="display: none;"></div>
+
+    <!-- 3. CONTENEDOR DINÁMICO DE EXPEDIENTE DEL ALUMNO (Modulo 05) -->
+    <div id="view-expediente-container" style="display: none;"></div>
+
+</div>
+
+@section Scripts {
+    <script>
+        function setActiveNavPsico(elementId) {
+            document.querySelectorAll('.sidebar-nav .nav-item').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById(elementId);
+            if (target) target.classList.add('active');
+        }
+
+        function mostrarDashboardPsico() {
+            setActiveNavPsico('nav-psy-dashboard');
+            document.getElementById('view-sesion-container').style.display = 'none';
+            document.getElementById('view-expediente-container').style.display = 'none';
+            document.getElementById('view-psy-dashboard').style.display = 'block';
+        }
+
+        function cargarSesionPsico() {
+            setActiveNavPsico('nav-psy-sesion');
+            document.getElementById('view-psy-dashboard').style.display = 'none';
+            document.getElementById('view-expediente-container').style.display = 'none';
+            const container = document.getElementById('view-sesion-container');
+            container.style.display = 'block';
+
+            if (!container.dataset.loaded) {
+                container.innerHTML = `
+                    <div style="padding: 3rem; text-align: center; color: var(--text-secondary);">
+                        <i class="ph ph-spinner ph-spin" style="font-size: 2.5rem; color: #a855f7; margin-bottom: 1rem; display: block;"></i>
+                        <p>Cargando formulario de sesión psicológica de Módulo 05...</p>
+                    </div>
+                `;
+
+                fetch('/Modulo05/Psicologia/FormSesion?partial=true', {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error('Error de respuesta HTTP: ' + res.status);
+                    return res.text();
+                })
+                .then(html => {
+                    container.innerHTML = html;
+                    container.dataset.loaded = "true";
+
+                    // Reejecutar scripts dentro de la vista parcial
+                    const scripts = container.querySelectorAll('script');
+                    scripts.forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
+                })
+                .catch(err => {
+                    container.innerHTML = `
+                        <div style="padding: 2rem; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 8px; color: #fca5a5;">
+                            <h4>Error al cargar el formulario de sesión</h4>
+                            <p>${err.message}</p>
+                            <button type="button" onclick="cargarSesionPsico()" style="margin-top: 10px; padding: 6px 12px; cursor: pointer;">Reintentar</button>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        function cargarExpedientePsico() {
+            setActiveNavPsico('nav-psy-expediente');
+            document.getElementById('view-psy-dashboard').style.display = 'none';
+            document.getElementById('view-sesion-container').style.display = 'none';
+            const container = document.getElementById('view-expediente-container');
+            container.style.display = 'block';
+
+            if (!container.dataset.loaded) {
+                container.innerHTML = `
+                    <div style="padding: 3rem; text-align: center; color: var(--text-secondary);">
+                        <i class="ph ph-spinner ph-spin" style="font-size: 2.5rem; color: #a855f7; margin-bottom: 1rem; display: block;"></i>
+                        <p>Cargando consulta de expedientes de Módulo 05...</p>
+                    </div>
+                `;
+
+                fetch('/Modulo05/Psicologia/ExpedienteAlumno?partial=true', {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error('Error de respuesta HTTP: ' + res.status);
+                    return res.text();
+                })
+                .then(html => {
+                    container.innerHTML = html;
+                    container.dataset.loaded = "true";
+
+                    const scripts = container.querySelectorAll('script');
+                    scripts.forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
+                })
+                .catch(err => {
+                    container.innerHTML = `
+                        <div style="padding: 2rem; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 8px; color: #fca5a5;">
+                            <h4>Error al cargar el expediente del alumno</h4>
+                            <p>${err.message}</p>
+                            <button type="button" onclick="cargarExpedientePsico()" style="margin-top: 10px; padding: 6px 12px; cursor: pointer;">Reintentar</button>
+                        </div>
+                    `;
+                });
+            }
+        }
+    </script>
+}
