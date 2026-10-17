@@ -22,7 +22,7 @@ namespace Login_Administracion_de_Modulos.Seguridad;
 /// </summary>
 public static class SesionServidor
 {
-    private const string CookieName = "sid";
+    private const string CookieName = ".AspNetCore.Sid";
     private const int HorasValidez = 8;
 
     /// <summary>Claims que se persisten: n=nombre, uid, pid, rol activo.</summary>
