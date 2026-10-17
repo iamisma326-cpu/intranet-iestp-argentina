@@ -55,7 +55,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Controller
 
             ViewData["Title"] = "Mis Reportes de Averías";
             ViewData["Role"] = "Docente Académico";
-            int docenteId = User.FindFirst("UsuarioId")?.Value is string uid ? int.Parse(uid) : 1; // Docente en sesión
+            int docenteId = (User.FindFirst("uid")?.Value ?? User.FindFirst("UsuarioId")?.Value) is string uid ? int.Parse(uid) : 1; // Docente en sesión
             var reportes = _ticketRepo.ObtenerReportesPorDocente(docenteId);
             return PartialView("~/Areas/Modulo05/Views/averias_docente/mis_reportes.cshtml", reportes);
         }
@@ -99,7 +99,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Controller
                     descCompleta = $"[Ambiente/Aula: {ambiente}] {descCompleta}";
                 }
 
-                int reportadorId = User.FindFirst("UsuarioId")?.Value is string uid ? int.Parse(uid) : 1;
+                int reportadorId = (User.FindFirst("uid")?.Value ?? User.FindFirst("UsuarioId")?.Value) is string uid ? int.Parse(uid) : 1;
                 var ticket = new TicketAveriaItem
                 {
                     IdBien = idBien,

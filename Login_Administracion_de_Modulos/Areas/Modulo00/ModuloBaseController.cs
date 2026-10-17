@@ -14,17 +14,18 @@ public abstract class ModuloBaseController : Controller
 {
     /// <summary>Rol activo (sombrero). Fuente única para vistas y guards.</summary>
     public string UsuarioActualRol =>
-        User.FindFirst("RolActivo")?.Value
+        User.FindFirst("rol")?.Value
+        ?? User.FindFirst("rol")?.Value ?? User.FindFirst("RolActivo")?.Value
         ?? User.FindFirst(ClaimTypes.Role)?.Value ?? "Alumno";
 
     public int? UsuarioActualId =>
-        int.TryParse(User.FindFirst("UsuarioId")?.Value, out var u) ? u : null;
+        int.TryParse(User.FindFirst("uid")?.Value ?? User.FindFirst("UsuarioId")?.Value, out var u) ? u : null;
 
     public int? PersonaActualId =>
-        int.TryParse(User.FindFirst("PersonaId")?.Value, out var p) ? p : null;
+        int.TryParse(User.FindFirst("pid")?.Value ?? User.FindFirst("PersonaId")?.Value, out var p) ? p : null;
 
     public string UsuarioActualNombre =>
-        User.FindFirst(ClaimTypes.Name)?.Value ?? "Invitado";
+        User.FindFirst("n")?.Value ?? User.FindFirst(ClaimTypes.Name)?.Value ?? "Invitado";
 
     // Sombrero manda: SOLO el rol activo decide. Administrador = superusuario.
     public bool EsAdmin => UsuarioActualRol.Equals("Administrador", StringComparison.OrdinalIgnoreCase)

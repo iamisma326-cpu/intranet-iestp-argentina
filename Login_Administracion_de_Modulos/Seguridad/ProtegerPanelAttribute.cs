@@ -60,7 +60,7 @@ namespace Login_Administracion_de_Modulos.Seguridad
             }
 
             // 2. Rol con el que opera el usuario (claim RolActivo)
-            string? rolActivo = user.FindFirst("RolActivo")?.Value;
+            string? rolActivo = user.FindFirst("rol")?.Value ?? user.FindFirst("RolActivo")?.Value;
             string? nombreUsuario = user.Identity?.Name ?? user.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
 
             // 3. Si hay roles permitidos definidos, verificar coincidencia

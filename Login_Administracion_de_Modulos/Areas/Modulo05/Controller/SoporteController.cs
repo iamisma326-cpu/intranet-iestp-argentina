@@ -142,7 +142,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Controller
                     return Json(new { success = false, message = "Debe seleccionar un estado." });
                 }
 
-                int tecnicoId = User.FindFirst("UsuarioId")?.Value is string uid ? int.Parse(uid) : 1;
+                int tecnicoId = (User.FindFirst("uid")?.Value ?? User.FindFirst("UsuarioId")?.Value) is string uid ? int.Parse(uid) : 1;
                 bool ok = _ticketRepo.ActualizarEstadoTicket(idIncidencia, nuevoEstado, solucion, tecnicoId);
                 if (ok)
                 {

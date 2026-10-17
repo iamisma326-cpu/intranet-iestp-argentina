@@ -42,7 +42,7 @@ namespace Login_Administracion_de_Modulos.Controllers
             // Si ya hay sesión activa, directo al panel de su rol
             if (User.Identity?.IsAuthenticated == true)
             {
-                return Redirect(ObtenerRutaDashboardPorRol(User.FindFirst("RolActivo")?.Value ?? string.Empty));
+                return Redirect(ObtenerRutaDashboardPorRol(User.FindFirst("rol")?.Value ?? User.FindFirst("RolActivo")?.Value ?? string.Empty));
             }
             return View("~/Views/Index.cshtml");
         }
@@ -419,7 +419,7 @@ namespace Login_Administracion_de_Modulos.Controllers
 
         public IActionResult Bienvenido()
         {
-            string rol = User.FindFirst("RolActivo")?.Value ?? string.Empty;
+            string rol = User.FindFirst("rol")?.Value ?? User.FindFirst("RolActivo")?.Value ?? string.Empty;
             return Redirect(ObtenerRutaDashboardPorRol(rol));
         }
 
@@ -427,26 +427,39 @@ namespace Login_Administracion_de_Modulos.Controllers
         // AUXILIARES DE AUTENTICACIÓN
         // ==========================================
 
-        /// <summary>Firma la cookie de claims con los datos del usuario. Es la ÚNICA fuente de identidad.</summary>
+        /// <summary>
+        /// Firma la cookie de claims con los datos del usuario. Es la ÚNICA fuente de identidad.
+        /// TICKET COMPACTO: MonsterASP (proxy delante del sitio) descarta los Set-Cookie cuyo
+        /// valor excede ~512 bytes hacia el navegador (verificado: la antiforgery de 155 bytes
+        /// llega; la sesión de 731 nunca llega). Por eso la cookie lleva SOLO lo esencial:
+        ///   - Name (nombre corto para headers), UsuarioId, PersonaId, RolActivo
+        ///   - Un único ClaimTypes.Role con el rol ACTIVO (el guard de paneles autoriza por
+        ///     RolActivo; IsInRole queda funcional para ese rol y para "Administrador").
+        /// Se omiten los claims redundantes (NameIdentifier, EsDemo y roles inactivos).
+        /// </summary>
         private async Task FirmarSesionAsync(int usuarioId, int personaId, string nombreCompleto,
             string rolPrincipal, IEnumerable<string> roles, bool esDemo)
         {
+            // Nombre corto en la cookie (los paneles muestran esto; recortado a 30 chars
+            // para no inflar el ticket).
+            string nombreCorto = string.IsNullOrWhiteSpace(nombreCompleto)
+                ? "Usuario Institucional"
+                : (nombreCompleto.Length > 30 ? nombreCompleto[..30].Trim() : nombreCompleto);
+
             var claims = new List<Claim>
             {
-                new(ClaimTypes.NameIdentifier, usuarioId.ToString()),
-                new(ClaimTypes.Name, string.IsNullOrWhiteSpace(nombreCompleto) ? "Usuario Institucional" : nombreCompleto),
-                new("UsuarioId", usuarioId.ToString()),
-                new("PersonaId", personaId.ToString()),
-                new("RolActivo", rolPrincipal),
-                new("EsDemo", esDemo ? "true" : "false")
+                new("n", nombreCorto),                       // nombre (tipo corto: identidad.Name)
+                new("uid", usuarioId.ToString()),
+                new("pid", personaId.ToString()),
+                new("rol", rolPrincipal),                    // RolActivo (tipo corto)
+                new("r", rolPrincipal)                       // role para IsInRole (tipo corto)
             };
 
-            foreach (var r in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, r));
-            }
-
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            // Tipos cortos: el ticket serializa el TIPO de cada claim; los ClaimTypes.*
+            // estándar son URIs de ~47 chars que inflan la cookie de sesión en ~190 bytes.
+            // Con "n"/"r" el Identity.Name y el IsInRole siguen funcionando igual.
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme,
+                nameType: "n", roleType: "r");
             var principal = new ClaimsPrincipal(identity);
 
             await HttpContext.SignInAsync(

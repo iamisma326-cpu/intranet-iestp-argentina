@@ -130,7 +130,7 @@ namespace Login_Administracion_de_Modulos.Areas.Modulo05.Controller
                     obsCompleta = $"Medicamento recetado: {medicamentosStr}\n{obsCompleta}".Trim();
                 }
 
-                int atendidoPorId = User.FindFirst("UsuarioId")?.Value is string uid ? int.Parse(uid) : 1;
+                int atendidoPorId = (User.FindFirst("uid")?.Value ?? User.FindFirst("UsuarioId")?.Value) is string uid ? int.Parse(uid) : 1;
 
                 var item = new AtencionMedicaItem
                 {
