@@ -367,7 +367,25 @@
 @section Scripts {
     <script>
         // --- Carga de módulos portados (M09: vouchers y recibos; M01: matrículas) ---
+        // Tailwind runtime sin preflight para las vistas de M01/M09 inyectadas por fetch.
+        function asegurarTailwindModulos() {
+            if (document.getElementById('tw-modulos')) return;
+            const sc = document.createElement('script');
+            sc.id = 'tw-modulos';
+            sc.src = 'https://cdn.tailwindcss.com';
+            sc.onload = () => { if (window.tailwind) window.tailwind.config = { corePlugins: { preflight: false } }; };
+            document.head.appendChild(sc);
+        }
+        function sincronizarTemaModulos() {
+            const tema = document.documentElement.getAttribute('data-theme') || 'dark';
+            document.querySelectorAll('.tes-section').forEach(sec => {
+                if (tema === 'light') sec.classList.remove('dark'); else sec.classList.add('dark');
+            });
+        }
+
         function cargarSeccionModuloTes(idSeccion, url, el) {
+            asegurarTailwindModulos();
+            sincronizarTemaModulos();
             mostrarSeccionTesoreria(idSeccion, el);
             const container = document.getElementById(idSeccion);
             if (container.dataset.loaded) return;
@@ -393,8 +411,18 @@
                     container.innerHTML = `<div style="padding: 2rem; color: #ef4444;">No se pudo cargar: ${err.message}</div>`;
                 });
         }
-        function cargarVouchersTesoreria(el)  { cargarSeccionModuloTes('seccion-tes-vouchers', '/Modulo09/Pagos?partial=true', el); }
-        function cargarRecibosTesoreria(el)   { cargarSeccionModuloTes('seccion-tes-recibos', '/Modulo09/Pagos/Bandeja?partial=true', el); }
+        // Vouchers: bandeja de vouchers pendientes de validación (tabla).
+        // Recibos: misma herramienta (en el original la emisión de recibos vive en la
+        // bandeja) pero anclada al formulario de emisión para que cada pestaña muestre
+        // su parte del flujo.
+        function cargarVouchersTesoreria(el)  { cargarSeccionModuloTes('seccion-tes-vouchers', '/Modulo09/Pagos/Bandeja?partial=true', el); }
+        function cargarRecibosTesoreria(el)   {
+            cargarSeccionModuloTes('seccion-tes-recibos', '/Modulo09/Pagos?partial=true', el);
+            setTimeout(() => {
+                const form = document.querySelector('#seccion-tes-recibos #form-recibo');
+                if (form) form.scrollIntoView({behavior: 'smooth', block: 'start'});
+            }, 1200);
+        }
         function cargarMatriculasTesoreria(el){ cargarSeccionModuloTes('seccion-tes-matriculas', '/Modulo01/Matriculas?partial=true', el); }
 
         function mostrarSeccionTesoreria(seccionId, navElement) {

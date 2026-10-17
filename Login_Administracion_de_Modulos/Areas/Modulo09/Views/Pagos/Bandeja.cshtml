@@ -1,7 +1,7 @@
 @model Login_Administracion_de_Modulos.Areas.Modulo09.Controllers.ModeloBandejaPagosVista
 @{
     ViewData["Title"] = "Bandeja de Vouchers";
-    var rolActivo = User.FindFirst("ActiveRole")?.Value ?? "";
+    var rolActivo = User.FindFirst("rol")?.Value ?? User.FindFirst("RolActivo")?.Value ?? "";
 }
 
 <div class="space-y-6">
@@ -85,7 +85,7 @@
                                 <div class="text-[11px] text-rose-600 dark:text-rose-400 mt-1 bg-rose-100 dark:bg-rose-950/50 rounded-lg px-2 py-1">⚠️ @p.MotivoRechazo</div>
                             }
                         </div>
-                        @if (p.VoucherEstado == "Pendiente" && (string.Equals(rolActivo, "Tesoreria", System.StringComparison.OrdinalIgnoreCase) || string.Equals(rolActivo, "Admin", System.StringComparison.OrdinalIgnoreCase)))
+                        @if (p.VoucherEstado == "Pendiente" && ((rolActivo?.Contains("Tesorer", System.StringComparison.OrdinalIgnoreCase) ?? false) || (rolActivo?.Contains("Admin", System.StringComparison.OrdinalIgnoreCase) ?? false)))
                         {
                             <div class="flex gap-1">
                                 @if (p.TieneVoucher)
@@ -110,7 +110,7 @@
                         }
                         else if (p.VoucherEstado != "Pendiente")
                         {
-                            @if (p.TieneVoucher && (string.Equals(rolActivo, "Tesoreria", System.StringComparison.OrdinalIgnoreCase) || string.Equals(rolActivo, "Admin", System.StringComparison.OrdinalIgnoreCase)))
+                            @if (p.TieneVoucher && ((rolActivo?.Contains("Tesorer", System.StringComparison.OrdinalIgnoreCase) ?? false) || (rolActivo?.Contains("Admin", System.StringComparison.OrdinalIgnoreCase) ?? false)))
                             {
                                 <a href="/Modulo09/Pagos/Voucher/@p.Id" target="_blank"
                                    class="btn btn-ghost btn-xs rounded-lg font-bold text-slate-500" title="Ver el voucher PDF subido por el estudiante">📄 Ver PDF</a>
@@ -124,11 +124,11 @@
     </div>
 
     <!-- Recibo directo de caja (Tesorería) -->
-    @if (string.Equals(rolActivo, "Tesoreria", System.StringComparison.OrdinalIgnoreCase) || string.Equals(rolActivo, "Admin", System.StringComparison.OrdinalIgnoreCase))
+    @if ((rolActivo?.Contains("Tesorer", System.StringComparison.OrdinalIgnoreCase) ?? false) || (rolActivo?.Contains("Admin", System.StringComparison.OrdinalIgnoreCase) ?? false))
     {
         <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-6">
             <h2 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-4">💰 Registrar recibo directo</h2>
-            <form method="post" asp-action="EmitirRecibo">
+            <form method="post" asp-action="EmitirRecibo" id="form-recibo">
                 @Html.AntiForgeryToken()
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>

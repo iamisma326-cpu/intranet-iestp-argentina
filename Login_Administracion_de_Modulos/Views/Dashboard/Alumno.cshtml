@@ -14,6 +14,10 @@
         <span>Mi matrícula</span>
         <span style="background-color: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; margin-left: auto;">1</span>
     </a>
+    <a href="javascript:void(0)" class="nav-item" id="nav-alu-academico" onclick="cargarMiAcademico(this)">
+        <i class="ph ph-graduation-cap"></i>
+        <span>Mi Académico</span>
+    </a>
     <a href="javascript:void(0)" class="nav-item" id="nav-alu-tramites" onclick="cargarMisTramites(this)">
         <i class="ph ph-file"></i>
         <span>Mis trámites</span>
@@ -137,6 +141,7 @@
 <div id="seccion-alu-matricula" class="alu-section" style="display: none;"></div>
 
 <!-- Sección Mis Trámites TUPA (Módulo 09, equipo Ismael) -->
+<div id="seccion-alu-academico" class="alu-section" style="display: none;"></div>
 <div id="seccion-alu-tramites" class="alu-section" style="display: none;"></div>
 
 <!-- Sección Mis Pagos (Módulo 09, equipo Ismael) -->
@@ -180,8 +185,37 @@
 
 <script>
     // --- Carga de módulos portados (M01: Mi Matrícula; M09: Trámites y Pagos) ---
+    // Tailwind (runtime, sin preflight) para las vistas de los módulos M01/M09 que
+    // se inyectan por fetch. Sin preflight NO resetea los estilos del panel; solo
+    // genera las clases usadas. La clase "dark" del contenedor se sincroniza con el
+    // tema activo del panel (data-theme) para que las clases dark: del módulo respondan.
+    function asegurarTailwindModulos() {
+        if (document.getElementById('tw-modulos')) return;
+        const sc = document.createElement('script');
+        sc.id = 'tw-modulos';
+        sc.src = 'https://cdn.tailwindcss.com';
+        sc.onload = () => {
+            if (window.tailwind) {
+                window.tailwind.config = { corePlugins: { preflight: false } };
+            }
+        };
+        document.head.appendChild(sc);
+        const st = document.createElement('style');
+        st.textContent = '.alu-section table, .alu-section form, .alu-section input, .alu-section select, .alu-section textarea, .alu-section button { font-family: inherit; }';
+        document.head.appendChild(st);
+    }
+    function sincronizarTemaModulos() {
+        const tema = document.documentElement.getAttribute('data-theme') || 'dark';
+        document.querySelectorAll('.alu-section').forEach(sec => {
+            if (tema === 'light') sec.classList.remove('dark');
+            else sec.classList.add('dark');
+        });
+    }
+
     function cargarSeccionModulo(idSeccion, url, el) {
         mostrarSeccionAlumno(idSeccion, el);
+        asegurarTailwindModulos();
+        sincronizarTemaModulos();
         const container = document.getElementById(idSeccion);
         if (container.dataset.loaded) return;
         container.innerHTML = `
@@ -207,6 +241,7 @@
             });
     }
     function cargarMiMatricula(el)   { cargarSeccionModulo('seccion-alu-matricula', '/Modulo01/Matriculas/MiMatricula?partial=true', el); }
+    function cargarMiAcademico(el)   { cargarSeccionModulo('seccion-alu-academico', '/Modulo01/Academico?partial=true', el); }
     function cargarMisTramites(el)   { cargarSeccionModulo('seccion-alu-tramites', '/Modulo09/Tramites?partial=true', el); }
     function cargarMisPagos(el)      { cargarSeccionModulo('seccion-alu-pagos', '/Modulo09/Pagos?partial=true', el); }
 

@@ -1,7 +1,7 @@
 @model Login_Administracion_de_Modulos.Areas.Modulo09.Models.ModeloTramiteDetalle
 @{
     ViewData["Title"] = $"Trámite: {Model.TipoNombre}";
-    var rolActivo = User.FindFirst("ActiveRole")?.Value ?? "";
+    var rolActivo = User.FindFirst("rol")?.Value ?? User.FindFirst("RolActivo")?.Value ?? "";
 }
 
 <div class="space-y-6">
@@ -89,14 +89,14 @@
                     {
                         <span class="badge badge-ghost badge-xs">Falta</span>
                     }
-                    @if (r.TieneArchivo && !string.Equals(rolActivo, "Alumno", System.StringComparison.OrdinalIgnoreCase))
+                    @if (r.TieneArchivo && !(rolActivo?.Contains("Alumno", System.StringComparison.OrdinalIgnoreCase) ?? false))
                     {
                         <a href="/Modulo09/Tramites/Archivo/@Model.Id/@r.Id" target="_blank"
                            class="btn btn-outline btn-xs rounded-lg font-bold" title="Ver el archivo adjunto por el estudiante">📄 Ver archivo</a>
                     }
 
                     <!-- Corregir: solo si el trámite está Observado/Rechazado y NO vencido (rol alumno) -->
-                    @if ((Model.Estado == "Observado" || Model.Estado == "Rechazado") && Model.Estado != "Vencido" && (string.Equals(rolActivo, "Alumno", System.StringComparison.OrdinalIgnoreCase) || string.Equals(rolActivo, "Admin", System.StringComparison.OrdinalIgnoreCase)))
+                    @if ((Model.Estado == "Observado" || Model.Estado == "Rechazado") && Model.Estado != "Vencido" && ((rolActivo?.Contains("Alumno", System.StringComparison.OrdinalIgnoreCase) ?? false) || (rolActivo?.Contains("Admin", System.StringComparison.OrdinalIgnoreCase) ?? false)))
                     {
                         <form method="post" asp-controller="Tramites" asp-action="Corregir" asp-route-id="@Model.Id" enctype="multipart/form-data" class="flex items-center gap-2 rounded-lg border border-amber-200 dark:border-amber-900/60 bg-amber-50/60 dark:bg-amber-950/20 p-1.5">
                             @Html.AntiForgeryToken()

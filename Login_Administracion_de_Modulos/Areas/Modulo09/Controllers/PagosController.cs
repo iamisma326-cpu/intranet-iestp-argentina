@@ -73,6 +73,11 @@ public class PagosController : ModuloBaseController
         });
     }
 
+    // PERSONAL (Tesorería): alias de Index con la bandeja de vouchers. Los paneles
+    // enlazan /Pagos/Bandeja directamente; sin esta acción devolvía 404.
+    [HttpGet("Bandeja")]
+    public Task<IActionResult> Bandeja(string? voucher) => Index(voucher);
+
     // ALUMNO: registrar pago con voucher (queda Pendiente para la bandeja)
     [HttpPost("Registrar")]
     [ValidateAntiForgeryToken]

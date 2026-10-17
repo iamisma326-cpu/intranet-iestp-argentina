@@ -1,7 +1,7 @@
 @model Login_Administracion_de_Modulos.Areas.Modulo09.Controllers.ModeloMesaTramitesVista
 @{
     ViewData["Title"] = "Mesa de Trámites";
-    var rolActivo = User.FindFirst("ActiveRole")?.Value ?? "";
+    var rolActivo = User.FindFirst("rol")?.Value ?? User.FindFirst("RolActivo")?.Value ?? "";
 }
 
 <div class="space-y-6">
@@ -100,7 +100,7 @@
                             </td>
                             <td>
                                 <div class="flex gap-1 flex-wrap">
-                                    @if (string.Equals(rolActivo, "Secretaria", System.StringComparison.OrdinalIgnoreCase) || string.Equals(rolActivo, "Admin", System.StringComparison.OrdinalIgnoreCase) || string.Equals(rolActivo, "Director", System.StringComparison.OrdinalIgnoreCase))
+                                    @if ((rolActivo?.Contains("Secretar", System.StringComparison.OrdinalIgnoreCase) ?? false) || (rolActivo?.Contains("Admin", System.StringComparison.OrdinalIgnoreCase) ?? false) || (rolActivo?.Contains("Director", System.StringComparison.OrdinalIgnoreCase) ?? false))
                                     {
                                         if (t.Estado == "Recibido")
                                         {

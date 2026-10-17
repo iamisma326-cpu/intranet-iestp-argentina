@@ -1,7 +1,7 @@
 @model Login_Administracion_de_Modulos.Areas.Modulo01.Controllers.ModeloPanelMatriculasVista
 @{
     ViewData["Title"] = "Matrículas 2026-II";
-    var rolActivo = User.FindFirst("ActiveRole")?.Value ?? "";
+    var rolActivo = User.FindFirst("rol")?.Value ?? User.FindFirst("RolActivo")?.Value ?? "";
 }
 
 <div class="space-y-6">
@@ -13,11 +13,11 @@
                 <div class="flex items-center gap-2 mb-1">
                     <span class="text-[10px] font-mono font-bold bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 px-2 py-0.5 rounded">01</span>
                     <span class="text-xs font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-900/40 px-2 py-0.5 rounded-md border border-sky-200 dark:border-sky-800">Puesto de trabajo</span>
-                @if (string.Equals(rolActivo, "Tesoreria", System.StringComparison.OrdinalIgnoreCase) && !string.Equals(rolActivo, "Admin", System.StringComparison.OrdinalIgnoreCase))
+                @if ((rolActivo?.Contains("Tesorer", System.StringComparison.OrdinalIgnoreCase) ?? false) && !(rolActivo?.Contains("Admin", System.StringComparison.OrdinalIgnoreCase) ?? false))
                 {
                     <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/40 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">Tu bandeja: validación de vouchers</span>
                 }
-                else if (string.Equals(rolActivo, "Secretaria", System.StringComparison.OrdinalIgnoreCase) && !string.Equals(rolActivo, "Admin", System.StringComparison.OrdinalIgnoreCase))
+                else if ((rolActivo?.Contains("Secretar", System.StringComparison.OrdinalIgnoreCase) ?? false) && !(rolActivo?.Contains("Admin", System.StringComparison.OrdinalIgnoreCase) ?? false))
                 {
                     <span class="text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/40 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-800">Tu bandeja: validación de fotos + conformidad</span>
                 }
@@ -58,11 +58,11 @@
         <div class="flex items-center gap-2 mb-1">
             <h2 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">⏳ En espera de validación</h2>
             <span class="badge badge-warning badge-xs font-semibold text-white">@Model.EnEspera.Count()</span>
-            @if (string.Equals(rolActivo, "Tesoreria", System.StringComparison.OrdinalIgnoreCase) && !string.Equals(rolActivo, "Admin", System.StringComparison.OrdinalIgnoreCase))
+            @if ((rolActivo?.Contains("Tesorer", System.StringComparison.OrdinalIgnoreCase) ?? false) && !(rolActivo?.Contains("Admin", System.StringComparison.OrdinalIgnoreCase) ?? false))
             {
                 <span class="badge badge-success badge-xs font-semibold text-white">Tu bandeja de vouchers 💳</span>
             }
-            else if (string.Equals(rolActivo, "Secretaria", System.StringComparison.OrdinalIgnoreCase) && !string.Equals(rolActivo, "Admin", System.StringComparison.OrdinalIgnoreCase))
+            else if ((rolActivo?.Contains("Secretar", System.StringComparison.OrdinalIgnoreCase) ?? false) && !(rolActivo?.Contains("Admin", System.StringComparison.OrdinalIgnoreCase) ?? false))
             {
                 <span class="badge badge-success badge-xs font-semibold text-white">Tu bandeja de fotos 📷</span>
             }
@@ -93,14 +93,14 @@
                                 <a href="/Modulo09/Tramites/Detalle/@tid" target="_blank"
                                    class="btn btn-ghost btn-xs rounded-lg font-bold text-slate-500" title="Ver el trámite de reserva con los archivos adjuntos (voucher, foto, documentos)">📁 Ver expediente</a>
                             }
-                            @if (!m.VoucherOk && (string.Equals(rolActivo, "Tesoreria", System.StringComparison.OrdinalIgnoreCase) || string.Equals(rolActivo, "Admin", System.StringComparison.OrdinalIgnoreCase)))
+                            @if (!m.VoucherOk && ((rolActivo?.Contains("Tesorer", System.StringComparison.OrdinalIgnoreCase) ?? false) || (rolActivo?.Contains("Admin", System.StringComparison.OrdinalIgnoreCase) ?? false)))
                             {
                                 <form method="post" asp-action="ValidarVoucher" asp-route-id="@m.Id">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn btn-outline btn-xs rounded-xl">Validar voucher</button>
                                 </form>
                             }
-                            @if (!m.FotoOk && (string.Equals(rolActivo, "Secretaria", System.StringComparison.OrdinalIgnoreCase) || string.Equals(rolActivo, "Admin", System.StringComparison.OrdinalIgnoreCase)))
+                            @if (!m.FotoOk && ((rolActivo?.Contains("Secretar", System.StringComparison.OrdinalIgnoreCase) ?? false) || (rolActivo?.Contains("Admin", System.StringComparison.OrdinalIgnoreCase) ?? false)))
                             {
                                 <form method="post" asp-action="ValidarFoto" asp-route-id="@m.Id">
                                     @Html.AntiForgeryToken()
@@ -148,7 +148,7 @@
                                 Foto <span class="badge badge-success badge-xs font-semibold text-white">Validada</span>
                             </div>
                         </div>
-                        @if (string.Equals(rolActivo, "Secretaria", System.StringComparison.OrdinalIgnoreCase) || string.Equals(rolActivo, "Admin", System.StringComparison.OrdinalIgnoreCase))
+                        @if ((rolActivo?.Contains("Secretar", System.StringComparison.OrdinalIgnoreCase) ?? false) || (rolActivo?.Contains("Admin", System.StringComparison.OrdinalIgnoreCase) ?? false))
                         {
                             <form method="post" asp-action="Registrar" asp-route-id="@m.Id">
                                 @Html.AntiForgeryToken()
