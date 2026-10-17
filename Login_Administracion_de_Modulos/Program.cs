@@ -1,7 +1,13 @@
 using Login_Administracion_de_Modulos.Seguridad;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
+using Dapper;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Dapper: soporte DateOnly→DateTime (Npgsql 10 devuelve DATE como DateOnly)
+SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
+SqlMapper.AddTypeHandler(new NullableDateOnlyTypeHandler());
 
 // 0. Cargar el archivo .env (raíz del proyecto) y las variables de entorno del
 //    sistema. Los secretos (BD, Google) NUNCA se commitean al repositorio.
