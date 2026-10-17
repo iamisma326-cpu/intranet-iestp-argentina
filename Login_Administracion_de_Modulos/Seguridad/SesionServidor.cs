@@ -8,11 +8,12 @@ namespace Login_Administracion_de_Modulos.Seguridad;
 /// <summary>
 /// Sesión server-side con cookie CORTA "sid" (32 chars).
 ///
-/// Motivo: el proxy frontal de MonsterASP descarta hacia el navegador los Set-Cookie
-/// cuyo valor supera ~256 bytes (verificado empíricamente: la antiforgery de 155 bytes
-/// llega siempre; la cookie de autenticación de ASP.NET Core no baja de ~300 bytes por
-/// el overhead de DataProtection, y jamás llega). Con este almacén, la cookie viaja
-/// corta (apenas un identificador opaco) y los claims viven en core.sesiones (Neon).
+/// Motivo: el reloj del frontal de MonsterASP está ~1 mes adelantado y su proxy descarta
+/// hacia el navegador los Set-Cookie que llevan 'expires' (los ve como cookies vencidas:
+/// expires hoy+8h queda en el pasado de SU reloj). Solo pasan las cookies de sesión SIN
+/// expires — como la antiforgery. Por eso la autenticación por cookie persistente de
+/// ASP.NET Core jamás llegaba al navegador. Aquí la cookie es de sesión (sin expires) y
+/// la validez real vive en core.sesiones.expira_en (BD), inmune al reloj del hosting.
 ///
 /// Flujo:
 ///   - IniciarSesionAsync: persiste los claims en core.sesiones y setea cookie "sid".
@@ -48,13 +49,17 @@ public static class SesionServidor
             await cmd.ExecuteNonQueryAsync();
         }
 
-        // Cookie corta: NUNCA supera ~40 bytes de valor → pasa el proxy sin problema.
+        // Cookie corta y SIN 'expires': es una cookie de sesión del navegador (vive hasta
+        // cerrar la pestaña). La validez REAL la controla core.sesiones.expira_en (BD).
+        // Motivo: el reloj del frontal de MonsterASP está ~1 mes adelantado y su proxy
+        // descarta los Set-Cookie cuyo 'expires' queda en el pasado según SU reloj —
+        // por eso ninguna cookie persistente llegaba al navegador y solo la antiforgery
+        // (cookie de sesión, sin expires) pasaba.
         context.Response.Cookies.Append(CookieName, sid, new CookieOptions
         {
             HttpOnly = true,
             SameSite = SameSiteMode.Lax,
             Secure = context.Request.IsHttps,
-            Expires = DateTimeOffset.UtcNow.AddHours(HorasValidez),
             Path = "/",
             IsEssential = true
         });
