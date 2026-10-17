@@ -388,7 +388,17 @@ namespace Login_Administracion_de_Modulos.Controllers
                 await RegistrarSesionAsync(connection, idUsuario, "ACCESO_RAPIDO");
                 await FirmarSesionAsync(idUsuario, idPersona, nombreCompleto, rolPrincipal, roles, esDemo: true);
 
-                return Redirect(ObtenerRutaDashboardPorRol(rolPrincipal));
+                // IMPORTANTE: responder 200 con redirección por cliente (meta-refresh).
+                // MonsterASP/IIS delante del proxy HTTP/2 descarta el header Set-Cookie de las
+                // respuestas 302 hacia el navegador: la cookie de sesión nunca llega y el
+                // dashboard expulsa al usuario de vuelta al login. Con 200 + meta-refresh el
+                // Set-Cookie viaja en el cuerpo de una respuesta 200 (mismo camino que la
+                // cookie antiforgery, que sí llega) y el navegador la guarda antes de navegar.
+                string ruta = ObtenerRutaDashboardPorRol(rolPrincipal);
+                ViewBag.Nombre = nombreCompleto;
+                ViewBag.Rol = rolPrincipal;
+                ViewBag.RutaDestino = ruta;
+                return View("~/Views/LoginDemoRedirect.cshtml");
             }
             catch (Exception ex)
             {

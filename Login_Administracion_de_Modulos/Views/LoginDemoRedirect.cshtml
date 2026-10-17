@@ -1,0 +1,63 @@
+@{
+    Layout = null;
+    var nombre = ViewBag.Nombre as string ?? "Usuario Institucional";
+    var rol = ViewBag.Rol as string ?? "";
+    var ruta = ViewBag.RutaDestino as string ?? "/Login";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ingresando… - Intranet IESTP Argentina</title>
+    <meta http-equiv="refresh" content="0;url=@ruta" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+            color: #e2e8f0;
+        }
+        .card {
+            text-align: center;
+            padding: 3rem 4rem;
+            border-radius: 1.5rem;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .spinner {
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 1.5rem;
+            border: 4px solid rgba(255, 255, 255, 0.15);
+            border-top-color: #60a5fa;
+            border-radius: 50%;
+            animation: girar 0.8s linear infinite;
+        }
+        @@keyframes girar { to { transform: rotate(360deg); } }
+        h1 { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.35rem; }
+        p  { font-size: 0.85rem; color: #94a3b8; }
+        a  { color: #60a5fa; text-decoration: none; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="spinner"></div>
+        <h1>Ingresando al panel de @rol…</h1>
+        <p>Bienvenido(a), @nombre. Un momento, por favor.</p>
+        <p style="margin-top:1rem">
+            <a href="@ruta">Si no te redirige automáticamente, haz clic aquí.</a>
+        </p>
+    </div>
+    <script>
+        // Refuerzo del meta-refresh: navegación por script tras asegurar que la cookie
+        // de sesión (Set-Cookie de esta respuesta 200) ya fue almacenada por el navegador.
+        setTimeout(function () { window.location.replace("@ruta"); }, 350);
+    </script>
+</body>
+</html>
