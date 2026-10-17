@@ -89,8 +89,8 @@
 
             @if (isDemoSession)
             {
-                <span class="header-demo-badge" title="Sesión interactiva en modo Demostración">
-                    <i class="ph ph-shield-check"></i> <span class="demo-badge-text">Demo</span>
+                <span class="header-demo-badge" title="Sesión iniciada por acceso rápido (usuario real, sin contraseña)">
+                    <i class="ph ph-shield-check"></i> <span class="demo-badge-text">Acceso rápido</span>
                 </span>
             }
 
@@ -260,7 +260,7 @@
                             <span class="badge-role"><i class="ph ph-identification-badge"></i> @resolvedUserRole</span>
                             @if (isDemoSession)
                             {
-                                <span class="badge-demo"><i class="ph ph-shield-check"></i> Modo Demostración</span>
+                                <span class="badge-demo"><i class="ph ph-shield-check"></i> Acceso rápido</span>
                             }
                             else
                             {
@@ -274,7 +274,7 @@
                 <div class="profile-details-grid">
                     <div class="profile-detail-card">
                         <span class="detail-label"><i class="ph ph-identification-card"></i> Identificador</span>
-                        <span class="detail-value">@(User.FindFirst("UsuarioId")?.Value is string uid && uid != "0" ? $"ID #{uid} (Activo)" : "Sesión de demostración")</span>
+                        <span class="detail-value">@($"ID #{User.FindFirst("UsuarioId")?.Value} (Activo)")</span>
                     </div>
 
                     <div class="profile-detail-card">
