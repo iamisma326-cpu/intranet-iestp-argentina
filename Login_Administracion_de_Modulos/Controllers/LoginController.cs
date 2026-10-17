@@ -448,16 +448,9 @@ namespace Login_Administracion_de_Modulos.Controllers
 
             var claims = new List<Claim>
             {
-                new("n", nombreCorto),                       // nombre (tipo corto: identidad.Name)
-                new("uid", usuarioId.ToString()),
-                new("pid", personaId.ToString()),
-                new("rol", rolPrincipal),                    // RolActivo (tipo corto)
-                new("r", rolPrincipal)                       // role para IsInRole (tipo corto)
+                new("uid", usuarioId.ToString())
             };
 
-            // Tipos cortos: el ticket serializa el TIPO de cada claim; los ClaimTypes.*
-            // estándar son URIs de ~47 chars que inflan la cookie de sesión en ~190 bytes.
-            // Con "n"/"r" el Identity.Name y el IsInRole siguen funcionando igual.
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme,
                 nameType: "n", roleType: "r");
             var principal = new ClaimsPrincipal(identity);
