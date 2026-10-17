@@ -1,0 +1,201 @@
+/* ==========================================================================
+   Compatibilidad de módulos portados (M01/M09) dentro de los paneles
+   --------------------------------------------------------------------------
+   Las vistas portadas del sistema original usan clases Tailwind + utilidades
+   estilo DaisyUI (btn, badge, input, select, alert) que el panel no define.
+   Este archivo las estiliza con las VARIABLES DE TEMA del panel (--bg-card,
+   --text-primary, --input-bg, ...) para que los módulos respeten el modo
+   claro/oscuro del sistema en lugar de verse "planos" o con letra negra
+   sobre fondo oscuro.
+   Se carga solo dentro de los paneles (junto al fetch de módulos).
+   ========================================================================== */
+
+/* ---------- Botones ---------- */
+.mod-compat .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-weight: 600;
+    line-height: 1.25;
+    border-radius: 0.75rem;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+    text-decoration: none;
+}
+.mod-compat .btn:hover { background: var(--bg-card-hover); }
+.mod-compat .btn:active { transform: translateY(1px); }
+.mod-compat .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.mod-compat .btn-primary {
+    background: linear-gradient(135deg, var(--accent-cyan) 0%, #0284c7 100%);
+    border-color: transparent;
+    color: #04202c;
+}
+[data-theme="light"] .mod-compat .btn-primary { color: #ffffff; }
+.mod-compat .btn-primary:hover { filter: brightness(1.08); background: linear-gradient(135deg, var(--accent-cyan) 0%, #0284c7 100%); }
+
+.mod-compat .btn-outline {
+    background: transparent;
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+}
+.mod-compat .btn-outline:hover { background: var(--accent-cyan-bg); }
+
+.mod-compat .btn-ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--text-secondary);
+}
+.mod-compat .btn-ghost:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+
+.mod-compat .btn-error {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #f87171;
+}
+.mod-compat .btn-error:hover { background: rgba(239, 68, 68, 0.2); }
+
+.mod-compat .btn-accent {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.4);
+    color: #34d399;
+}
+.mod-compat .btn-accent:hover { background: rgba(16, 185, 129, 0.2); }
+
+/* Tamaños */
+.mod-compat .btn-xs { padding: 0.25rem 0.6rem; font-size: 0.7rem; }
+.mod-compat .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.75rem; }
+
+/* ---------- Badges (chips de estado) ---------- */
+.mod-compat .badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    line-height: 1;
+    padding: 0.28rem 0.6rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+.mod-compat .badge-xs { font-size: 0.65rem; padding: 0.22rem 0.5rem; }
+.mod-compat .badge-sm { font-size: 0.75rem; padding: 0.3rem 0.65rem; }
+
+.mod-compat .badge-success { background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.35); }
+.mod-compat .badge-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border-color: rgba(245, 158, 11, 0.35); }
+.mod-compat .badge-error   { background: rgba(239, 68, 68, 0.15);  color: #ef4444; border-color: rgba(239, 68, 68, 0.35); }
+.mod-compat .badge-info    { background: rgba(14, 165, 233, 0.15); color: #0ea5e9; border-color: rgba(14, 165, 233, 0.35); }
+.mod-compat .badge-ghost   { background: var(--bg-card-hover); color: var(--text-secondary); border-color: var(--border-color); }
+
+/* Los badges con texto blanco forzado (badge-error text-white del original)
+   conservan su contraste en ambos temas: */
+.mod-compat .badge.text-white { color: #ffffff !important; }
+
+/* ---------- Inputs / selects / textareas ---------- */
+.mod-compat .input,
+.mod-compat .select,
+.mod-compat textarea,
+.mod-compat input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.mod-compat select {
+    background: var(--input-bg);
+    color: var(--input-color);
+    border: 1px solid var(--input-border);
+    border-radius: 0.75rem;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.8rem;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+.mod-compat .input:focus,
+.mod-compat .select:focus,
+.mod-compat input:focus,
+.mod-compat select:focus,
+.mod-compat textarea:focus {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 2px var(--accent-cyan-bg);
+}
+.mod-compat .input-sm, .mod-compat .select-sm { padding: 0.3rem 0.55rem; font-size: 0.75rem; }
+.mod-compat input::placeholder, .mod-compat textarea::placeholder { color: var(--text-secondary); opacity: 0.8; }
+
+/* Los inputs de las vistas traen dark:bg-slate-800: en modo claro Tailwind pinta
+   bg-white → letra negra sobre fondo blanco del panel está bien; en oscuro,
+   la clase dark: del CDN pinta slate-800, consistente con --input-bg. */
+
+/* ---------- Alerts (avisos informativos de las vistas) ---------- */
+.mod-compat .alert {
+    display: flex;
+    gap: 0.6rem;
+    border-radius: 1rem;
+    padding: 0.7rem 1rem;
+    font-size: 0.78rem;
+    border: 1px solid transparent;
+    align-items: flex-start;
+}
+.mod-compat .alert-info {
+    background: rgba(14, 165, 233, 0.1);
+    border-color: rgba(14, 165, 233, 0.3);
+    color: #0ea5e9;
+}
+[data-theme="light"] .mod-compat .alert-info { color: #0369a1; }
+.mod-compat .alert-warning {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: #f59e0b;
+}
+[data-theme="light"] .mod-compat .alert-warning { color: #92400e; }
+.mod-compat .alert-success {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #10b981;
+}
+[data-theme="light"] .mod-compat .alert-success { color: #065f46; }
+
+/* ---------- Tablas (record académico, historiales) ---------- */
+.mod-compat table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+.mod-compat table thead th {
+    background: var(--table-header-bg);
+    color: var(--text-secondary);
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--table-border);
+}
+.mod-compat table tbody td {
+    padding: 0.55rem 0.75rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--table-border);
+}
+.mod-compat table tbody tr:hover td { background: var(--table-hover); }
+
+/* ---------- Tipografía base de la sección del módulo ---------- */
+.mod-compat { color: var(--text-primary); }
+.mod-compat h1, .mod-compat h2, .mod-compat h3, .mod-compat h4 {
+    color: var(--text-primary);
+}
+.mod-compat a { color: var(--accent-cyan); }
+.mod-compat p { color: inherit; }
+
+/* ---------- Labels de formularios ---------- */
+.mod-compat label {
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 600;
+    display: block;
+}
+
+/* ---------- Utilidades que el CDN Tailwind no cubre bien sin preflight ---------- */
+.mod-compat .hidden { display: none !important; }
+.mod-compat [class*="divide-y"] > :not([hidden]) ~ :not([hidden]) { border-top: 1px solid var(--border-color); }

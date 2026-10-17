@@ -7,6 +7,10 @@
     // Inicialización inmediata para evitar parpadeos (FOUC)
     const storedTheme = localStorage.getItem('app-theme') || 'dark';
     document.documentElement.setAttribute('data-theme', storedTheme);
+    // La clase "dark" de <html> acompaña al tema para los módulos portados
+    // (clases dark: de Tailwind). Ver setTheme().
+    if (storedTheme === 'dark') document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
 })();
 
 function getTheme() {
@@ -16,6 +20,11 @@ function getTheme() {
 function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('app-theme', theme);
+    // Sincronizar la clase "dark" de <html> para los módulos portados (M01/M09),
+    // cuyas vistas usan clases dark: de Tailwind que responden a .dark en un
+    // ancestro. Así el modo claro del panel también aclara los módulos.
+    if (theme === 'dark') document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
     updateThemeToggleUI(theme);
 }
 
