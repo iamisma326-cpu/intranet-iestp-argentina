@@ -104,7 +104,21 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
-app.UseAuthentication();
+
+// 6b. Autenticación server-side (cookie corta "sid" → claims en core.sesiones).
+// Sustituye a UseAuthentication de cookies: el proxy de MonsterASP descarta los
+// Set-Cookie >~256 bytes y el ticket de claims de ASP.NET Core no baja de ~300,
+// así que la identidad se persiste en Postgres y la cookie solo lleva el sid.
+app.Use(async (context, next) =>
+{
+    var principal = await Login_Administracion_de_Modulos.Seguridad.SesionServidor.CargarSesionAsync(context, app.Configuration);
+    if (principal != null)
+    {
+        context.User = principal;
+    }
+    await next();
+});
+
 app.UseAuthorization();
 
 app.MapControllerRoute(

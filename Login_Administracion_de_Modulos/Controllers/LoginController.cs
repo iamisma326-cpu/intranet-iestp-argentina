@@ -413,7 +413,7 @@ namespace Login_Administracion_de_Modulos.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await Seguridad.SesionServidor.CerrarSesionAsync(HttpContext, _configuration);
             return RedirectToAction("Index", "Login");
         }
 
@@ -428,41 +428,22 @@ namespace Login_Administracion_de_Modulos.Controllers
         // ==========================================
 
         /// <summary>
-        /// Firma la cookie de claims con los datos del usuario. Es la ÚNICA fuente de identidad.
-        /// TICKET COMPACTO: MonsterASP (proxy delante del sitio) descarta los Set-Cookie cuyo
-        /// valor excede ~512 bytes hacia el navegador (verificado: la antiforgery de 155 bytes
-        /// llega; la sesión de 731 nunca llega). Por eso la cookie lleva SOLO lo esencial:
-        ///   - Name (nombre corto para headers), UsuarioId, PersonaId, RolActivo
-        ///   - Un único ClaimTypes.Role con el rol ACTIVO (el guard de paneles autoriza por
-        ///     RolActivo; IsInRole queda funcional para ese rol y para "Administrador").
-        /// Se omiten los claims redundantes (NameIdentifier, EsDemo y roles inactivos).
+        /// Registra la sesión server-side (cookie corta "sid" + claims en core.sesiones).
+        /// Motivo: el proxy de MonsterASP descarta los Set-Cookie >~256 bytes hacia el
+        /// navegador y el ticket de claims de ASP.NET Core no baja de ~300 bytes, por lo
+        /// que la autenticación por cookie grande JAMÁS llegaba al navegador en producción
+        /// (los accesos rápidos y el login por DNI rebotaban al /Login). Los claims viven
+        /// en Postgres y la cookie solo transporta el identificador opaco.
         /// </summary>
         private async Task FirmarSesionAsync(int usuarioId, int personaId, string nombreCompleto,
             string rolPrincipal, IEnumerable<string> roles, bool esDemo)
         {
-            // Nombre corto en la cookie (los paneles muestran esto; recortado a 30 chars
-            // para no inflar el ticket).
             string nombreCorto = string.IsNullOrWhiteSpace(nombreCompleto)
                 ? "Usuario Institucional"
                 : (nombreCompleto.Length > 30 ? nombreCompleto[..30].Trim() : nombreCompleto);
 
-            var claims = new List<Claim>
-            {
-                new("uid", usuarioId.ToString())
-            };
-
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme,
-                nameType: "n", roleType: "r");
-            var principal = new ClaimsPrincipal(identity);
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                principal,
-                new AuthenticationProperties
-                {
-                    IsPersistent = true,
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8)
-                });
+            await Seguridad.SesionServidor.IniciarSesionAsync(HttpContext, _configuration,
+                new Seguridad.SesionServidor.SesionPayload(usuarioId, personaId, nombreCorto, rolPrincipal));
         }
 
         /// <summary>Roles activos del usuario desde core.usuario_roles + core.roles.</summary>
