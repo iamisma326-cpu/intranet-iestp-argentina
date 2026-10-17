@@ -61,44 +61,19 @@ namespace Login_Administracion_de_Modulos.Controllers
             return View("~/Views/Dashboard/Administrador.cshtml");
         }
 
+                [HttpGet("/Dashboard/JefePatrimonial")]
         [HttpGet("/Dashboard/JefeGeneral")]
-        [HttpGet("/Dashboard/Jefe")]
-        [ProtegerPanel("Jefe General", "Almacen")]
-        public IActionResult JefeGeneral()
+        [ProtegerPanel("Jefe Patrimonial", "Almacen")]
+        public IActionResult JefePatrimonial()
         {
-            return View("~/Views/Dashboard/JefeGeneral.cshtml");
+            return View("~/Views/Dashboard/JefePatrimonial.cshtml");
         }
 
-        [HttpGet("/Dashboard/JefeComputacion")]
-        [HttpGet("/Dashboard/TallerComputacion")]
-        [ProtegerPanel("Jefe de Taller Computación", "Computacion")]
-        public IActionResult JefeComputacion()
+        [HttpGet("/Dashboard/CoordinadorCarrera")]
+        [ProtegerPanel("Coordinador de Carrera")]
+        public IActionResult CoordinadorCarrera()
         {
-            return View("~/Views/Dashboard/JefeComputacion.cshtml");
-        }
-
-        [HttpGet("/Dashboard/JefeAdministracion")]
-        [HttpGet("/Dashboard/TallerAdministracion")]
-        [ProtegerPanel("Jefe de Taller Administración", "Administracion")]
-        public IActionResult JefeAdministracion()
-        {
-            return View("~/Views/Dashboard/JefeAdministracion.cshtml");
-        }
-
-        [HttpGet("/Dashboard/JefeContabilidad")]
-        [HttpGet("/Dashboard/TallerContabilidad")]
-        [ProtegerPanel("Jefe de Taller Contabilidad", "Contabilidad")]
-        public IActionResult JefeContabilidad()
-        {
-            return View("~/Views/Dashboard/JefeContabilidad.cshtml");
-        }
-
-        [HttpGet("/Dashboard/EncargadoInventario")]
-        [HttpGet("/Dashboard/Inventario")]
-        [ProtegerPanel("Encargado de Inventario", "Inventario")]
-        public IActionResult EncargadoInventario()
-        {
-            return View("~/Views/Dashboard/EncargadoInventario.cshtml");
+            return View("~/Views/Dashboard/CoordinadorCarrera.cshtml");
         }
 
         [HttpGet("/Dashboard/Tesoreria")]

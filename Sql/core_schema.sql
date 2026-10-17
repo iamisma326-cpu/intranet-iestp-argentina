@@ -124,12 +124,8 @@ INSERT INTO core.roles (nombre, descripcion) VALUES
     ('Psicología',           'Bienestar psicológico'),
     ('Jefe de Soporte',      'Soporte TI'),
     ('Practicante',          'Practicante de apoyo'),
-    ('Jefe General',         'Jefatura general / almacén'),
-    ('Encargado de Inventario', 'Inventario de bienes'),
-    ('Jefe de Taller Computación',  'Jefatura del taller de computación'),
-    ('Jefe de Taller Administración','Jefatura del taller de administración'),
-    ('Jefe de Taller Contabilidad', 'Jefatura del taller de contabilidad')
-ON CONFLICT (nombre) DO NOTHING;
+    ('Jefe Patrimonial',     'Jefatura patrimonial de almacén e inventario'),
+)ON CONFLICT (nombre) DO NOTHING;
 
 -- Módulos registrados para la gobernanza de permisos
 INSERT INTO core.permisos_modulos (nombre_modulo, nivel_acceso, descripcion) VALUES
@@ -196,11 +192,7 @@ JOIN core.roles r ON (
     (p.numero_documento = '20000001' AND r.nombre = 'Docente') OR
     (p.numero_documento = '60000001' AND r.nombre = 'Jefe de Soporte') OR
     (p.numero_documento = '60000002' AND r.nombre = 'Practicante') OR
-    (p.numero_documento = '60000003' AND r.nombre = 'Jefe General') OR
-    (p.numero_documento = '60000004' AND r.nombre = 'Jefe de Taller Computación') OR
-    (p.numero_documento = '60000005' AND r.nombre = 'Jefe de Taller Administración') OR
-    (p.numero_documento = '60000006' AND r.nombre = 'Jefe de Taller Contabilidad') OR
-    (p.numero_documento = '60000007' AND r.nombre = 'Encargado de Inventario')
+    (p.numero_documento = '60000003' AND r.nombre = 'Jefe Patrimonial') OR
 )
 ON CONFLICT (id_usuario, id_rol) DO NOTHING;
 

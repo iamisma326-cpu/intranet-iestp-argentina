@@ -302,11 +302,10 @@ namespace Login_Administracion_de_Modulos.Controllers
                 "secretaria"               => "30000001", // Rosa Morales Salazar (Secretaría Académica)
                 "admin" or "administrador"  => "47915633", // Felipe Ostos Bermúdez (Administrador)
                 "tesoreria" or "tesorero"   => "40000001", // Elena Ramos Palacios (Tesorería)
-                "jefe" or "jefegeneral"    => "51000001", // Jorge Ramírez Salazar (Jefe General)
-                "computacion"              => "51000002", // María Torres Vega (Jefe de Taller Computación)
-                "taller-administracion"    => "51000003", // Carlos Huamán Ríos (Jefe de Taller Administración)
-                "taller-contabilidad"      => "51000004", // Rosa Vargas Muñoz (Jefe de Taller Contabilidad)
-                "inventario"               => "51000001", // Jorge Ramírez Salazar (Encargado de Inventario)
+                "jefe" or "jefepatrimonial" => "51000001", // Jorge Ramírez Salazar (Jefe Patrimonial)
+                "coordinador" or "computacion" => "51000002", // María Torres Vega (Coordinadora de Carrera)
+                "taller-administracion"    => "51000003", // Carlos Huamán Ríos (Coordinador de Carrera)
+                "taller-contabilidad"      => "51000004", // Rosa Vargas Muñoz (Coordinador de Carrera)
                 _ => ""
             };
 
@@ -336,10 +335,10 @@ namespace Login_Administracion_de_Modulos.Controllers
                 "secretaria"                    => "Secretar",
                 "admin" or "administrador"      => "Administrador",
                 "tesoreria" or "tesorero"        => "Tesorer",
-                "jefe" or "jefegeneral"         => "Jefe General",
-                "computacion"                   => "Computaci",
-                "taller-administracion"         => "Administraci",
-                "taller-contabilidad"           => "Contabilidad",
+                "jefe" or "jefepatrimonial"      => "Jefe Patrimonial",
+                "coordinador" or "computacion"  => "Coordinador de Carrera",
+                "taller-administracion"         => "Coordinador de Carrera",
+                "taller-contabilidad"           => "Coordinador de Carrera",
                 "inventario"                    => "Inventario",
                 _ => ""
             };
@@ -551,20 +550,23 @@ namespace Login_Administracion_de_Modulos.Controllers
         {
             if (string.IsNullOrWhiteSpace(rolNombre)) return "/Dashboard/Alumno";
 
-            if (rolNombre.Contains("Encargado de Inventario", StringComparison.OrdinalIgnoreCase) || (rolNombre.Contains("Inventario", StringComparison.OrdinalIgnoreCase) && !rolNombre.Contains("Jefe", StringComparison.OrdinalIgnoreCase)))
-                return "/Dashboard/EncargadoInventario";
+            // Jefe Patrimonial: jefatura de almacén e inventario institucional
+            if (rolNombre.Contains("Jefe Patrimonial", StringComparison.OrdinalIgnoreCase) || rolNombre.Contains("Almacen", StringComparison.OrdinalIgnoreCase) || rolNombre.Contains("Patrimonial", StringComparison.OrdinalIgnoreCase))
+                return "/Dashboard/JefePatrimonial";
 
+            // Coordinador de Carrera (Computación, Administración o Contabilidad): panel unificado
+            if (rolNombre.Contains("Coordinador", StringComparison.OrdinalIgnoreCase))
+                return "/Dashboard/CoordinadorCarrera";
+
+            // Compatibilidad con sesiones antiguas: nombres previos de jefaturas de taller e inventario
             if ((rolNombre.Contains("Taller", StringComparison.OrdinalIgnoreCase) || rolNombre.Contains("Jefe", StringComparison.OrdinalIgnoreCase)) && rolNombre.Contains("Computación", StringComparison.OrdinalIgnoreCase))
-                return "/Dashboard/JefeComputacion";
-
-            if ((rolNombre.Contains("Taller", StringComparison.OrdinalIgnoreCase) || rolNombre.Contains("Jefe", StringComparison.OrdinalIgnoreCase)) && (rolNombre.Contains("Administración", StringComparison.OrdinalIgnoreCase) || rolNombre.Contains("Administracion", StringComparison.OrdinalIgnoreCase)) && !rolNombre.Contains("General", StringComparison.OrdinalIgnoreCase) && !rolNombre.Equals("Administrador", StringComparison.OrdinalIgnoreCase))
-                return "/Dashboard/JefeAdministracion";
-
+                return "/Dashboard/CoordinadorCarrera";
+            if ((rolNombre.Contains("Taller", StringComparison.OrdinalIgnoreCase) || rolNombre.Contains("Jefe", StringComparison.OrdinalIgnoreCase)) && (rolNombre.Contains("Administración", StringComparison.OrdinalIgnoreCase) || rolNombre.Contains("Administracion", StringComparison.OrdinalIgnoreCase)) && !rolNombre.Contains("General", StringComparison.OrdinalIgnoreCase))
+                return "/Dashboard/CoordinadorCarrera";
             if ((rolNombre.Contains("Taller", StringComparison.OrdinalIgnoreCase) || rolNombre.Contains("Jefe", StringComparison.OrdinalIgnoreCase)) && (rolNombre.Contains("Contabilidad", StringComparison.OrdinalIgnoreCase) || rolNombre.Contains("Conta", StringComparison.OrdinalIgnoreCase)))
-                return "/Dashboard/JefeContabilidad";
-
-            if (rolNombre.Contains("Jefe General", StringComparison.OrdinalIgnoreCase) || rolNombre.Contains("Almacen", StringComparison.OrdinalIgnoreCase))
-                return "/Dashboard/JefeGeneral";
+                return "/Dashboard/CoordinadorCarrera";
+            if (rolNombre.Contains("Encargado de Inventario", StringComparison.OrdinalIgnoreCase) || (rolNombre.Contains("Inventario", StringComparison.OrdinalIgnoreCase) && !rolNombre.Contains("Jefe", StringComparison.OrdinalIgnoreCase)))
+                return "/Dashboard/JefePatrimonial";
 
             if (rolNombre.Contains("Alumno", StringComparison.OrdinalIgnoreCase) || rolNombre.Contains("Estudiante", StringComparison.OrdinalIgnoreCase))
                 return "/Dashboard/Alumno";
