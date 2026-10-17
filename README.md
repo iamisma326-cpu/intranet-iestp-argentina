@@ -13,20 +13,20 @@ su módulo de forma aislada.
                                │
          ┌──────────┬──────────┼──────────┬──────────┐
          ▼          ▼          ▼          ▼          ▼
-   [Modulo01]  [Modulo02]  [Modulo03]  [Modulo04]  [Modulo05]  ... (07)
+   [Modulo01]  [Modulo02]  [Modulo03]  [Modulo04]  [Modulo05]  ... (10)
    (equipo 01) (equipo 02) (equipo 03) (equipo 04)  Salud, Tópico
                                                 y Psicología (con código)
 ```
 
 - **Sitio en producción:** https://intranetiestp.runasp.net (MonsterASP)
-- **Base de datos:** PostgreSQL 18 en Neon (esquemas `core` + `modXX`)
+- **Base de datos:** PostgreSQL 16 en Neon (esquemas `core` + `modXX`)
 
 ## 1. Stack
 
 | Capa | Tecnología |
 | :--- | :--- |
 | Backend | ASP.NET Core MVC, .NET 10, C# |
-| Base de datos | PostgreSQL 18 (Neon) — acceso con ADO.NET/Npgsql 10, SQL parametrizado |
+| Base de datos | PostgreSQL 16 (Neon) — acceso con Npgsql 8 (Dapper 2.1), SQL parametrizado |
 | Autenticación | Cookie de claims (usuario + todos sus roles + `RolActivo`) · Google SSO opcional |
 | Contraseñas | PBKDF2-SHA256, 100k iteraciones, comparación de tiempo constante |
 | Frontend | Razor Views + CSS vanilla + Phosphor Icons |
@@ -45,17 +45,28 @@ su módulo de forma aislada.
 │   ├── core_schema.sql                   # esquema core (idempotente) + seeds
 │   └── roles_equipos.sql                 # roles de BD user_equipoXX + user_app
 └── Login_Administracion_de_Modulos/
-    ├── Controllers/                      # Login y Dashboards (14 paneles por rol)
+    ├── Controllers/                      # Login y Dashboards (13 paneles por rol)
     ├── Seguridad/
     │   ├── ConfiguracionSegura.cs        # carga .env / env vars (secreto jamás en código)
     │   ├── PasswordSecurity.cs           # PBKDF2 hash/verify
     │   └── ProtegerPanelAttribute.cs     # filtro RBAC sobre claims
-    ├── Views/                            # login + 14 paneles (marcos de rol)
+    ├── Views/                            # login + 13 paneles (marcos de rol)
     ├── Areas/
-    │   ├── Modulo01..04, 06, 07/         # slots de cada equipo (vacíos hasta que arranquen)
-    │   └── Modulo05/                      # Salud: tópico y psicología (referencia viva)
-    │       ├── Controller/  ├── Models/  └── Sql/schema.sql
+    │   ├── Modulo00/                     # base común: ModuloBaseController, factory de conexión, layout de módulos
+    │   ├── Modulo01/                     # Matrícula Académica (EN PRODUCCIÓN)
+    │   │   ├── Controllers/ ├── Services/ ├── Views/ └── Sql/schema.sql
+    │   ├── Modulo05/                     # Salud: tópico, psicología y averías (EN PRODUCCIÓN)
+    │   │   ├── Controllers/ ├── Services/ ├── Views/ └── Sql/schema.sql
+    │   ├── Modulo09/                     # Tesorería, trámites TUPA y pagos (EN PRODUCCIÓN)
+    │   │   ├── Controllers/ ├── Services/ ├── Views/ └── Sql/schema.sql
+    │   └── Modulo02..04, 06, 07/         # slots de cada equipo (vacíos hasta que arranquen)
     └── Program.cs / appsettings.json     # pipeline y placeholders (secretos en .env)
+
+> **Módulo 10 — Repositorio de Proyectos (nuevo):** en esta propuesta se agrega un
+> módulo dedicado al equipo de repositorio de proyectos (en el sistema anterior
+> usaban el módulo 04). Publicación y consulta de proyectos de fin de carrera:
+> repositorio institucional con expedientes, archivos y estados de revisión.
+> Espacio soberano: `Areas/Modulo10` + esquema `mod10` en la base de datos.
 ```
 
 ## 3. Contrato de sesión y seguridad
@@ -117,10 +128,10 @@ rápido del login:
 | 51000005 | Luis Chávez Paredes | Jefe de Soporte |
 | 51000006 | Lucía Fernández Quispe | Enfermería (Tópico) |
 | 51000007 | Andrés Salazar Morales | Psicología |
-| 51000001 | Jorge Ramírez Salazar | Jefe General / Inventario |
-| 51000002 | María Torres Vega | Jefe Taller Computación |
-| 51000003 | Carlos Huamán Ríos | Jefe Taller Administración |
-| 51000004 | Rosa Vargas Muñoz | Jefe Taller Contabilidad |
+| 51000001 | Jorge Ramírez Salazar | Jefe Patrimonial |
+| 51000002 | María Torres Vega | Coordinador de Carrera (Computación) |
+| 51000003 | Carlos Huamán Ríos | Coordinador de Carrera (Administración) |
+| 51000004 | Rosa Vargas Muñoz | Coordinador de Carrera (Contabilidad) |
 | 74096398 | Franco Stefano Alcála | Practicante |
 
 ## 6. Cómo trabaja cada equipo (gobernanza)
@@ -138,7 +149,7 @@ Reglas de código para tu módulo (ver `Areas/Modulo05/` como referencia viva):
 ```csharp
 [Area("Modulo04")]
 [Route("Modulo04/[controller]")]
-[ProtegerPanel("Encargado de Inventario", "Jefe General")]  // tus roles
+[ProtegerPanel("Jefe Patrimonial", "Coordinador de Carrera")]  // tus roles
 public class InventarioController : Controller
 {
     private readonly string _conn;
@@ -225,7 +236,7 @@ panel** (ej. "equipo 02 → asistencia en Docente y Alumno"). Ese es el ÚNICO
 punto de coordinación necesario; después de eso, cada equipo trabaja aislado.
 Si dos equipos piden la misma pestaña, decide el dueño del proyecto.
 
-## 8. Paneles del sistema (14 roles)
+## 8. Paneles del sistema (13 roles)
 
 | N° | Rol | Ruta del panel |
 | :---: | :--- | :--- |
@@ -237,12 +248,11 @@ Si dos equipos piden la misma pestaña, decide el dueño del proyecto.
 | 06 | Practicante | `/Dashboard/Practicante` |
 | 07 | Secretaría Académica | `/Dashboard/Secretaria` |
 | 08 | Administrador (acceso global) | `/Dashboard/Administrador` |
-| 09 | Jefe General / Almacén | `/Dashboard/JefeGeneral` |
-| 10 | Jefe Taller Computación | `/Dashboard/JefeComputacion` |
-| 11 | Jefe Taller Administración | `/Dashboard/JefeAdministracion` |
-| 12 | Jefe Taller Contabilidad | `/Dashboard/JefeContabilidad` |
-| 13 | Encargado de Inventario | `/Dashboard/EncargadoInventario` |
-| 14 | Tesorería | `/Dashboard/Tesoreria` |
+| 09 | Jefe Patrimonial (almacén e inventario) | `/Dashboard/JefePatrimonial` |
+| 10 | Coordinador de Carrera (Computación) | `/Dashboard/CoordinadorCarrera` |
+| 11 | Coordinador de Carrera (Administración) | `/Dashboard/CoordinadorCarrera` |
+| 12 | Coordinador de Carrera (Contabilidad) | `/Dashboard/CoordinadorCarrera` |
+| 13 | Tesorería | `/Dashboard/Tesoreria` |
 
 El rol se asigna en `core.usuario_roles`; el usuario inicia sesión con su DNI
 y el núcleo lo lleva al panel de su rol activo. El acceso rápido del login
