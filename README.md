@@ -19,14 +19,14 @@ su módulo de forma aislada.
 ```
 
 - **Sitio en producción:** https://intranetiestp.runasp.net (MonsterASP)
-- **Base de datos:** PostgreSQL 16 en Neon (esquemas `core` + `modXX`)
+- **Base de datos:** PostgreSQL 18 en Neon (esquemas `core` + `modXX`)
 
 ## 1. Stack
 
 | Capa | Tecnología |
 | :--- | :--- |
 | Backend | ASP.NET Core MVC, .NET 10, C# |
-| Base de datos | PostgreSQL 16 (Neon) — acceso con Npgsql 8 (Dapper 2.1), SQL parametrizado |
+| Base de datos | PostgreSQL 18 (Neon) — acceso con ADO.NET vía Npgsql 10 (Dapper 2.1), SQL parametrizado |
 | Autenticación | Cookie de claims (usuario + todos sus roles + `RolActivo`) · Google SSO opcional |
 | Contraseñas | PBKDF2-SHA256, 100k iteraciones, comparación de tiempo constante |
 | Frontend | Razor Views + CSS vanilla + Phosphor Icons |
