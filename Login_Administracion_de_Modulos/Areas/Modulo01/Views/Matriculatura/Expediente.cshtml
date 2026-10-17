@@ -1,0 +1,269 @@
+@model Login_Administracion_de_Modulos.Areas.Modulo01.Controllers.ModeloExpedienteMatriculaturaVista
+@{
+    ViewData["Title"] = "01. Expediente de matrícula";
+    var e = Model.Expediente;
+    var puedeMatricular = e.PuedeMatricular && e.Reserva != null;
+}
+
+<div class="space-y-6">
+
+    <!-- Encabezado del alumno -->
+    <div class="bg-white dark:bg-[#111827] rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex flex-col sm:flex-row justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center text-xl shrink-0">👤</div>
+                <div>
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                        <span class="text-[10px] font-mono font-bold bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 px-2 py-0.5 rounded">@e.CodigoEstudiante</span>
+                        <span class="text-xs font-bold px-2 py-0.5 rounded-md border
+                            @(e.Condicion == "Promovido" ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-800"
+                              : e.Condicion == "Repitente" ? "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/40 dark:text-rose-300 dark:border-rose-800"
+                              : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-800")">
+                            @e.Condicion
+                        </span>
+                    </div>
+                    <h1 class="text-lg sm:text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight">@e.Estudiante</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                        DNI @e.Dni · @e.Carrera (@e.CarreraCodigo) · Ciclo @e.CicloCulminado culminado → matricula <strong>ciclo @e.CicloProximo</strong>
+                    </p>
+                </div>
+            </div>
+            <a href="/Modulo01/Matriculatura" class="btn btn-outline btn-sm rounded-xl text-xs shrink-0 self-start">← Nueva búsqueda</a>
+        </div>
+    </div>
+
+    <!-- Estado de la reserva -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="bg-white dark:bg-[#111827] rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Reserva de matrícula</span>
+            @if (e.Reserva == null)
+            {
+                <span class="text-sm font-bold text-rose-600">Sin trámite de reserva</span>
+                <p class="text-xs text-slate-500 mt-1">El alumno no inició el trámite TM05 (Reserva de Matrícula).</p>
+            }
+            else
+            {
+                <span class="text-sm font-bold">@e.Reserva.CodigoMatricula</span>
+                <p class="text-xs text-slate-500 mt-1">Trámite @e.Reserva.TramiteCodigo (@e.Reserva.TramiteEstado)</p>
+            }
+        </div>
+        <div class="bg-white dark:bg-[#111827] rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Voucher CT13</span>
+            @if (e.Reserva == null)
+            {
+                <span class="text-sm text-slate-400">—</span>
+            }
+            else
+            {
+                <span class="text-sm font-bold @(e.Reserva.VoucherEstado == "Validado" ? "text-emerald-600" : e.Reserva.VoucherEstado == "Rechazado" ? "text-rose-600" : "text-amber-600")">
+                    @e.Reserva.VoucherEstado
+                </span>
+                <p class="text-xs text-slate-500 mt-1">Monto S/ @e.Reserva.VoucherMonto.ToString("0.00")</p>
+            }
+        </div>
+        <div class="bg-white dark:bg-[#111827] rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Estado de la matrícula</span>
+            @if (e.Reserva == null)
+            {
+                <span class="text-sm text-slate-400">—</span>
+            }
+            else
+            {
+                <span class="text-sm font-bold">@e.Reserva.Estado</span>
+                var etapa = e.Reserva.Estado == "Matriculado" ? "Cerrada" : "En trámite";
+                if (!e.Reserva.PeriodoHabilitado)
+                {
+                    <p class="text-xs text-amber-600 mt-1">⚠️ El período de la reserva aún no está habilitado para matrícula.</p>
+                }
+                else
+                {
+                    <p class="text-xs text-slate-500 mt-1">Etapa: @etapa</p>
+                }
+            }
+        </div>
+    </div>
+
+    @if (e.Reserva != null && e.Reserva.Estado == "Matriculado" && e.Reserva.MatriculaId > 0)
+    {
+        <!-- Matrícula ya cerrada: ficha y reenvío -->
+        <div class="bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl p-5 border border-emerald-200 dark:border-emerald-900">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-sm font-black text-emerald-800 dark:text-emerald-300">✅ Matrícula @(e.Reserva.CodigoMatricula != "" ? e.Reserva.CodigoMatricula : "del período") ya registrada</h2>
+                    <p class="text-xs text-emerald-700 dark:text-emerald-400">El estudiante ya tiene su matrícula en el período habilitado. Descarga la ficha o reenvíala al correo.</p>
+                </div>
+                <div class="flex gap-2">
+                    <a href="/Modulo01/Matriculatura/Ficha/@e.Reserva.MatriculaId" class="btn btn-sm rounded-xl text-xs font-bold">📄 Descargar ficha PDF</a>
+                    <form method="post" asp-controller="Matriculatura" asp-action="Reenviar" asp-route-id="@e.Reserva.MatriculaId">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-primary btn-sm rounded-xl text-xs font-bold">📧 Reenviar por correo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+    else if (puedeMatricular)
+    {
+        <!-- Cierre de matrícula: elección de UDs -->
+        <form method="post" asp-controller="Matriculatura" asp-action="Matricular" id="formMatricular">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Dni" value="@e.Dni" />
+            <input type="hidden" name="MatriculaId" value="@e.Reserva!.MatriculaId" />
+            <input type="hidden" name="TramiteId" value="@e.Reserva.TramiteId" />
+            <input type="hidden" name="CicloProximo" value="@e.CicloProximo" />
+            <input type="hidden" name="Condicion" value="@e.Condicion" />
+            <input type="hidden" name="CursosDesaprobadosNombres" value="@e.CursosDesaprobadosNombres" />
+
+            <div class="bg-white dark:bg-[#111827] rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <h2 class="text-sm font-black text-slate-900 dark:text-slate-100">Unidades didácticas — ciclo @e.CicloProximo</h2>
+                    <label class="flex items-center gap-2 text-xs text-slate-500">
+                        <input type="checkbox" id="chkTodas" class="checkbox checkbox-sm" checked /> Marcar todas
+                    </label>
+                </div>
+
+                @if (e.CursosDesaprobados > 0)
+                {
+                    <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-xl p-3 text-xs text-amber-800 dark:text-amber-300">
+                        <strong>@e.CursosDesaprobados curso(s) a cargo:</strong> @e.CursosDesaprobadosNombres —
+                        se inscriben junto a las UDs del ciclo @e.CicloProximo (condición «@e.Condicion»).
+                    </div>
+                }
+
+                <div class="overflow-x-auto">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr class="text-[10px] uppercase text-slate-400">
+                                <th></th>
+                                <th>Código</th>
+                                <th>Unidad didáctica</th>
+                                <th>Créditos</th>
+                                <th>Tipo</th>
+                                <th>Curso a cargo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ud in e.OfertaProximoCiclo)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" name="UnidadesDidacticasIds" value="@(ud.Origen):@ud.Id"
+                                               class="checkbox checkbox-sm chk-ud" @(ud.Obligatoria || ud.EsCursoACargo ? "checked" : "") />
+                                    </td>
+                                    <td class="font-mono text-xs">@ud.Codigo</td>
+                                    <td class="text-xs">@ud.Nombre</td>
+                                    <td class="text-xs">@ud.Creditos</td>
+                                    <td class="text-xs">@ud.Tipo</td>
+                                    <td>
+                                        @if (ud.EsCursoACargo)
+                                        {
+                                            <span class="text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300 px-2 py-0.5 rounded">Curso a cargo</span>
+                                        }
+                                        else { <span class="text-slate-400">—</span> }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 sm:items-end">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Turno</label>
+                        <select name="TurnoId" class="select select-bordered rounded-xl text-xs" required>
+                            @foreach (var t in Model.Turnos)
+                            {
+                                <option value="@t.Id">@t.Nombre</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Tipo de matrícula</label>
+                        <select name="TipoMatriculaId" class="select select-bordered rounded-xl text-xs" required>
+                            @foreach (var t in Model.TiposMatricula)
+                            {
+                                <option value="@t.Id">@t.Nombre</option>
+                            }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary rounded-xl text-xs font-bold shadow-sm">
+                        ✅ Finalizar matrícula y emitir ficha
+                    </button>
+                </div>
+                <p class="text-[11px] text-slate-400">
+                    Al finalizar se reemplazan las UDs inscritas, se consume una vacante del carril
+                    (carrera/turno/ciclo) y la matrícula pasa a <strong>Matriculado — Cerrada</strong>.
+                    La ficha PDF se genera y se envía al correo del estudiante.
+                </p>
+            </div>
+        </form>
+    }
+    else
+    {
+        <div class="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-5 border border-amber-200 dark:border-amber-900">
+            <h2 class="text-sm font-black text-amber-800 dark:text-amber-300">⏳ Todavía no se puede matricular</h2>
+            <p class="text-xs text-amber-700 dark:text-amber-400 mt-1">
+                @if (e.Reserva == null)
+                {
+                    <span>El alumno no tiene trámite de Reserva de Matrícula (TM05) en el período activo.</span>
+                }
+                else if (e.Reserva.VoucherEstado != "Validado")
+                {
+                    <span>El voucher de la reserva está <strong>@e.Reserva.VoucherEstado</strong>. Tesorería debe validarlo
+                    (o rechazarlo para que el alumno suba otro) antes de cerrar la matrícula.</span>
+                }
+                else
+                {
+                    <span>El voucher ya está validado, pero el período de la reserva (<strong>@e.Reserva.CodigoMatricula</strong>)
+                    aún no está habilitado para matrícula. El administrador del sistema debe habilitarlo
+                    (<code>permite_matricula</code>).</span>
+                }
+            </p>
+        </div>
+    }
+
+    <!-- Historial académico -->
+    @if (e.Historial.Count > 0)
+    {
+        <div class="bg-white dark:bg-[#111827] rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <h2 class="text-sm font-black text-slate-900 dark:text-slate-100 mb-3">Historial académico</h2>
+            <div class="overflow-x-auto">
+                <table class="table table-sm">
+                    <thead>
+                        <tr class="text-[10px] uppercase text-slate-400">
+                            <th>Ciclo</th>
+                            <th>Código</th>
+                            <th>Unidad didáctica</th>
+                            <th>Nota</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var h in e.Historial)
+                        {
+                            <tr>
+                                <td class="text-xs">@h.Ciclo</td>
+                                <td class="font-mono text-xs">@h.UnidadCodigo</td>
+                                <td class="text-xs">@h.UnidadNombre</td>
+                                <td class="text-xs font-bold @(h.Nota < 11 ? "text-rose-600" : "text-emerald-600")">@h.Nota.ToString("0.0")</td>
+                                <td>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded
+                                        @(h.Estado == "Aprobado" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300"
+                                          : h.Estado == "Desaprobado" ? "bg-rose-100 text-rose-800 dark:bg-rose-900/50 dark:text-rose-300"
+                                          : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300")">@h.Estado</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    // Marcar/desmarcar todas las UDs
+    document.getElementById('chkTodas')?.addEventListener('change', function () {
+        document.querySelectorAll('.chk-ud').forEach(ch => ch.checked = this.checked);
+    });
+</script>

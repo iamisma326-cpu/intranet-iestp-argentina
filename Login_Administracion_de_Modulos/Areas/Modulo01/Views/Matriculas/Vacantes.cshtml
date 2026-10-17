@@ -1,0 +1,60 @@
+@model IEnumerable<Login_Administracion_de_Modulos.Areas.Modulo01.Models.ModeloVacante>
+@{
+    ViewData["Title"] = "Vacantes por Carrera";
+}
+
+<div class="space-y-6">
+    <div class="bg-white dark:bg-[#111827] rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center text-xl shrink-0">📊</div>
+            <div>
+                <h1 class="text-lg sm:text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Vacantes por Carrera-Turno</h1>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Cupo por carrera · turno · ciclo. Se consumen al registrar una conformidad.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="table table-zebra w-full text-xs">
+                <thead>
+                    <tr class="text-slate-400 dark:text-slate-500 uppercase text-[10px]">
+                        <th>Carrera</th>
+                        <th>Turno</th>
+                        <th>Ciclo</th>
+                        <th class="text-right">Ocupadas</th>
+                        <th class="text-right">Disponibles</th>
+                        <th>Uso</th>
+                    </tr>
+                </thead>
+                <tbody class="text-slate-700 dark:text-slate-300">
+                    @{
+                        int maxOcup = Model.Any() ? Model.Max(v => v.Ocupadas + v.Disponibles) : 1;
+                    }
+                    @foreach (var v in Model)
+                    {
+                        var total = v.Ocupadas + v.Disponibles;
+                        var pctOcup = total > 0 ? (v.Ocupadas * 100 / total) : 0;
+                        <tr>
+                            <td class="font-medium text-slate-900 dark:text-slate-100">@v.CarreraCodigo <span class="text-slate-400">· @v.Carrera</span></td>
+                            <td>@v.Turno</td>
+                            <td>@v.Ciclo</td>
+                            <td class="text-right font-mono">@v.Ocupadas</td>
+                            <td class="text-right font-mono @(v.Disponibles == 0 ? "text-rose-500 font-bold" : "text-emerald-600 dark:text-emerald-400")">@v.Disponibles</td>
+                            <td class="w-40">
+                                <div class="flex items-center gap-2">
+                                    <progress class="progress progress-success h-2 w-24" value="@v.Ocupadas" max="@(total > 0 ? total : 1)"></progress>
+                                    <span class="text-[10px] text-slate-400 font-mono">@pctOcup%</span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@if (false) { }
+
+

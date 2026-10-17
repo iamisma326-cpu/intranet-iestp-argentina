@@ -1,0 +1,139 @@
+@model Login_Administracion_de_Modulos.Areas.Modulo09.Controllers.ModeloMisPagosVista
+@{
+    ViewData["Title"] = "Mis Pagos";
+}
+
+<div class="space-y-6">
+    <div class="bg-white dark:bg-[#111827] rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl shrink-0">💳</div>
+            <div>
+                <h1 class="text-lg sm:text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Mis Pagos</h1>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Recibos de matrícula y trámites. El voucher lo valida Tesorería.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de recibos -->
+    <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="table table-zebra w-full text-xs">
+                <thead>
+                    <tr class="text-slate-400 dark:text-slate-500 uppercase text-[10px]">
+                        <th>Concepto</th>
+                        <th class="text-right">Monto</th>
+                        <th>Fecha</th>
+                        <th>Periodo</th>
+                        <th>Voucher</th>
+                    </tr>
+                </thead>
+                <tbody class="text-slate-700 dark:text-slate-300">
+                    @if (!Model.Pagos.Any())
+                    {
+                        <tr><td colspan="5" class="text-center text-slate-400 italic py-6">Aún no tienes pagos registrados.</td></tr>
+                    }
+                    @foreach (var p in Model.Pagos)
+                    {
+                        <tr>
+                            <td>@p.ConceptoNombre</td>
+                            <td class="text-right font-mono">S/ @p.Monto.ToString("0.00")</td>
+                            <td class="text-slate-400 font-mono">@p.FechaPago.ToString("dd/MM/yyyy")</td>
+                            <td class="text-slate-400 font-mono">@p.Periodo</td>
+                            <td>
+                                @if (p.VoucherEstado == "Validado")
+                                {
+                                    <span class="badge badge-success badge-xs font-semibold text-white">Aprobado</span>
+                                }
+                                else if (p.VoucherEstado == "Rechazado")
+                                {
+                                    <span class="badge badge-error badge-xs font-semibold text-white">Rechazado</span>
+                                    if (!string.IsNullOrEmpty(p.MotivoRechazo))
+                                    {
+                                        <span class="text-[10px] text-rose-500 block mt-0.5 italic">"@p.MotivoRechazo"</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="badge badge-warning badge-xs font-semibold text-white">Pendiente</span>
+                                }
+                                @* El alumno ve SIEMPRE el voucher que ya adjuntó (aunque esté
+                                   pendiente o rechazado): es su propia evidencia para corregirla. *@
+                                @if (p.TieneVoucher)
+                                {
+                                    <a href="/Modulo09/Pagos/Voucher/@p.Id" target="_blank" rel="noopener"
+                                       class="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-success/30 bg-success/5 text-success hover:bg-success/10 transition text-[10px] font-bold mt-1"><span aria-hidden="true">↗</span> Ver voucher PDF</a>
+                                }
+                                @if (p.VoucherEstado != "Validado")
+                                {
+                                    <form method="post" action="/Modulo09/Pagos/SubirVoucher/@p.Id" enctype="multipart/form-data" class="mt-1 flex items-center gap-1">
+                                        @Html.AntiForgeryToken()
+                                        <input type="file" name="voucher" accept="application/pdf" required
+                                               data-max-mb="2"
+                                               class="file-input file-input-bordered file-input-xs w-full max-w-[180px] text-[10px] voucher-input" />
+                                        <button type="submit" class="btn btn-xs bg-slate-900 dark:bg-emerald-600 text-white border-0">@(p.TieneVoucher ? "Reemplazar PDF" : "Adjuntar PDF")</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Cómo funciona el voucher según el flujo real -->
+    <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-6">
+        <h2 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-2">📎 ¿Cómo funciona el voucher?</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400">
+            Los trámites con costo (p. ej. <strong>Reserva de Matrícula</strong>) generan aquí su recibo automáticamente.
+            Págalo en el banco/Yape, adjunta el <strong>voucher en PDF</strong> con el botón de la fila y
+            <strong>Tesorería</strong> lo validará. Si lo rechaza, verás el motivo en esta lista: corrígelo adjuntando uno nuevo.
+        </p>
+    </div>
+</div>
+
+
+
+
+
+    <script>
+        // Mismo criterio que en Trámites: el peso se valida en el navegador para que
+        // el alumno se entere al elegir el archivo y no después de subirlo entero.
+        const MAX_BYTES_V = 2 * 1024 * 1024;
+        for (const input of document.querySelectorAll('input.voucher-input')) {
+            const form = input.closest('form');
+            const btn  = form.querySelector('button[type=submit]');
+            const pista = document.createElement('p');
+            pista.className = 'text-[10px] mt-0.5';
+            form.appendChild(pista);
+
+            const revisar = () => {
+                const f = input.files[0];
+                pista.textContent = '';
+                pista.className = 'text-[10px] mt-0.5';
+                btn.disabled = false;
+                if (!f) return;
+                if (f.size > MAX_BYTES_V) {
+                    pista.textContent = `${(f.size / 1048576).toFixed(1)} MB supera los 2 MB — elegí un PDF más liviano.`;
+                    pista.className = 'text-[10px] mt-0.5 text-rose-500 font-bold';
+                    btn.disabled = true;
+                } else if (f.type !== 'application/pdf') {
+                    pista.textContent = 'El voucher debe ser un PDF.';
+                    pista.className = 'text-[10px] mt-0.5 text-rose-500 font-bold';
+                    btn.disabled = true;
+                } else {
+                    pista.textContent = `${(f.size / 1024).toFixed(0)} KB — listo para enviar.`;
+                    pista.className = 'text-[10px] mt-0.5 text-emerald-600 dark:text-emerald-400 font-bold';
+                }
+            };
+
+            input.addEventListener('change', revisar);
+            form.addEventListener('submit', ev => {
+                revisar();
+                if (btn.disabled) { ev.preventDefault(); return; }
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loading loading-spinner loading-xs"></span> Subiendo…';
+            });
+        }
+    </script>
+

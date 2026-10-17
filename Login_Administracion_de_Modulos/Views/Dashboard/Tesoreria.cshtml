@@ -22,18 +22,18 @@
         <span>Inicio</span>
     </a>
 
-    <a href="javascript:void(0)" class="nav-item" id="nav-tes-vouchers" onclick="mostrarSeccionTesoreria('seccion-tes-vouchers', this)">
+    <a href="javascript:void(0)" class="nav-item" id="nav-tes-vouchers" onclick="cargarVouchersTesoreria(this)">
         <i class="ph ph-credit-card"></i>
         <span>Bandeja de vouchers</span>
         <span id="badge-vouchers-count" style="background-color: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; margin-left: auto;">1</span>
     </a>
 
-    <a href="javascript:void(0)" class="nav-item" id="nav-tes-recibos" onclick="mostrarSeccionTesoreria('seccion-tes-recibos', this)">
+    <a href="javascript:void(0)" class="nav-item" id="nav-tes-recibos" onclick="cargarRecibosTesoreria(this)">
         <i class="ph ph-receipt"></i>
         <span>Recibos</span>
     </a>
 
-    <a href="javascript:void(0)" class="nav-item" id="nav-tes-matriculas" onclick="mostrarSeccionTesoreria('seccion-tes-matriculas', this)">
+    <a href="javascript:void(0)" class="nav-item" id="nav-tes-matriculas" onclick="cargarMatriculasTesoreria(this)">
         <i class="ph ph-clipboard-text"></i>
         <span>Matrículas</span>
     </a>
@@ -179,155 +179,21 @@
      2. SECCIÓN: BANDEJA DE VOUCHERS
      ======================================================== -->
 <div id="seccion-tes-vouchers" class="tes-section" style="display: none;">
-    <div style="margin-bottom: 1.5rem;">
-        <h2 style="font-size: 1.4rem; font-weight: 700; color: #fff; margin: 0 0 0.25rem 0;">Bandeja de Vouchers de Pago</h2>
-        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Verificación y conciliación bancaria de transferencias de matrícula y trámites TUPA</p>
-    </div>
-
-    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.5rem;">
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem;">
-                <thead>
-                    <tr style="border-bottom: 1px solid var(--border-color); text-align: left; color: var(--text-secondary);">
-                        <th style="padding: 0.75rem 0.5rem;">Código</th>
-                        <th style="padding: 0.75rem 0.5rem;">Estudiante (personas)</th>
-                        <th style="padding: 0.75rem 0.5rem;">Concepto</th>
-                        <th style="padding: 0.75rem 0.5rem;">Entidad</th>
-                        <th style="padding: 0.75rem 0.5rem;">Monto</th>
-                        <th style="padding: 0.75rem 0.5rem;">Fecha</th>
-                        <th style="padding: 0.75rem 0.5rem;">Estado</th>
-                        <th style="padding: 0.75rem 0.5rem; text-align: center;">Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                        <td style="padding: 0.85rem 0.5rem; font-weight: 600; color: var(--accent-cyan);">VCH-2026-002</td>
-                        <td style="padding: 0.85rem 0.5rem;">
-                            <strong style="color: #fff;">Huamán, Rosa Mercedes</strong><br>
-                            <span style="font-size: 0.75rem; color: var(--text-secondary);">DNI: 44556677</span>
-                        </td>
-                        <td style="padding: 0.85rem 0.5rem; color: #cbd5e1;">Matrícula Regular 2026-II</td>
-                        <td style="padding: 0.85rem 0.5rem;"><span style="background: rgba(3, 105, 161, 0.2); color: #38bdf8; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">Interbank</span></td>
-                        <td style="padding: 0.85rem 0.5rem; font-weight: 700; color: #fff;">S/ 200.00</td>
-                        <td style="padding: 0.85rem 0.5rem; color: var(--text-secondary);">10/09/2026</td>
-                        <td style="padding: 0.85rem 0.5rem;">
-                            <span id="tag-vch-estado" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 3px 10px; border-radius: 12px; font-weight: 600; font-size: 0.75rem;">Por validar</span>
-                        </td>
-                        <td style="padding: 0.85rem 0.5rem; text-align: center;">
-                            <button style="background: #f59e0b; color: #000; border: none; border-radius: 6px; padding: 0.4rem 0.9rem; font-weight: 600; cursor: pointer;" onclick="abrirModalValidar()">Revisar</button>
-                        </td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                        <td style="padding: 0.85rem 0.5rem; font-weight: 600; color: var(--text-secondary);">VCH-2026-001</td>
-                        <td style="padding: 0.85rem 0.5rem;">
-                            <strong style="color: #fff;">Pérez, Juan Diego</strong><br>
-                            <span style="font-size: 0.75rem; color: var(--text-secondary);">DNI: 74296138</span>
-                        </td>
-                        <td style="padding: 0.85rem 0.5rem; color: #cbd5e1;">Constancia de Estudios (TUPA)</td>
-                        <td style="padding: 0.85rem 0.5rem;"><span style="background: rgba(255, 255, 255, 0.1); color: #cbd5e1; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">Banco de la Nación</span></td>
-                        <td style="padding: 0.85rem 0.5rem; font-weight: 700; color: #fff;">S/ 30.00</td>
-                        <td style="padding: 0.85rem 0.5rem; color: var(--text-secondary);">05/09/2026</td>
-                        <td style="padding: 0.85rem 0.5rem;">
-                            <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 3px 10px; border-radius: 12px; font-weight: 600; font-size: 0.75rem;">Aprobado</span>
-                        </td>
-                        <td style="padding: 0.85rem 0.5rem; text-align: center;">
-                            <button style="background: rgba(255, 255, 255, 0.08); color: #cbd5e1; border: 1px solid var(--border-color); border-radius: 6px; padding: 0.4rem 0.8rem; font-size: 0.78rem; cursor: pointer;" onclick="alert('Recibo R0001 emitido para este voucher.')">Ver Recibo</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <!-- Bandeja de vouchers de pago — Módulo 09 (equipo Ismael) (módulo portado, se carga con fetch) -->
 </div>
 
 <!-- ========================================================
      3. SECCIÓN: RECIBOS
      ======================================================== -->
 <div id="seccion-tes-recibos" class="tes-section" style="display: none;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem;">
-        <div>
-            <h2 style="font-size: 1.4rem; font-weight: 700; color: #fff; margin: 0 0 0.25rem 0;">Recibos Emitidos</h2>
-            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Histórico de comprobantes y pagos procesados oficialmente en Tesorería</p>
-        </div>
-        <button class="btn-primary" style="background: #f59e0b; color: #000; border: none; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;" onclick="abrirModalNuevoRecibo()">+ Emitir Recibo</button>
-    </div>
-
-    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.5rem;">
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem;">
-                <thead>
-                    <tr style="border-bottom: 1px solid var(--border-color); text-align: left; color: var(--text-secondary);">
-                        <th style="padding: 0.75rem 0.5rem;">N° Recibo</th>
-                        <th style="padding: 0.75rem 0.5rem;">Estudiante</th>
-                        <th style="padding: 0.75rem 0.5rem;">Concepto</th>
-                        <th style="padding: 0.75rem 0.5rem;">Monto</th>
-                        <th style="padding: 0.75rem 0.5rem;">Fecha Emisión</th>
-                        <th style="padding: 0.75rem 0.5rem; text-align: center;">Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                        <td style="padding: 0.85rem 0.5rem; font-weight: 700; color: #fff;">R-0001-2026</td>
-                        <td style="padding: 0.85rem 0.5rem; color: #cbd5e1;">Pérez, Juan Diego (DNI 74296138)</td>
-                        <td style="padding: 0.85rem 0.5rem; color: var(--text-secondary);">Constancia de Estudios (TUPA Art. 24)</td>
-                        <td style="padding: 0.85rem 0.5rem; font-weight: 700; color: #34d399;">S/ 30.00</td>
-                        <td style="padding: 0.85rem 0.5rem; color: var(--text-secondary);">05/09/2026</td>
-                        <td style="padding: 0.85rem 0.5rem; text-align: center;">
-                            <button style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: #fff; border-radius: 6px; padding: 4px 10px; font-size: 0.78rem; cursor: pointer;" onclick="window.print()">
-                                <i class="ph ph-printer"></i> Imprimir
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <!-- Emisión de recibos — Módulo 09 (equipo Ismael) (módulo portado, se carga con fetch) -->
 </div>
 
 <!-- ========================================================
      4. SECCIÓN: MATRÍCULAS
      ======================================================== -->
 <div id="seccion-tes-matriculas" class="tes-section" style="display: none;">
-    <div style="margin-bottom: 1.5rem;">
-        <h2 style="font-size: 1.4rem; font-weight: 700; color: #fff; margin: 0 0 0.25rem 0;">Control de Pagos de Matrícula</h2>
-        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Relación de postulantes y estudiantes matriculados para el semestre 2026-II</p>
-    </div>
-
-    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.5rem;">
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem;">
-                <thead>
-                    <tr style="border-bottom: 1px solid var(--border-color); text-align: left; color: var(--text-secondary);">
-                        <th style="padding: 0.75rem 0.5rem;">Estudiante</th>
-                        <th style="padding: 0.75rem 0.5rem;">Carrera</th>
-                        <th style="padding: 0.75rem 0.5rem;">Semestre</th>
-                        <th style="padding: 0.75rem 0.5rem;">Derecho Matrícula</th>
-                        <th style="padding: 0.75rem 0.5rem;">Estado Pago</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                        <td style="padding: 0.85rem 0.5rem;"><strong style="color: #fff;">Huamán, Rosa Mercedes</strong> (44556677)</td>
-                        <td style="padding: 0.85rem 0.5rem; color: #cbd5e1;">Computación e Informática</td>
-                        <td style="padding: 0.85rem 0.5rem; color: var(--text-secondary);">IV</td>
-                        <td style="padding: 0.85rem 0.5rem; font-weight: 700; color: #fff;">S/ 200.00</td>
-                        <td style="padding: 0.85rem 0.5rem;">
-                            <span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600;">En validación</span>
-                        </td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                        <td style="padding: 0.85rem 0.5rem;"><strong style="color: #fff;">Pérez, Juan Diego</strong> (74296138)</td>
-                        <td style="padding: 0.85rem 0.5rem; color: #cbd5e1;">Administración de Empresas</td>
-                        <td style="padding: 0.85rem 0.5rem; color: var(--text-secondary);">II</td>
-                        <td style="padding: 0.85rem 0.5rem; font-weight: 700; color: #fff;">S/ 200.00</td>
-                        <td style="padding: 0.85rem 0.5rem;">
-                            <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600;">Cancelado</span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <!-- Gestión de matrículas — Módulo 01 (equipo Ismael) (módulo portado, se carga con fetch) -->
 </div>
 
 <!-- ========================================================
@@ -500,6 +366,37 @@
 
 @section Scripts {
     <script>
+        // --- Carga de módulos portados (M09: vouchers y recibos; M01: matrículas) ---
+        function cargarSeccionModuloTes(idSeccion, url, el) {
+            mostrarSeccionTesoreria(idSeccion, el);
+            const container = document.getElementById(idSeccion);
+            if (container.dataset.loaded) return;
+            container.innerHTML = `
+                <div style="padding: 3rem; text-align: center; color: var(--text-secondary);">
+                    <i class="ph ph-spinner ph-spin" style="font-size: 2.5rem; color: #10b981; margin-bottom: 1rem; display: block;"></i>
+                    <p>Cargando módulo...</p>
+                </div>`;
+            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(res => { if (!res.ok) throw new Error('HTTP ' + res.status); return res.text(); })
+                .then(html => {
+                    container.innerHTML = html;
+                    container.dataset.loaded = "true";
+                    const scripts = container.querySelectorAll('script');
+                    scripts.forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
+                })
+                .catch(err => {
+                    container.innerHTML = `<div style="padding: 2rem; color: #ef4444;">No se pudo cargar: ${err.message}</div>`;
+                });
+        }
+        function cargarVouchersTesoreria(el)  { cargarSeccionModuloTes('seccion-tes-vouchers', '/Modulo09/Pagos?partial=true', el); }
+        function cargarRecibosTesoreria(el)   { cargarSeccionModuloTes('seccion-tes-recibos', '/Modulo09/Pagos/Bandeja?partial=true', el); }
+        function cargarMatriculasTesoreria(el){ cargarSeccionModuloTes('seccion-tes-matriculas', '/Modulo01/Matriculas?partial=true', el); }
+
         function mostrarSeccionTesoreria(seccionId, navElement) {
             // 1. Quitar clase active a todos los botones del panel lateral
             const items = document.querySelectorAll('.nav-item');

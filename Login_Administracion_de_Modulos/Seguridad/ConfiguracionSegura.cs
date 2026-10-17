@@ -167,15 +167,17 @@ namespace Login_Administracion_de_Modulos.Seguridad
             string prefijo = codigoModulo.Trim().PadLeft(2, '0');
             string searchPath = $"mod{prefijo},core,public";
 
-            // Si la cadena ya trae SearchPath, respetarla tal cual (el módulo lo controla).
-            if (baseConn.Contains("SearchPath", StringComparison.OrdinalIgnoreCase)
-                || baseConn.Contains("search path", StringComparison.OrdinalIgnoreCase))
+            // Si la cadena ya trae search_path configurado, respetarla tal cual.
+            if (baseConn.Contains("search_path", StringComparison.OrdinalIgnoreCase)
+                || baseConn.Contains("SearchPath", StringComparison.OrdinalIgnoreCase))
             {
                 return baseConn;
             }
 
-            // Añadir SearchPath al final de la cadena.
-            return $"{baseConn};SearchPath={searchPath}";
+            // Npgsql 8+/pg16 contra Neon: la keyword "SearchPath" del connection string
+            // NO aplica (verificado con SHOW search_path). El método confiable es
+            // Options=-c search_path=... (libpq estándar).
+            return $"{baseConn};Options=-c search_path={searchPath}";
         }
     }
 }

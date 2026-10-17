@@ -9,16 +9,16 @@
         <i class="ph ph-house"></i>
         <span>Inicio</span>
     </a>
-    <a href="javascript:void(0)" class="nav-item" id="nav-alu-matricula" onclick="mostrarSeccionAlumno('seccion-alu-matricula', this)">
+    <a href="javascript:void(0)" class="nav-item" id="nav-alu-matricula" onclick="cargarMiMatricula(this)">
         <i class="ph ph-file-text"></i>
         <span>Mi matrícula</span>
         <span style="background-color: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; margin-left: auto;">1</span>
     </a>
-    <a href="javascript:void(0)" class="nav-item" id="nav-alu-tramites" onclick="mostrarSeccionAlumno('seccion-alu-tramites', this)">
+    <a href="javascript:void(0)" class="nav-item" id="nav-alu-tramites" onclick="cargarMisTramites(this)">
         <i class="ph ph-file"></i>
         <span>Mis trámites</span>
     </a>
-    <a href="javascript:void(0)" class="nav-item" id="nav-alu-pagos" onclick="mostrarSeccionAlumno('seccion-alu-pagos', this)">
+    <a href="javascript:void(0)" class="nav-item" id="nav-alu-pagos" onclick="cargarMisPagos(this)">
         <i class="ph ph-credit-card"></i>
         <span>Mis pagos</span>
     </a>
@@ -133,6 +133,15 @@
     </div>
 </div>
 
+<!-- Sección Mi Matrícula (Módulo 01, equipo Ismael) -->
+<div id="seccion-alu-matricula" class="alu-section" style="display: none;"></div>
+
+<!-- Sección Mis Trámites TUPA (Módulo 09, equipo Ismael) -->
+<div id="seccion-alu-tramites" class="alu-section" style="display: none;"></div>
+
+<!-- Sección Mis Pagos (Módulo 09, equipo Ismael) -->
+<div id="seccion-alu-pagos" class="alu-section" style="display: none;"></div>
+
 <!-- Sección Salud (Tópico y Psicología) -->
 <div id="seccion-alu-salud" class="alu-section" style="display: none;">
     <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
@@ -170,6 +179,37 @@
 </div>
 
 <script>
+    // --- Carga de módulos portados (M01: Mi Matrícula; M09: Trámites y Pagos) ---
+    function cargarSeccionModulo(idSeccion, url, el) {
+        mostrarSeccionAlumno(idSeccion, el);
+        const container = document.getElementById(idSeccion);
+        if (container.dataset.loaded) return;
+        container.innerHTML = `
+            <div style="padding: 3rem; text-align: center; color: var(--text-secondary);">
+                <i class="ph ph-spinner ph-spin" style="font-size: 2.5rem; color: #38bdf8; margin-bottom: 1rem; display: block;"></i>
+                <p>Cargando módulo...</p>
+            </div>`;
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(res => { if (!res.ok) throw new Error('HTTP ' + res.status); return res.text(); })
+            .then(html => {
+                container.innerHTML = html;
+                container.dataset.loaded = "true";
+                const scripts = container.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
+            })
+            .catch(err => {
+                container.innerHTML = `<div style="padding: 2rem; color: #ef4444;">No se pudo cargar el módulo: ${err.message}. Verifica tu rol activo.</div>`;
+            });
+    }
+    function cargarMiMatricula(el)   { cargarSeccionModulo('seccion-alu-matricula', '/Modulo01/Matriculas/MiMatricula?partial=true', el); }
+    function cargarMisTramites(el)   { cargarSeccionModulo('seccion-alu-tramites', '/Modulo09/Tramites?partial=true', el); }
+    function cargarMisPagos(el)      { cargarSeccionModulo('seccion-alu-pagos', '/Modulo09/Pagos?partial=true', el); }
+
     function mostrarSeccionAlumno(idSeccion, el) {
         document.querySelectorAll('.alu-section').forEach(sec => sec.style.display = 'none');
         document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => item.classList.remove('active'));

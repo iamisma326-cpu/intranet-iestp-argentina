@@ -70,6 +70,18 @@ else
     Console.WriteLine("[Startup] Google SSO: deshabilitado (falta GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET en .env)");
 }
 
+// 4b. Factory de conexiones por módulo (SearchPath=modXX,core,public) usada por los
+//     servicios portados de los módulos 01 y 09 (patrón Dapper del proyecto original).
+builder.Services.AddScoped<Login_Administracion_de_Modulos.Areas.Modulo00.IModuleDbConnectionFactory, Login_Administracion_de_Modulos.Areas.Modulo00.ModuleDbConnectionFactory>();
+// Servicios del Módulo 01 (Matrícula Académica)
+builder.Services.AddScoped<Login_Administracion_de_Modulos.Areas.Modulo01.Services.IMatriculaServicio, Login_Administracion_de_Modulos.Areas.Modulo01.Services.MatriculaServicio>();
+builder.Services.AddScoped<Login_Administracion_de_Modulos.Areas.Modulo01.Services.IMatriculaturaServicio, Login_Administracion_de_Modulos.Areas.Modulo01.Services.MatriculaturaServicio>();
+builder.Services.AddScoped<Login_Administracion_de_Modulos.Areas.Modulo01.Services.IServicioCorreoFicha, Login_Administracion_de_Modulos.Areas.Modulo01.Services.ServicioCorreoFicha>();
+builder.Services.AddScoped<Login_Administracion_de_Modulos.Areas.Modulo01.Services.AcademicoServicio>();
+// Servicios del Módulo 09 (Trámites TUPA y Pagos)
+builder.Services.AddScoped<Login_Administracion_de_Modulos.Areas.Modulo09.Services.ITramiteServicio, Login_Administracion_de_Modulos.Areas.Modulo09.Services.TramiteServicio>();
+builder.Services.AddScoped<Login_Administracion_de_Modulos.Areas.Modulo09.Services.IPagoServicio, Login_Administracion_de_Modulos.Areas.Modulo09.Services.PagoServicio>();
+
 var app = builder.Build();
 
 // 5. Cabeceras de seguridad HTTP

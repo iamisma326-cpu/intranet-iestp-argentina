@@ -1,0 +1,30 @@
+@model Login_Administracion_de_Modulos.Areas.Modulo01.Controllers.ModeloBusquedaMatriculaturaVista
+@{
+    ViewData["Title"] = "01. Matriculatura (Secretaría)";
+}
+
+<div class="space-y-6">
+
+    <!-- Header -->
+    <div class="bg-white dark:bg-[#111827] rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex items-center gap-4 mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center text-xl shrink-0">🗂️</div>
+            <div>
+                <span class="text-[10px] font-mono font-bold bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 px-2 py-0.5 rounded">01</span>
+                <h1 class="text-lg sm:text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Matriculatura — cierre de Reserva de Matrícula</h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                    El alumno tramitó la Reserva (TM05) y pagó el CT13. Cuando Tesorería valida el voucher,
+                    busca aquí su DNI, revisas su expediente y cierras su matrícula con las UDs del nuevo ciclo.
+                </p>
+            </div>
+        </div>
+
+        <!-- Buscador -->
+        <form method="get" asp-controller="Matriculatura" asp-action="Expediente" class="flex flex-col sm:flex-row gap-3">
+            <input type="text" name="dni" value="@Model.Dni" placeholder="DNI del estudiante (8 dígitos)"
+                   maxlength="8" inputmode="numeric" pattern="[0-9]{8}"
+                   class="input input-bordered w-full sm:max-w-xs rounded-xl font-mono" autofocus />
+            <button type="submit" class="btn btn-primary rounded-xl text-xs font-bold shrink-0">🔍 Buscar expediente</button>
+        </form>
+    </div>
+</div>

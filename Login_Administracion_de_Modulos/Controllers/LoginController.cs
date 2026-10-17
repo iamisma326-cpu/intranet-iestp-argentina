@@ -297,7 +297,7 @@ namespace Login_Administracion_de_Modulos.Controllers
                 "psicologia"               => "51000007", // Andrés Salazar Morales (Psicología)
                 "docente"                  => "10000002", // Gina Huertas Camacho (Docente)
                 "soporte"                  => "51000005", // Luis Chávez Paredes (Jefe de Soporte)
-                "alumno" or "estudiante"   => "77654321", // Ana García Flores (Alumno)
+                "alumno" or "estudiante"   => "87654321", // Felipe Ostos (Alumno; con matrícula y trámites reales)
                 "practicante"              => "74096398", // Franco Stefano Alcála Mancilla (Practicante)
                 "secretaria"               => "30000001", // Rosa Morales Salazar (Secretaría Académica)
                 "admin" or "administrador"  => "47915633", // Felipe Ostos Bermúdez (Administrador)

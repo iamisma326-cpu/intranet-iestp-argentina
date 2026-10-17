@@ -1,0 +1,125 @@
+@model Login_Administracion_de_Modulos.Areas.Modulo09.Models.ModeloTramiteDetalle
+@{
+    ViewData["Title"] = $"Trámite: {Model.TipoNombre}";
+    var rolActivo = User.FindFirst("ActiveRole")?.Value ?? "";
+}
+
+<div class="space-y-6">
+    <!-- Ficha TUPA del trámite -->
+    <div class="bg-white dark:bg-[#111827] rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex justify-between items-start flex-wrap gap-3">
+            <div>
+                <h1 class="text-lg sm:text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Ficha del Trámite</h1>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    @Model.TipoNombre — @Model.Estudiante
+                </p>
+            </div>
+            <span class="badge @(Model.Estado == "Aprobado" ? "badge-success" : Model.Estado == "Rechazado" ? "badge-error" : Model.Estado == "Entregado" ? "badge-accent" : "badge-warning") badge-sm font-semibold text-white">@Model.Estado</span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-5 text-xs">
+            <div class="border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                <span class="text-[10px] font-bold text-slate-400 uppercase block">Solicitado</span>
+                <span class="font-mono font-semibold text-slate-800 dark:text-slate-200">@Model.FechaSolicitud.ToString("dd/MM/yyyy")</span>
+            </div>
+            <div class="border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                <span class="text-[10px] font-bold text-slate-400 uppercase block">Límite TUPA</span>
+                <span class="font-mono font-semibold text-slate-800 dark:text-slate-200">@Model.FechaLimite?.ToString("dd/MM/yyyy")</span>
+            </div>
+            <div class="border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                <span class="text-[10px] font-bold text-slate-400 uppercase block">Derecho de pago</span>
+                <span class="font-semibold text-slate-800 dark:text-slate-200">S/ @Model.PagoMonto</span>
+            </div>
+            <div class="border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                <span class="text-[10px] font-bold text-slate-400 uppercase block">Resolución</span>
+                @if (!string.IsNullOrEmpty(Model.Resolucion))
+                {
+                    <span class="font-semibold text-rose-600 dark:text-rose-400">"@Model.Resolucion"</span>
+                }
+                else
+                {
+                    <span class="text-slate-400">—</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner de plazo de corrección: el alumno ve CUÁNDO debe corregir -->
+    @if (Model.Estado == "Observado" && Model.FechaLimiteCorreccion != null)
+    {
+        <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 rounded-2xl p-4 mb-4 flex items-start gap-3">
+            <span class="text-lg" aria-hidden="true">⏳</span>
+            <div class="text-xs text-amber-800 dark:text-amber-200">
+                <strong>Tienes hasta el @Model.FechaLimiteCorreccion?.ToString("dd/MM/yyyy")</strong> (15 días hábiles) para subir la corrección.
+                Si el plazo vence, el trámite se cierra y deberás iniciar uno nuevo.
+            </div>
+        </div>
+    }
+    @if (Model.Estado == "Vencido")
+    {
+        <div class="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/60 rounded-2xl p-4 mb-4 flex items-start gap-3">
+            <span class="text-lg" aria-hidden="true">⛔</span>
+            <div class="text-xs text-rose-800 dark:text-rose-200">
+                <strong>El plazo de corrección venció.</strong>
+                Ya no puedes corregir este trámite: inicia uno nuevo (con su derecho de pago si aplica) o acude a Secretaría.
+            </div>
+        </div>
+    }
+
+    <!-- Requisitos con su estado -->
+    <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-6">
+        <h2 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-4">📎 Requisitos presentados</h2>
+        <div class="space-y-2">
+            @foreach (var r in Model.Requisitos)
+            {
+                <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl p-3">
+                    <span class="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center text-[10px] font-bold font-mono">@r.Orden</span>
+                    <div class="flex-1">
+                        <p class="text-xs font-medium text-slate-800 dark:text-slate-200">@r.Requisito</p>
+                        @if (!string.IsNullOrEmpty(r.Observacion))
+                        {
+                            <p class="text-[11px] text-rose-500 mt-0.5">⚠️ @r.Observacion</p>
+                        }
+                    </div>
+                    @if (r.Presentado)
+                    {
+                        <span class="badge badge-success badge-xs font-semibold text-white">Presentado</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-ghost badge-xs">Falta</span>
+                    }
+                    @if (r.TieneArchivo && !string.Equals(rolActivo, "Alumno", System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        <a href="/Modulo09/Tramites/Archivo/@Model.Id/@r.Id" target="_blank"
+                           class="btn btn-outline btn-xs rounded-lg font-bold" title="Ver el archivo adjunto por el estudiante">📄 Ver archivo</a>
+                    }
+
+                    <!-- Corregir: solo si el trámite está Observado/Rechazado y NO vencido (rol alumno) -->
+                    @if ((Model.Estado == "Observado" || Model.Estado == "Rechazado") && Model.Estado != "Vencido" && (string.Equals(rolActivo, "Alumno", System.StringComparison.OrdinalIgnoreCase) || string.Equals(rolActivo, "Admin", System.StringComparison.OrdinalIgnoreCase)))
+                    {
+                        <form method="post" asp-controller="Tramites" asp-action="Corregir" asp-route-id="@Model.Id" enctype="multipart/form-data" class="flex items-center gap-2 rounded-lg border border-amber-200 dark:border-amber-900/60 bg-amber-50/60 dark:bg-amber-950/20 p-1.5">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="requisitoId" value="@r.Id" />
+                            <input type="file" name="req_@r.Id" accept="application/pdf,image/jpeg,image/png" required
+                                   class="file-input file-input-bordered file-input-xs w-full max-w-[200px] rounded-xl dark:bg-slate-800 text-[10px]" />
+                            <button type="submit" class="btn btn-warning btn-xs rounded-lg font-bold">Corregir archivo <span aria-hidden="true">↑</span></button>
+                        </form>
+                    }
+                </div>
+            }
+        </div>
+        @if (Model.Estado == "Observado" || Model.Estado == "Rechazado")
+        {
+            <p class="text-[11px] text-slate-400 mt-3">
+                Al re-adjuntar el archivo observado, el trámite vuelve a <strong>En evaluación</strong>. No se crea un trámite nuevo.
+            </p>
+        }
+    </div>
+
+    <div>
+        <a class="btn btn-outline btn-sm rounded-xl font-semibold" asp-controller="Tramites" asp-action="Index">← Volver a trámites</a>
+    </div>
+</div>
+
+

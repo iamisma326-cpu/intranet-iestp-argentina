@@ -1,0 +1,129 @@
+@model Login_Administracion_de_Modulos.Areas.Modulo01.Models.ModeloMatriculaActiva?
+@{
+    ViewData["Title"] = "Mi Matrícula 2026-II";
+}
+
+<div class="space-y-6">
+    <!-- Header Zen del módulo -->
+    <div class="bg-white dark:bg-[#111827] rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center text-xl shrink-0">🎓</div>
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="text-[10px] font-mono font-bold bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 px-2 py-0.5 rounded">01</span>
+                    <span class="text-xs font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-900/40 px-2 py-0.5 rounded-md border border-sky-200 dark:border-sky-800">Proceso Cero Filas</span>
+                </div>
+                <h1 class="text-lg sm:text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Mi Matrícula</h1>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Tu solicitud con su avance paso a paso.</p>
+            </div>
+        </div>
+    </div>
+
+    @if (Model == null)
+    {
+        <div class="bg-white dark:bg-[#111827] rounded-2xl p-10 border border-slate-200/80 dark:border-slate-800 shadow-sm text-center">
+            <div class="text-4xl mb-3">📭</div>
+            <h2 class="text-base font-bold text-slate-800 dark:text-slate-200">Todavía no tienes una matrícula registrada</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                Tu matrícula nace del trámite TUPA: lo inicias en <a href="/Modulo09/Tramites#nuevoTramite" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-primary/30 bg-primary/5 text-primary hover:bg-primary/10 transition font-bold">Abrir Mis trámites <span aria-hidden="true">↗</span></a>
+                adjuntando tu voucher de pago y la foto del carné. Tesorería valida el voucher, Secretaría
+                valida la foto y recién ahí se registra tu matrícula aquí.
+            </p>
+            <a href="/Modulo09/Tramites#nuevoTramite" class="btn btn-primary btn-sm rounded-xl text-xs font-bold shadow-sm mt-4">Iniciar mi trámite</a>
+        </div>
+    }
+    else
+    {
+        var pasos = new[]
+        {
+            new { N = 1, Ok = true,                Label = "Trámite iniciado" },
+            new { N = 2, Ok = Model.VoucherOk,     Label = "Voucher validado (Tesorería)" },
+            new { N = 3, Ok = Model.FotoOk,        Label = "Foto validada (Secretaría)" },
+            new { N = 4, Ok = Model.Estado == "Matriculado", Label = "Conformidad" }
+        };
+        var pct = Model.PasosCompletados * 25;
+
+        <!-- Tarjeta de estado con avance -->
+        <div class="bg-white dark:bg-[#111827] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <div class="flex justify-between items-center flex-wrap gap-3">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100">@Model.Carrera · @Model.Ciclo · Turno @Model.Turno</h3>
+                    <p class="text-[11px] text-slate-400 mt-0.5">@Model.Condicion · @Model.TipoMatricula</p>
+                </div>
+                <span class="badge badge-warning badge-sm font-semibold text-white">@Model.Estado</span>
+            </div>
+
+            <progress class="progress progress-warning w-full mt-4" value="@pct" max="100"></progress>
+
+            <ul class="mt-4 space-y-2">
+                @foreach (var p in pasos)
+                {
+                    <li class="flex items-center gap-2 text-xs @(p.Ok ? "text-emerald-600 dark:text-emerald-400 font-medium" : "text-slate-400")">
+                        <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold
+                            @(p.Ok ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300" : "bg-slate-100 dark:bg-slate-800 text-slate-400")">
+                            @(p.Ok ? "✓" : p.N.ToString())
+                        </span>
+                        @p.Label
+                    </li>
+                }
+            </ul>
+            <p class="text-[11px] text-slate-400 mt-3">Etapa actual: <span class="font-semibold text-slate-600 dark:text-slate-300">@Model.EtapaLegible</span></p>
+
+            <details class="mt-4">
+                <summary class="inline-flex items-center gap-1.5 text-[11px] font-bold text-primary cursor-pointer hover:underline">Ver bitácora del proceso <span aria-hidden="true">⌄</span></summary>
+                <div class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 font-mono bg-slate-50 dark:bg-slate-900/50 rounded-xl p-3">
+                    @Model.CreadoEn.ToString("dd/MM/yyyy") · Trámite iniciado (Cero Filas)
+                    @if (Model.FechaMatricula.HasValue)
+                    {
+                        var fechaConf = Model.FechaMatricula.Value.ToString("dd/MM/yyyy");
+                        <span>@fechaConf · Conformidad registrada</span>
+                    }
+                </div>
+            </details>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+                <a class="btn btn-outline btn-xs rounded-xl" href="/Modulo09/Tramites#nuevoTramite">Solicitar reserva de matrícula (TUPA 4.8)</a>
+            </div>
+        </div>
+
+        <!-- Mis documentos (adjuntados en el trámite) -->
+        <div class="bg-white dark:bg-[#111827] rounded-2xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-3">📁 Mis documentos (adjuntados en el trámite)</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                    <p class="text-xs font-bold text-slate-700 dark:text-slate-300">Voucher de matrícula</p>
+                    <p class="text-[11px] text-slate-400 mt-1">
+                        Estado:
+                        @if (Model.VoucherOk)
+                        {
+                            <span class="badge badge-success badge-xs font-semibold text-white">Validado</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-ghost badge-xs">Pendiente</span>
+                        }
+                        · se adjunta como PDF al iniciar el trámite
+                    </p>
+                </div>
+                <div class="border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                    <p class="text-xs font-bold text-slate-700 dark:text-slate-300">Foto para el carné</p>
+                    <p class="text-[11px] text-slate-400 mt-1">
+                        Estado:
+                        @if (Model.FotoOk)
+                        {
+                            <span class="badge badge-success badge-xs font-semibold text-white">Validada</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-ghost badge-xs">Pendiente</span>
+                        }
+                        · se adjunta como imagen al iniciar el trámite
+                    </p>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center justify-between gap-3 flex-wrap rounded-xl border border-amber-200/70 dark:border-amber-900/60 bg-amber-50/70 dark:bg-amber-950/20 px-3 py-2.5"><p class="text-[11px] text-slate-500 dark:text-slate-400">¿Te observaron un documento?</p><a href="/Modulo09/Tramites" class="btn btn-warning btn-xs rounded-lg font-bold">Corregir documento <span aria-hidden="true">→</span></a></div>
+        </div>
+    }
+</div>
+
+

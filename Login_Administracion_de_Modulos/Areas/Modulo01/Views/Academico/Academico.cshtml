@@ -1,0 +1,160 @@
+@model Login_Administracion_de_Modulos.Areas.Modulo01.Models.AcademicoVista
+@{
+    // Pestaña Académico del alumno (Equipo 01) — formato SIGA:
+    // cards de resumen, barras de rendimiento por ciclo y record por período.
+    var notaColor = new Dictionary<string, string>
+    {
+        ["Aprobado"]   = "bg-emerald-500",
+        ["Desaprobado"] = "bg-rose-500",
+        ["Retirado"]   = "bg-slate-400"
+    };
+}
+<section class="space-y-4">
+
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-xl font-black text-slate-800 dark:text-slate-100">🎓 Mi académico</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Tu rendimiento por ciclo y tu record académico oficial por período.</p>
+        </div>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 dark:bg-slate-800 rounded-full px-3 py-1">escala 0 – 20</span>
+    </div>
+
+    @if (!Model.Record.Any())
+    {
+        <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-8 text-center">
+            <p class="text-3xl">🗂️</p>
+            <h2 class="text-sm font-bold text-slate-700 dark:text-slate-200 mt-3">Aún no tienes historial académico registrado</h2>
+            <p class="text-xs text-slate-400 mt-1">Cuando Secretaría registre tus notas aparecerán aquí tu rendimiento por ciclo y tu record con el promedio ponderado.</p>
+        </div>
+    }
+    else
+    {
+        <!-- Cards de resumen -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="col-span-2 lg:col-span-1 relative overflow-hidden bg-gradient-to-br from-sky-600 to-cyan-600 rounded-2xl p-4 text-white shadow-sm">
+                <div class="absolute -right-6 -bottom-8 w-28 h-28 rounded-full border-[14px] border-white/15"></div>
+                <span class="relative text-[10px] font-bold uppercase tracking-wider text-sky-100 block">Promedio general</span>
+                <div class="relative text-4xl font-black mt-2">@(Model.Resumen.PromedioGeneral?.ToString("0.0") ?? "—")</div>
+                <p class="relative text-[10px] text-sky-100 mt-1">escala vigesimal</p>
+            </div>
+            <div class="bg-white dark:bg-[#111827] rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Cursos</span>
+                <div class="text-3xl font-black text-sky-600 dark:text-sky-400 mt-3">@(Model.Resumen.CursosTotales ?? 0)</div>
+                <p class="text-[10px] text-slate-400 mt-1">en total</p>
+            </div>
+            <div class="bg-white dark:bg-[#111827] rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Aprobados</span>
+                <div class="text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-3">@(Model.Resumen.CursosAprobados ?? 0)</div>
+                <p class="text-[10px] text-slate-400 mt-1">cursos llevados</p>
+            </div>
+            <div class="bg-white dark:bg-[#111827] rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">A cargo</span>
+                <div class="text-3xl font-black text-rose-600 dark:text-rose-400 mt-3">@(Model.Resumen.CursosDesaprobados ?? 0)</div>
+                <p class="text-[10px] text-slate-400 mt-1">cursos por recuperar</p>
+            </div>
+        </div>
+
+        <!-- Rendimiento por ciclo: barras verticales CSS puro (sin Chart.js) -->
+        <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-5">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">📈 Rendimiento por ciclo</h2>
+                <span class="text-[10px] text-slate-400">promedio vigesimal de tus cursos de cada ciclo</span>
+            </div>
+            <div class="flex items-end gap-4 sm:gap-8 h-40 px-2">
+                @foreach (var r in Model.Rendimiento)
+                {
+                    var pct = Math.Min(100, (int)Math.Round(r.Promedio * 5));
+                    <div class="flex-1 flex flex-col items-center justify-end h-full group">
+                        <span class="text-[11px] font-black text-slate-700 dark:text-slate-200 mb-1">@(r.Promedio > 0 ? r.Promedio.ToString("0.0") : "—")</span>
+                        <div class="w-full max-w-12 bg-slate-100 dark:bg-slate-800 rounded-t-xl overflow-hidden h-full flex items-end">
+                            <div class="w-full rounded-t-xl transition-all duration-500 @(pct >= 65 ? "bg-gradient-to-t from-sky-600 to-cyan-500" : "bg-gradient-to-t from-rose-600 to-rose-400")" style="height:@(Math.Max(pct, 4))%"></div>
+                        </div>
+                        <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-2">Ciclo @r.Ciclo</span>
+                        <span class="text-[9px] text-slate-400">@r.Cursos cursos</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Record académico: filtro por CICLO + tabla del seleccionado (formato SIGA) -->
+        <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+            <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-3 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200/80 dark:border-slate-800">
+                <h2 class="text-xs font-black text-slate-800 dark:text-slate-200 uppercase tracking-wider">📄 Record académico</h2>
+                <!-- Filtro por ciclo: solo los ciclos CON notas (un ciclo en curso aún no tiene notas finales) -->
+                <div class="flex flex-wrap gap-1.5">
+                    @foreach (var c in Model.Record)
+                    {
+                        var activo = c.Ciclo == Model.CicloSeleccionado.Ciclo;
+                        <a href="/Modulo01/Academico?ciclo=@c.Ciclo"
+                           class="px-3 py-1.5 rounded-xl text-[11px] font-bold border transition @(activo
+                                ? "bg-sky-600 text-white border-sky-600 shadow-sm"
+                                : "bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-sky-400 hover:text-sky-600")">
+                            Ciclo @c.Ciclo
+                        </a>
+                    }
+                </div>
+            </div>
+            @{
+                var cicloSel = Model.CicloSeleccionado;
+            }
+            @if (string.IsNullOrEmpty(cicloSel.Ciclo))
+            {
+                <div class="px-5 py-8 text-center">
+                    <p class="text-2xl">🗂️</p>
+                    <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200 mt-2">Aún no tienes historial académico registrado</h3>
+                    <p class="text-xs text-slate-400 mt-1">Cuando Secretaría registre tus notas aparecerán aquí tu rendimiento por ciclo y tu record con el promedio ponderado.</p>
+                </div>
+            }
+            else
+            {
+                <div class="px-5 py-3 text-[11px] font-bold text-slate-400">
+                    @cicloSel.Cursos.Count cursos · @cicloSel.CreditosMatriculados.ToString("0.0") créditos · cursado en @cicloSel.PeriodoCodigo
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead>
+                            <tr class="text-left text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-800">
+                                <th class="px-5 py-2.5 font-bold">Código</th>
+                                <th class="px-3 py-2.5 font-bold">Curso</th>
+                                <th class="px-3 py-2.5 font-bold text-right">Créditos</th>
+                                <th class="px-3 py-2.5 font-bold text-right">Nota</th>
+                                <th class="px-5 py-2.5 font-bold">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var c in cicloSel.Cursos)
+                            {
+                                <tr class="border-b border-slate-50 dark:border-slate-800/60 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
+                                    <td class="px-5 py-2.5 font-mono font-bold text-sky-600 dark:text-sky-400 whitespace-nowrap">@c.Codigo</td>
+                                    <td class="px-3 py-2.5 text-slate-700 dark:text-slate-200">@c.UnidadNombre</td>
+                                    <td class="px-3 py-2.5 text-right text-slate-500 dark:text-slate-400">@c.Creditos.ToString("0.0")</td>
+                                    <td class="px-3 py-2.5 text-right">
+                                        <span class="font-black @(c.Estado == "Desaprobado" ? "text-rose-500" : "text-slate-800 dark:text-slate-100")">@c.Nota.ToString("0.0")</span>
+                                    </td>
+                                    <td class="px-5 py-2.5">
+                                        <span class="inline-flex items-center gap-1.5 font-bold @(c.Estado == "Desaprobado" ? "text-rose-500" : c.Estado == "Aprobado" ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400")">
+                                            <span class="w-1.5 h-1.5 rounded-full @(notaColor.TryGetValue(c.Estado, out var dot) ? dot : "bg-slate-400")"></span>
+                                            @c.Estado
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="bg-slate-50 dark:bg-slate-800/60 text-[11px] font-black text-slate-700 dark:text-slate-200">
+                                <td colspan="2" class="px-5 py-3 uppercase tracking-wider text-[10px]">Promedio ponderado del Ciclo @cicloSel.Ciclo</td>
+                                <td class="px-3 py-3 text-right">@cicloSel.CreditosMatriculados.ToString("0.0")</td>
+                                <td class="px-3 py-3 text-right text-sky-600 dark:text-sky-400">@cicloSel.PromedioPonderado.ToString("0.00")</td>
+                                <td class="px-5 py-3 text-[10px] font-bold text-slate-400 normal-case">Cred. aprobados: @cicloSel.CreditosAprobados.ToString("0.0") de @cicloSel.CreditosMatriculados.ToString("0.0")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            }
+        </div>
+
+        <p class="text-[10px] text-slate-400 text-center">El promedio ponderado se calcula como Σ(nota × créditos) / Σ(créditos), igual que tu record oficial.</p>
+    }
+</section>
+
+

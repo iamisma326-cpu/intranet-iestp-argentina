@@ -7,13 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="MailKit" Version="4.16.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.0" />
-    <PackageReference Include="Npgsql" Version="10.0.0" />
+    <PackageReference Include="Npgsql" Version="8.0.5" />
+    <PackageReference Include="QuestPDF" Version="2024.12.3" />
   </ItemGroup>
 
   <!-- Carpetas organizadas con convenciones estándar de ASP.NET Core MVC -->
   <ItemGroup>
     <Folder Include="Areas\Modulo05\Sql\" />
+    <Folder Include="Areas\Modulo01\Sql\" />
+    <Folder Include="Areas\Modulo09\Sql\" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,279 @@
+@model Login_Administracion_de_Modulos.Areas.Modulo09.Controllers.ModeloMisTramitesVista
+@{
+    ViewData["Title"] = "Mis Trámites TUPA";
+}
+
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="bg-white dark:bg-[#111827] rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl shrink-0">📄</div>
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded">09</span>
+                    <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/40 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">TUPA 2026</span>
+                </div>
+                <h1 class="text-lg sm:text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Mis Trámites TUPA</h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Solicitudes TUPA a tu nombre. Los documentos se adjuntan al crear el trámite.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtro -->
+    <form method="get" class="flex gap-2 items-center">
+        <select name="estado" class="select select-sm select-bordered rounded-xl dark:bg-slate-800 text-xs">
+            <option value="">Todos los estados</option>
+            @foreach (var e in new[] { "Recibido", "En evaluación", "Aprobado", "Observado", "Rechazado", "Entregado", "Vencido" })
+            {
+                <option value="@e" selected="@(Model.FiltroEstado == e)">@e</option>
+            }
+        </select>
+        <button type="submit" class="btn btn-outline btn-sm rounded-xl text-xs">Filtrar</button>
+    </form>
+
+    <!-- Tabla de trámites -->
+    <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="table table-zebra w-full text-xs">
+                <thead>
+                    <tr class="text-slate-400 dark:text-slate-500 uppercase text-[10px]">
+                        <th>Trámite</th>
+                        <th>F. solicitud</th>
+                        <th>Estado</th>
+                        <th class="text-right">Días</th>
+                        <th>Requisitos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="text-slate-700 dark:text-slate-300">
+                    @if (!Model.Tramites.Any())
+                    {
+                        <tr><td colspan="6" class="text-center text-slate-400 italic py-6">Sin trámites aún. Crea uno abajo.</td></tr>
+                    }
+                    @foreach (var t in Model.Tramites)
+                    {
+                        <tr>
+                            <td>@t.TipoNombre</td>
+                            <td class="text-slate-400 font-mono">@t.FechaSolicitud.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <span class="badge @t.ColorChip badge-xs font-semibold text-white">@t.Estado</span>
+                                @if (t.Estado == "Observado" && t.FechaLimiteCorreccion != null)
+                                {
+                                    <div class="text-[10px] mt-1 font-semibold text-amber-600 dark:text-amber-400">Corrige antes del @t.FechaLimiteCorreccion?.ToString("dd/MM/yyyy")</div>
+                                }
+                            </td>
+                            <td class="text-right font-mono @(t.Dias > 15 ? "text-rose-500 font-bold" : "text-slate-400")">@t.Dias</td>
+                            <td class="font-mono">@t.RequisitosOk/@t.RequisitosTotal</td>
+                            <td><a class="btn btn-outline btn-xs rounded-lg font-bold whitespace-nowrap" asp-action="Detalle" asp-route-id="@t.Id"><span aria-hidden="true">↗</span> Abrir ficha</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Nuevo trámite: tipo → requisitos dinámicos (AJAX) + ficha TUPA -->
+    <div id="nuevoTramite" class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-6">
+        <h2 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-4">📄 Nuevo trámite</h2>
+
+        <form method="post" asp-action="Crear" enctype="multipart/form-data" id="formNuevoTramite">
+            @Html.AntiForgeryToken()
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="text-[11px] font-bold block mb-1">Tipo de trámite (TUPA) *</label>
+                    <select name="tipoTramite" id="selTipo" class="select select-sm select-bordered w-full rounded-xl dark:bg-slate-800 text-xs" required>
+                        <option value="">Selecciona…</option>
+                        @foreach (var t in Model.Tipos)
+                        {
+                            <option value="@t.Codigo">@t.Nombre</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[11px] font-bold block mb-1">Observaciones (opcional)</label>
+                    <input type="text" name="observaciones" class="input input-sm input-bordered w-full rounded-xl dark:bg-slate-800 text-xs" placeholder="Ej: adjunto voucher N° 12345" />
+                </div>
+            </div>
+
+            <!-- Ficha TUPA embebida (se llena por JS al elegir tipo) -->
+            <div id="fichaTupa" class="hidden bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 p-4 mb-4 text-xs">
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Procedimiento</span><span id="fNombre" class="font-semibold text-slate-800 dark:text-slate-200"></span></div>
+                    <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Plazo</span><span id="fPlazo" class="font-mono font-semibold"></span> <span class="text-slate-400 text-[10px]">días hábiles</span></div>
+                    <div><span class="text-slate-400 block text-[10px] uppercase font-bold">Derecho de pago</span><span id="fPago" class="font-semibold text-slate-800 dark:text-slate-200"></span></div>
+                </div>
+                <div class="mt-3">
+                    <span class="text-slate-400 block text-[10px] uppercase font-bold mb-1">Requisitos (todos obligatorios)</span>
+                    <ul id="fRequisitos" class="space-y-1"></ul>
+                </div>
+                <div class="alert alert-warning rounded-xl mt-3 text-[11px] py-2">
+                    ⚠️ Sin <strong>todos</strong> los archivos adjuntos el trámite no se registra. Documentos en PDF, foto de carné en imagen (JPG/PNG).
+                </div>
+            </div>
+
+            @* Feedback inmediato: cualquier problema del formulario se reporta acá, sin
+               esperar al servidor. Es lo que el alumno ve al instante. *@
+            <div id="avisoNuevo" class="hidden rounded-xl text-[11px] py-2 px-3 mb-3 font-semibold"></div>
+            <p id="pistaEnvio" class="text-[10px] text-slate-400 text-right mb-2 hidden"></p>
+
+            <div class="flex gap-2 justify-end">
+                <button type="reset" class="btn btn-ghost btn-sm rounded-xl">Cancelar</button>
+                <button type="submit" class="btn btn-primary btn-sm rounded-xl font-bold" id="btnEnviar" disabled>Enviar solicitud</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+    <script>
+        const selTipo   = document.getElementById('selTipo');
+        const ficha     = document.getElementById('fichaTupa');
+        const btnEnviar = document.getElementById('btnEnviar');
+        const aviso     = document.getElementById('avisoNuevo');
+        const pista     = document.getElementById('pistaEnvio');
+        const form      = document.getElementById('formNuevoTramite');
+
+        const MAX_MB = 2;
+        const MAX_BYTES = MAX_MB * 1024 * 1024;
+        const TIPOS_OK = ['application/pdf', 'image/jpeg', 'image/png'];
+
+        // avisos instantáneos (nunca un botón muerto sin explicación)
+        function mostrarAviso(texto, tipo = 'error') {
+            aviso.textContent = texto;
+            aviso.className = tipo === 'error'
+                ? 'rounded-xl text-[11px] py-2 px-3 mb-3 font-semibold bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800'
+                : 'rounded-xl text-[11px] py-2 px-3 mb-3 font-semibold bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800';
+        }
+        function ocultarAviso() { aviso.classList.add('hidden'); }
+
+        function ponerPista(texto) {
+            pista.textContent = texto;
+            pista.classList.toggle('hidden', !texto);
+        }
+
+        // carga de la ficha TUPA: cualquier fallo se muestra, nunca se traga
+        selTipo.addEventListener('change', async () => {
+            const codigo = selTipo.value;
+            ocultarAviso();
+            if (!codigo) {
+                ficha.classList.add('hidden');
+                btnEnviar.disabled = true;
+                ponerPista('');
+                return;
+            }
+
+            ficha.classList.remove('hidden');
+            ponerPista('Cargando requisitos…');
+            btnEnviar.disabled = true;
+
+            let data;
+            try {
+                const resp = await fetch(`/Modulo09/Tramites/Requisitos/${encodeURIComponent(codigo)}`,
+                                          { headers: { 'Accept': 'application/json' } });
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                data = await resp.json();
+            } catch (err) {
+                // antes esto se quedaba mudo: ficha a medias y botón para siempre deshabilitado
+                document.getElementById('fRequisitos').innerHTML = '';
+                ponerPista('');
+                mostrarAviso(`No se pudieron cargar los requisitos de ${codigo}. Revisá tu conexión o recargá la página.`);
+                return;
+            }
+
+            if (!data || !data.tipo || !Array.isArray(data.requisitos)) {
+                mostrarAviso(`El tipo ${codigo} no tiene requisitos definidos. No se puede enviar el trámite.`);
+                return;
+            }
+
+            document.getElementById('fNombre').textContent = data.tipo.nombre;
+            document.getElementById('fPlazo').textContent = data.tipo.diasHabiles;
+            document.getElementById('fPago').textContent =
+                `${data.tipo.pagoNombre} (S/ ${data.tipo.pagoMonto})`;
+
+            const ul = document.getElementById('fRequisitos');
+            if (data.requisitos.length === 0) {
+                ul.innerHTML = '<li class="py-1.5 text-amber-600 dark:text-amber-400">Este tipo no declara requisitos en el catálogo TUPA.</li>';
+                mostrarAviso('Este tipo de trámite no tiene requisitos configurados. Comunicate con Secretaría.');
+                return;
+            }
+
+            ul.innerHTML = data.requisitos.map(r =>
+                `<li class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-100 dark:border-slate-800 last:border-0">
+                    <span class="flex items-center gap-2"><span class="text-slate-400 font-mono">${r.orden}.</span> ${r.requisito}</span>
+                    <span class="flex items-center gap-1">
+                        <input type="file" name="req_${r.id}" accept="application/pdf,image/jpeg,image/png" required
+                               data-requerimiento="${r.requisito}"
+                               class="file-input file-input-bordered file-input-xs w-full max-w-[240px] rounded-xl dark:bg-slate-800 text-[10px] archivo-input" />
+                        <span class="text-[10px] archivo-err hidden"></span>
+                    </span>
+                 </li>`
+            ).join('');
+
+            ficha.classList.remove('hidden');
+            validarArchivos();
+        });
+
+        // validación de archivos ANTES de subir: tamaño y tipo
+        function validarArchivos() {
+            const inputs = [...ficha.querySelectorAll('input[type=file]')];
+            if (inputs.length === 0) { btnEnviar.disabled = true; return false; }
+
+            let faltan = 0;
+            let problema = null;
+
+            for (const input of inputs) {
+                const err = input.parentElement.querySelector('.archivo-err');
+                const archivo = input.files[0];
+                input.classList.remove('file-input-error');
+
+                if (!archivo) { faltan++; err.classList.add('hidden'); continue; }
+
+                // el peso se chequea en el navegador: el alumno se entera al elegir el
+                // archivo, no después de subirlo entero
+                if (archivo.size > MAX_BYTES) {
+                    problema = `El archivo '${archivo.name}' pesa ${(archivo.size / 1048576).toFixed(1)} MB y supera los ${MAX_MB} MB permitidos.`;
+                    input.classList.add('file-input-error');
+                    err.textContent = `${(archivo.size / 1048576).toFixed(1)} MB > ${MAX_MB} MB`;
+                    err.className = 'text-[10px] archivo-err text-rose-500 font-bold';
+                } else if (TIPOS_OK.indexOf(archivo.type) === -1) {
+                    problema = `El archivo '${archivo.name}' no es un PDF, JPG ni PNG.`;
+                    input.classList.add('file-input-error');
+                    err.textContent = 'tipo no válido';
+                    err.className = 'text-[10px] archivo-err text-rose-500 font-bold';
+                } else {
+                    err.className = 'text-[10px] archivo-err text-emerald-600 dark:text-emerald-400 font-bold';
+                    err.textContent = `${(archivo.size / 1024).toFixed(0)} KB`;
+                }
+            }
+
+            if (problema) { mostrarAviso(problema); btnEnviar.disabled = true; return false; }
+            if (faltan > 0) {
+                ocultarAviso();
+                btnEnviar.disabled = true;
+                ponerPista(`Adjuntá ${faltan} archivo${faltan > 1 ? 's' : ''} más para poder enviar.`);
+                return false;
+            }
+
+            ocultarAviso();
+            ponerPista('Todos los archivos listos. Al enviar se registra el trámite.');
+            btnEnviar.disabled = false;
+            return true;
+        }
+
+        form.addEventListener('change', ev => {
+            if (ev.target.matches('input[type=file]')) validarArchivos();
+        });
+
+        // envío: feedback inmediato + bloqueo de reenvíos
+        form.addEventListener('submit', ev => {
+            if (!validarArchivos()) {
+                ev.preventDefault();   // no se sube nada si falta o excede
+                return;
+            }
+            const nombres = [...ficha.querySelectorAll('input[type=file]')].map(i => i.files[0].name);
+            btnEnviar.disabled = true;
+            btnEnviar.innerHTML = '<span class="loading loading-spinner loading-xs"></span> Enviando…';
+            ponerPista(`Subiendo ${nombres.length} archivo${nombres.length > 1 ? 's' : ''}: no cierres la página.`);
+        });
+    </script>
+

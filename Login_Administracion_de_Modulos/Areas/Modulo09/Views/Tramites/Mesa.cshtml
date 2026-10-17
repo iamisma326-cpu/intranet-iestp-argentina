@@ -1,0 +1,168 @@
+@model Login_Administracion_de_Modulos.Areas.Modulo09.Controllers.ModeloMesaTramitesVista
+@{
+    ViewData["Title"] = "Mesa de Trámites";
+    var rolActivo = User.FindFirst("ActiveRole")?.Value ?? "";
+}
+
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="bg-white dark:bg-[#111827] rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl shrink-0">🗂️</div>
+            <div>
+                <h1 class="text-lg sm:text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Mesa de Trámites</h1>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Seguimiento de las solicitudes. Aquí no se crean trámites: se verifica y avanza el proceso.</p>
+            </div>
+            <div class="ml-auto text-center">
+                <span class="text-[10px] font-bold text-slate-400 uppercase block">Pendientes</span>
+                <span class="badge badge-warning badge-sm font-bold text-white">@Model.Pendientes</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aviso de flujo -->
+    <div class="alert alert-info rounded-2xl text-[11px] py-2.5">
+        📋 Flujo TUPA: Recibido → En evaluación → Aprobado / Observado (el alumno tiene 15 días hábiles para corregir) → Entregado / Vencido.
+        @(Model.Tramites.Any(t => t.VoucherEstado == "Sin costo")
+            ? "Los trámites sin costo (columna Pago = Sin costo) no requieren voucher: se aprueban directo."
+            : "Antes de aprobar, verifica que Tesorería haya validado el voucher (columna Pago).")
+    </div>
+
+    <!-- Filtro -->
+    <form method="get" class="flex gap-2 items-center">
+        <select name="estado" class="select select-sm select-bordered rounded-xl dark:bg-slate-800 text-xs">
+            <option value="">Todos los estados</option>
+            @foreach (var e in new[] { "Recibido", "En evaluación", "Aprobado", "Observado", "Rechazado", "Entregado", "Vencido" })
+            {
+                <option value="@e" selected="@(Model.FiltroEstado == e)">@e</option>
+            }
+        </select>
+        <button type="submit" class="btn btn-outline btn-sm rounded-xl text-xs">Filtrar</button>
+    </form>
+
+    <!-- Tabla -->
+    <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="table table-zebra w-full text-xs">
+                <thead>
+                    <tr class="text-slate-400 dark:text-slate-500 uppercase text-[10px]">
+                        <th>Código</th>
+                        <th>Tipo</th>
+                        <th>Estudiante</th>
+                        <th>F. solicitud</th>
+                        <th>Pago</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="text-slate-700 dark:text-slate-300">
+                    @if (!Model.Tramites.Any())
+                    {
+                        <tr><td colspan="7" class="text-center text-slate-400 italic py-6">Sin trámites en la mesa.</td></tr>
+                    }
+                    @foreach (var t in Model.Tramites)
+                    {
+                        <tr>
+                            <td class="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                                <a href="/Modulo09/Tramites/Detalle/@t.Id" class="hover:underline" title="Abrir la ficha del trámite con sus archivos adjuntos">@t.Codigo</a>
+                            </td>
+                            <td>@t.TipoCodigo · @t.TipoNombre</td>
+                            <td>
+                                <span class="font-medium text-slate-900 dark:text-slate-100">@t.Estudiante</span>
+                                <span class="text-slate-400 font-mono text-[10px] block">@t.CodigoEstudiante</span>
+                            </td>
+                            <td class="text-slate-400 font-mono">@t.FechaSolicitud.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @if (t.VoucherEstado == "Validado")
+                                {
+                                    <span class="badge badge-success badge-xs font-semibold text-white">Validado</span>
+                                }
+                                else if (t.VoucherEstado == "Rechazado")
+                                {
+                                    <span class="badge badge-error badge-xs font-semibold text-white">Rechazado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-warning badge-xs font-semibold text-white">Pendiente</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge @(t.Estado == "Aprobado" ? "badge-success" : t.Estado == "Rechazado" || t.Estado == "Vencido" ? "badge-error" : t.Estado == "Entregado" ? "badge-accent" : "badge-warning") badge-xs font-semibold text-white">@t.Estado</span>
+                                @if (!string.IsNullOrEmpty(t.Resolucion))
+                                {
+                                    <span class="text-[10px] text-slate-400 block mt-0.5 italic">"@t.Resolucion"</span>
+                                }
+                                @if (t.Estado == "Observado" && t.FechaLimiteCorreccion != null)
+                                {
+                                    var dias = (t.FechaLimiteCorreccion.Value.Date - DateTime.Today).Days;
+                                    <span class="text-[10px] block mt-0.5 font-semibold @(dias <= 3 ? "text-rose-500" : "text-amber-600 dark:text-amber-400")">vence @t.FechaLimiteCorreccion?.ToString("dd/MM")</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="flex gap-1 flex-wrap">
+                                    @if (string.Equals(rolActivo, "Secretaria", System.StringComparison.OrdinalIgnoreCase) || string.Equals(rolActivo, "Admin", System.StringComparison.OrdinalIgnoreCase) || string.Equals(rolActivo, "Director", System.StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        if (t.Estado == "Recibido")
+                                        {
+                                        <form method="post" asp-action="Avanzar" asp-route-id="@t.Id">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="nuevoEstado" value="En evaluación" />
+                                            <button type="submit" class="btn btn-outline btn-xs rounded-xl">En proceso</button>
+                                        </form>
+                                    }
+                                    else if (t.Estado == "En evaluación")
+                                    {
+                                        <form method="post" asp-action="Avanzar" asp-route-id="@t.Id">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="nuevoEstado" value="Aprobado" />
+                                            <button type="submit" class="btn btn-success btn-xs rounded-xl font-bold">Aprobar</button>
+                                        </form>
+                                        <button type="button" class="btn btn-error btn-xs rounded-xl"
+                                                onclick="document.getElementById('mot_@t.Id').classList.toggle('hidden')">Observar</button>
+                                        <form method="post" asp-action="Avanzar" asp-route-id="@t.Id" id="mot_@t.Id" class="hidden flex gap-1">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="nuevoEstado" value="Observado" />
+                                            <input type="text" name="resolucion" class="input input-xs input-bordered rounded-xl dark:bg-slate-800" placeholder="Motivo de la observación" required />
+                                            <button type="submit" class="btn btn-error btn-xs rounded-xl">Enviar</button>
+                                        </form>
+                                    }
+                                    else if (t.Estado == "Aprobado")
+                                    {
+                                        <form method="post" asp-action="Avanzar" asp-route-id="@t.Id">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="nuevoEstado" value="Entregado" />
+                                            <button type="submit" class="btn btn-accent btn-xs rounded-xl font-bold">Listo para recojo ✓</button>
+                                        </form>
+                                    }
+                                    else if (t.Estado == "Observado")
+                                    {
+                                        <span class="text-slate-400 italic">Esperando corrección del alumno</span>
+                                    }
+                                    else if (t.Estado == "Vencido")
+                                    {
+                                        <form method="post" asp-action="Avanzar" asp-route-id="@t.Id">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="nuevoEstado" value="En evaluación" />
+                                            <button type="submit" class="btn btn-outline btn-xs rounded-xl" title="Reabrir el trámite vencido: vuelve a evaluación sin plazo (decisión de la mesa)">Reabrir</button>
+                                        </form>
+                                    }
+                                        else
+                                        {
+                                            <span class="text-slate-400">—</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-[10px] text-slate-400 italic">Vista de consulta: la mesa es de Secretaría</span>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
